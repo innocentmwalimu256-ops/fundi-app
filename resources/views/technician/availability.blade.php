@@ -22,7 +22,7 @@
                     <label class="p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white cursor-pointer flex items-center space-x-3 text-xs font-bold text-slate-800 has-[:checked]:border-emerald-600 has-[:checked]:bg-emerald-50 has-[:checked]:text-emerald-950 transition">
                         <input type="radio" name="availability_status" value="available" {{ ($profile->availability_status ?? 'available') === 'available' ? 'checked' : '' }} class="text-emerald-600 focus:ring-emerald-500">
                         <div>
-                            <p class="font-black text-sm">🟢 {{ __('Available Now') }}</p>
+                            <p class="font-black text-sm"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block mr-1"></span> {{ __('Available Now') }}</p>
                             <span class="text-[11px] font-normal text-slate-500">{{ __('Accepting new service requests') }}</span>
                         </div>
                     </label>
@@ -30,7 +30,7 @@
                     <label class="p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white cursor-pointer flex items-center space-x-3 text-xs font-bold text-slate-800 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 has-[:checked]:text-amber-950 transition">
                         <input type="radio" name="availability_status" value="busy" {{ ($profile->availability_status ?? '') === 'busy' ? 'checked' : '' }} class="text-amber-600 focus:ring-amber-500">
                         <div>
-                            <p class="font-black text-sm">🟡 {{ __('Busy on Job') }}</p>
+                            <p class="font-black text-sm"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block mr-1"></span> {{ __('Busy on Job') }}</p>
                             <span class="text-[11px] font-normal text-slate-500">{{ __('Currently executing active job') }}</span>
                         </div>
                     </label>
@@ -38,7 +38,7 @@
                     <label class="p-4 rounded-2xl border border-slate-200 bg-slate-50 hover:bg-white cursor-pointer flex items-center space-x-3 text-xs font-bold text-slate-800 has-[:checked]:border-slate-600 has-[:checked]:bg-slate-200 has-[:checked]:text-slate-950 transition">
                         <input type="radio" name="availability_status" value="offline" {{ ($profile->availability_status ?? '') === 'offline' ? 'checked' : '' }} class="text-slate-600 focus:ring-slate-500">
                         <div>
-                            <p class="font-black text-sm">⚪ {{ __('Offline') }}</p>
+                            <p class="font-black text-sm"><span class="w-2.5 h-2.5 rounded-full bg-slate-400 inline-block mr-1"></span> {{ __('Offline') }}</p>
                             <span class="text-[11px] font-normal text-slate-500">{{ __('Off-duty & hidden from search') }}</span>
                         </div>
                     </label>

@@ -95,7 +95,7 @@
                     </div>
 
                     <div class="text-right text-xs">
-                        <span class="font-bold text-amber-500">★ {{ number_format($tp->average_rating ?? 5.0, 1) }}</span>
+                        <span class="font-bold text-amber-500"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ number_format($tp->average_rating ?? 5.0, 1) }}</span>
                         <span class="text-[10px] text-slate-400 block">{{ $tp->completed_jobs_count ?? 0 }} {{ __('completed jobs') }}</span>
                     </div>
                 </div>

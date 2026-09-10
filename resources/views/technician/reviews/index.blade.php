@@ -18,13 +18,13 @@
             <div class="text-center min-w-[120px]">
                 @if(($profile->average_rating ?? 0) > 0)
                 <p class="text-4xl sm:text-5xl font-black text-slate-900 flex items-center justify-center">
-                    <span class="text-amber-400 mr-2">★</span> {{ number_format($profile->average_rating, 1) }}
+                    <span class="text-amber-400 mr-2"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i></span> {{ number_format($profile->average_rating, 1) }}
                 </p>
                 <span class="text-xs font-semibold text-slate-400 mt-1 block">{{ __('Out of 5.0 Rating') }}</span>
                 @else
                 <div class="inline-flex flex-col items-center justify-center">
                     <p class="text-3xl sm:text-4xl font-black text-slate-400 flex items-center justify-center">
-                        <span class="text-slate-300 mr-1.5">★</span> --
+                        <span class="text-slate-300 mr-1.5"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i></span> --
                     </p>
                     <span class="text-xs font-bold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-lg mt-1 border border-amber-200">{{ __('No Active Subscription') }}</span>
                 </div>
@@ -94,10 +94,10 @@
 
             <!-- Sub criteria -->
             <div class="flex flex-wrap gap-4 text-[11px] text-slate-500 pt-1">
-                <span>{{ __('Quality') }}: <strong>★ {{ $rev->quality ?? $rev->rating }}/5</strong></span>
-                <span>{{ __('Punctuality') }}: <strong>★ {{ $rev->punctuality ?? $rev->rating }}/5</strong></span>
-                <span>{{ __('Professionalism') }}: <strong>★ {{ $rev->professionalism ?? $rev->rating }}/5</strong></span>
-                <span>{{ __('Communication') }}: <strong>★ {{ $rev->communication ?? $rev->rating }}/5</strong></span>
+                <span>{{ __('Quality') }}: <strong><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $rev->quality ?? $rev->rating }}/5</strong></span>
+                <span>{{ __('Punctuality') }}: <strong><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $rev->punctuality ?? $rev->rating }}/5</strong></span>
+                <span>{{ __('Professionalism') }}: <strong><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $rev->professionalism ?? $rev->rating }}/5</strong></span>
+                <span>{{ __('Communication') }}: <strong><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $rev->communication ?? $rev->rating }}/5</strong></span>
             </div>
         </div>
         @empty

@@ -65,7 +65,7 @@
                         </td>
                         <td class="p-4">
                             @if(($p->total_reviews ?? 0) > 0)
-                                <span class="font-bold text-amber-600">★ {{ number_format($p->average_rating, 1) }}</span>
+                                <span class="font-bold text-amber-600"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ number_format($p->average_rating, 1) }}</span>
                                 <span class="text-[10px] text-slate-400 block">({{ $p->total_reviews }} {{ __('reviews') }})</span>
                             @else
                                 <span class="text-xs font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-100">{{ __('Mpya (0)') }}</span>

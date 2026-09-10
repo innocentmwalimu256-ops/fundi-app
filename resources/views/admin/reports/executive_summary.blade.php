@@ -45,10 +45,10 @@
 
         <div class="flex items-center space-x-2">
             <a href="{{ route('admin.reports.export.csv') }}" class="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-500 text-white text-xs font-bold transition shadow-xs flex items-center space-x-1.5">
-                <span>📥 {{ __('Export CSV') }}</span>
+                <span><i data-lucide="download" class="w-3.5 h-3.5 inline"></i> {{ __('Export CSV') }}</span>
             </a>
             <button onclick="window.print()" class="px-5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black transition shadow-md flex items-center space-x-1.5">
-                <span>🖨️ {{ __('Print / Save as PDF') }}</span>
+                <span><i data-lucide="printer" class="w-3.5 h-3.5 inline"></i>️ {{ __('Print / Save as PDF') }}</span>
             </button>
         </div>
     </div>
@@ -191,7 +191,7 @@
                             <td class="py-2.5 px-4 text-slate-600">{{ __($tp->professional_title ?? 'Technician') }}</td>
                             <td class="py-2.5 px-4 text-slate-500">{{ $tp->location ?? 'Dar es Salaam' }}</td>
                             <td class="py-2.5 px-4 text-center font-bold text-slate-900">{{ $tp->completed_jobs_count ?? 0 }}</td>
-                            <td class="py-2.5 px-4 text-right font-black text-amber-500 font-mono">★ {{ number_format($tp->average_rating ?? 5.0, 1) }}</td>
+                            <td class="py-2.5 px-4 text-right font-black text-amber-500 font-mono"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ number_format($tp->average_rating ?? 5.0, 1) }}</td>
                         </tr>
                         @empty
                         <tr>

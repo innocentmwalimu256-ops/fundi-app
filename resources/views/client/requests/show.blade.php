@@ -18,7 +18,7 @@
                 </span>
                 @if($request->connection_fee_status === 'paid')
                     <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm flex items-center space-x-1">
-                        <span>✓ {{ __('Connection Fee (TZS 2,000): PAID') }}</span>
+                        <span>{{ __('Connection Fee (TZS 2,000): PAID') }}</span>
                     </span>
                 @else
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
@@ -63,7 +63,7 @@
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('Service Progress') }}</h3>
             <span class="text-xs font-bold text-teal-700 bg-teal-50 px-3 py-1 rounded-full">
                 @if(in_array($request->status, ['completed', 'client_confirmed', 'reviewed']))
-                    ✓ {{ __('Job Completed') }}
+                    {{ __('Job Completed') }}
                 @elseif(in_array($request->status, ['in_progress', 'scheduled', 'on_the_way', 'accepted']))
                     {{ __('Technician In Progress') }}
                 @else
@@ -172,7 +172,7 @@
                     <form method="POST" action="{{ route('client.requests.accept-quotation', $request->id) }}" class="flex-1">
                         @csrf
                         <button type="submit" class="w-full py-3.5 px-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-teal-600/20 transition">
-                            ✓ {{ __('Accept Quotation & Schedule Job') }}
+                             {{ __('Accept Quotation & Schedule Job') }}
                         </button>
                     </form>
 
@@ -200,7 +200,7 @@
                 <form method="POST" action="{{ route('client.requests.confirm-completion', $request->id) }}">
                     @csrf
                     <button type="submit" class="py-3.5 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg transition">
-                        ✓ {{ __('Confirm Completion & Unlock Review') }}
+                         {{ __('Confirm Completion & Unlock Review') }}
                     </button>
                 </form>
             </div>
@@ -223,7 +223,7 @@
                         <div class="flex items-center space-x-2">
                             @for($i = 1; $i <= 5; $i++)
                             <button type="button" @click="star = {{ $i }}" class="p-1 text-3xl transition transform active:scale-125" :class="star >= {{ $i }} ? 'text-amber-400' : 'text-slate-200'">
-                                ★
+                                <i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i>
                             </button>
                             @endfor
                             <input type="hidden" name="rating" x-model="star">
@@ -251,7 +251,7 @@
                     </span>
                     <div class="flex items-center text-amber-400 text-sm">
                         @for($i = 1; $i <= 5; $i++)
-                            <span>{{ $i <= $request->review->rating ? '★' : '☆' }}</span>
+                            <span>{{ $i <= $request->review->rating ? '<i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i>' : '<i data-lucide="star" class="w-3.5 h-3.5 inline text-slate-300"></i>' }}</span>
                         @endfor
                     </div>
                 </div>
@@ -398,7 +398,7 @@
                                 <span class="font-mono font-bold">{{ $request->technician->masked_phone }}</span>
                             </div>
                             <p class="text-[11px] text-slate-400 leading-tight">
-                                🔒 {{ __('Direct phone & WhatsApp unlock once technician confirms and accepts your request.') }}
+                                <i data-lucide="lock" class="w-3.5 h-3.5 inline"></i> {{ __('Direct phone & WhatsApp unlock once technician confirms and accepts your request.') }}
                             </p>
                         </div>
                     @endif

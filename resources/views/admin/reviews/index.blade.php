@@ -24,7 +24,7 @@
                     <tr class="hover:bg-slate-50/60">
                         <td class="p-4 font-semibold text-slate-900">{{ $rev->client->full_name }}</td>
                         <td class="p-4 font-semibold text-slate-900">{{ $rev->technician->full_name }}</td>
-                        <td class="p-4 font-bold text-amber-500">★ {{ $rev->rating }}.0</td>
+                        <td class="p-4 font-bold text-amber-500"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $rev->rating }}.0</td>
                         <td class="p-4 text-slate-600 max-w-sm">"{{ $rev->comment }}"</td>
                         <td class="p-4">
                             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $rev->status === 'published' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">

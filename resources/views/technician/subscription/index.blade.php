@@ -159,7 +159,7 @@
                 <div class="pt-4 border-t border-slate-100">
                     @if($isCurrent)
                         <button disabled class="w-full py-3 rounded-2xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-bold uppercase tracking-wider cursor-default">
-                            ✓ {{ __('Current Active Plan') }}
+                            <i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> {{ __('Current Active Plan') }}
                         </button>
                     @else
                         <a href="{{ route('technician.subscription.checkout', $plan->slug) }}" class="block w-full py-3.5 rounded-2xl {{ $plan->slug === 'professional' ? 'bg-teal-600 hover:bg-teal-700 text-white' : ($plan->slug === 'premium' ? 'bg-amber-500 hover:bg-amber-600 text-slate-950 font-black' : 'bg-slate-900 hover:bg-slate-800 text-white') }} font-bold text-xs uppercase tracking-wider text-center shadow transition">

@@ -32,7 +32,7 @@
 
             <div class="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-slate-300">
                 <span>{{ __('Benefits:') }}</span>
-                <span class="font-bold text-teal-300">✓ {{ __('Direct WhatsApp & Chat Contact') }} • {{ __('Jobs') }}: {{ $plan->request_limit === 0 ? __('Unlimited') : $plan->request_limit . ' ' . __('per month') }}</span>
+                <span class="font-bold text-teal-300"><i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> {{ __('Direct WhatsApp & Chat Contact') }} • {{ __('Jobs') }}: {{ $plan->request_limit === 0 ? __('Unlimited') : $plan->request_limit . ' ' . __('per month') }}</span>
             </div>
         </div>
 
@@ -68,7 +68,7 @@
 
                     <label :class="selectedMethod === 'card' ? 'border-teal-600 bg-teal-50/50 ring-2 ring-teal-500/20' : 'border-slate-200 bg-white hover:bg-slate-50'" class="p-3.5 rounded-2xl border cursor-pointer flex flex-col items-center text-center transition">
                         <input type="radio" name="payment_method" value="card" class="sr-only" x-model="selectedMethod">
-                        <span class="w-8 h-8 rounded-xl bg-slate-900 text-white font-black text-xs flex items-center justify-center mb-1.5 shadow-sm">💳</span>
+                        <span class="w-8 h-8 rounded-xl bg-slate-900 text-white font-black text-xs flex items-center justify-center mb-1.5 shadow-sm"><i data-lucide="credit-card" class="w-3.5 h-3.5 inline"></i></span>
                         <span class="text-xs font-bold text-slate-900">{{ __('Card') }}</span>
                         <span class="text-[10px] text-slate-400">Visa/Mastercard</span>
                     </label>

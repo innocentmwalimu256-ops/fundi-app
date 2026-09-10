@@ -135,169 +135,405 @@
     </style>
     @stack('styles')
 </head>
-<body class="h-full bg-[#F7F8F7] text-[#111827] flex flex-col antialiased selection:bg-teal-500 selection:text-white @auth pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:pb-0 @endauth">
+<body class="h-full bg-[#F7F8F7] text-[#111827] flex flex-col antialiased selection:bg-teal-500 selection:text-white" x-data="{ mobileSidebarOpen: false }">
 
     @auth
-    <!-- Global Top Navigation Bar (Only for Logged-In Users) -->
-    <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] transition-all">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16 sm:h-[72px]">
-                
-                <!-- Logo & Brand -->
-                <div class="flex items-center space-x-3">
-                    <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isTechnician() ? route('technician.dashboard') : route('client.dashboard')) }}" class="flex items-center space-x-2.5 group">
-                        <div class="w-10 h-10 rounded-xl bg-navy-900 text-teal-400 flex items-center justify-center font-black shadow-sm group-hover:bg-navy-800 transition">
-                            <i data-lucide="wrench" class="w-5 h-5"></i>
+    <!-- Logged-in Master Workspace Layout (Left Sidebar + Header + Content) -->
+    <div class="min-h-screen flex bg-[#F7F8F7]">
+        
+        <!-- 1. LEFT SIDEBAR (Desktop / Tablet lg:) -->
+        <aside class="hidden lg:flex flex-col w-64 xl:w-72 bg-white border-r border-[#E5E7EB] sticky top-0 h-screen z-30 flex-shrink-0 justify-between py-6 px-4 custom-scrollbar overflow-y-auto">
+            
+            <div class="space-y-6">
+                <!-- Brand Header -->
+                <a href="{{ auth()->user()->isAdmin() ? route('admin.dashboard') : (auth()->user()->isTechnician() ? route('technician.dashboard') : route('client.dashboard')) }}" class="flex items-center space-x-3 px-2">
+                    <div class="w-10 h-10 rounded-2xl bg-navy-900 text-teal-400 flex items-center justify-center font-black shadow-xs flex-shrink-0">
+                        <i data-lucide="wrench" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-xl font-black tracking-tight text-navy-900">FUNDI</span>
                         </div>
-                        <div class="flex flex-col">
-                            <div class="flex items-center space-x-1.5">
-                                <span class="text-xl font-extrabold tracking-tight text-navy-900">FUNDI</span>
-                                <span class="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-[#F0FDFB] text-teal-700 border border-teal-200">
-                                    {{ auth()->user()->role }}
+                        <p class="text-[11px] text-teal-600 font-bold uppercase tracking-wider">Find. Connect. Fix.</p>
+                    </div>
+                </a>
+
+                <!-- User Mini-Profile Card (Matching Reference Design) -->
+                <div class="p-3.5 rounded-2xl bg-[#F7F8F7] border border-[#E5E7EB] flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-navy-900 text-teal-300 flex items-center justify-center font-bold text-xs uppercase shadow-xs flex-shrink-0">
+                        {{ auth()->user()->initials }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <h4 class="text-xs font-bold text-navy-900 truncate">{{ auth()->user()->full_name }}</h4>
+                        <div class="flex items-center space-x-1.5 mt-0.5">
+                            <span class="px-1.5 py-0.2 rounded bg-[#F0FDFB] text-teal-700 text-[10px] font-bold border border-teal-200 uppercase">
+                                {{ auth()->user()->role }}
+                            </span>
+                            <span class="text-[10px] text-[#12B76A] font-bold flex items-center">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#12B76A] mr-1"></span> Active
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Groups -->
+                <nav class="space-y-6 text-xs font-semibold">
+                    
+                    @if(auth()->user()->isClient())
+                    <!-- Client Workspace Links -->
+                    <div class="space-y-1">
+                        <span class="px-3 text-[10px] font-bold text-[#98A2B3] uppercase tracking-wider block mb-2">{{ __('WORKSPACE') }}</span>
+                        
+                        <a href="{{ route('client.dashboard') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('client.dashboard') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4 mr-3 {{ request()->routeIs('client.dashboard') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Dashboard') }}</span>
+                        </a>
+
+                        <a href="{{ route('client.services.index') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('client.services.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="layers" class="w-4 h-4 mr-3 {{ request()->routeIs('client.services.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Services') }}</span>
+                        </a>
+
+                        <a href="{{ route('client.technicians.index') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('client.technicians.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="search" class="w-4 h-4 mr-3 {{ request()->routeIs('client.technicians.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Find Technicians') }}</span>
+                        </a>
+
+                        <a href="{{ route('client.requests.index') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('client.requests.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="inbox" class="w-4 h-4 mr-3 {{ request()->routeIs('client.requests.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('My Requests') }}</span>
+                        </a>
+
+                        <a href="{{ route('client.favorites.index') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('client.favorites.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="bookmark" class="w-4 h-4 mr-3 {{ request()->routeIs('client.favorites.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Saved') }}</span>
+                        </a>
+                    </div>
+
+                    <!-- Client Communication Group -->
+                    <div class="space-y-1">
+                        <span class="px-3 text-[10px] font-bold text-[#98A2B3] uppercase tracking-wider block mb-2">{{ __('COMMUNICATION') }}</span>
+                        
+                        <a href="{{ route('messages.index') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('messages.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <div class="flex items-center">
+                                <i data-lucide="message-square" class="w-4 h-4 mr-3 {{ request()->routeIs('messages.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                                <span>{{ __('Messages') }}</span>
+                            </div>
+                        </a>
+
+                        <a href="{{ route('notifications.index') }}" class="flex items-center justify-between px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('notifications.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <div class="flex items-center">
+                                <i data-lucide="bell" class="w-4 h-4 mr-3 {{ request()->routeIs('notifications.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                                <span>{{ __('Notifications') }}</span>
+                            </div>
+                            @php $unreadCount = auth()->user()->unreadNotificationsCount(); @endphp
+                            @if($unreadCount > 0)
+                                <span class="px-1.5 py-0.5 rounded-full bg-[#F04438] text-[9px] font-bold text-white">
+                                    {{ $unreadCount > 9 ? '9+' : $unreadCount }}
                                 </span>
-                            </div>
-                            <span class="text-[10px] text-[#667085] font-medium tracking-tight -mt-0.5 hidden sm:block">Find. Connect. Fix.</span>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Desktop Navigation for Clients -->
-                @if(auth()->user()->isClient())
-                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
-                    <a href="{{ route('client.dashboard') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('client.dashboard') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('Dashboard') }}
-                    </a>
-                    <a href="{{ route('client.services.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('client.services.*') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('Services') }}
-                    </a>
-                    <a href="{{ route('client.technicians.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('client.technicians.*') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('Find Technicians') }}
-                    </a>
-                    <a href="{{ route('client.requests.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('client.requests.*') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('My Requests') }}
-                    </a>
-                    <a href="{{ route('client.favorites.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('client.favorites.*') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('Saved') }}
-                    </a>
-                </nav>
-                @endif
-
-                <!-- Desktop Navigation for Technicians -->
-                @if(auth()->user()->isTechnician())
-                <nav class="hidden md:flex items-center space-x-1 lg:space-x-2">
-                    <a href="{{ route('technician.dashboard') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('technician.dashboard') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('Dashboard') }}
-                    </a>
-                    <a href="{{ route('technician.requests.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('technician.requests.*') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('My Requests') }}
-                    </a>
-                    <a href="{{ route('technician.subscription') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('technician.subscription*') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('Subscriptions') }}
-                    </a>
-                    <a href="{{ route('technician.portfolios.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('technician.portfolios.*') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('Portfolio') }}
-                    </a>
-                    <a href="{{ route('technician.reviews.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl transition {{ request()->routeIs('technician.reviews.*') ? 'bg-[#F0FDFB] text-teal-700' : 'text-[#667085] hover:text-[#111827] hover:bg-slate-100' }}">
-                        {{ __('Rate & Review') }}
-                    </a>
-                </nav>
-                @endif
-
-                <!-- Right Actions: Language Switcher, Notifications, Messages, Profile -->
-                <div class="flex items-center space-x-2 sm:space-x-3">
-
-                    <!-- Bilingual Switcher (SW | EN) -->
-                    <div class="relative" x-data="{ langOpen: false }">
-                        <button @click="langOpen = !langOpen" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-slate-50 text-xs font-bold text-navy-900 transition shadow-xs cursor-pointer">
-                            <i data-lucide="globe" class="w-3.5 h-3.5 text-teal-600"></i>
-                            <span>{{ app()->getLocale() === 'en' ? 'EN' : 'SW' }}</span>
-                        </button>
-                        <div x-show="langOpen" @click.away="langOpen = false" x-cloak class="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-elevated border border-[#E5E7EB] py-1.5 z-50 text-xs font-semibold">
-                            <a href="{{ route('language.switch', 'sw') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-[#F0FDFB] hover:text-teal-700 transition {{ app()->getLocale() === 'sw' ? 'text-teal-700 font-bold bg-[#F0FDFB]' : 'text-[#111827]' }}">
-                                <span>🇹🇿 Kiswahili</span>
-                                @if(app()->getLocale() === 'sw') <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i> @endif
-                            </a>
-                            <a href="{{ route('language.switch', 'en') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-[#F0FDFB] hover:text-teal-700 transition {{ app()->getLocale() === 'en' ? 'text-teal-700 font-bold bg-[#F0FDFB]' : 'text-[#111827]' }}">
-                                <span>🇬🇧 English</span>
-                                @if(app()->getLocale() === 'en') <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i> @endif
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Notification Bell -->
-                    <a href="{{ route('notifications.index') }}" class="relative p-2 text-[#667085] hover:text-navy-900 hover:bg-slate-100 rounded-xl transition" title="{{ __('Notifications') }}">
-                        <i data-lucide="bell" class="w-5 h-5"></i>
-                        @php $unreadCount = auth()->user()->unreadNotificationsCount(); @endphp
-                        @if($unreadCount > 0)
-                            <span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#F04438] text-[9px] font-bold text-white shadow-xs">
-                                {{ $unreadCount > 9 ? '9+' : $unreadCount }}
-                            </span>
-                        @endif
-                    </a>
-
-                    <!-- Messages Link -->
-                    <a href="{{ route('messages.index') }}" class="relative p-2 text-[#667085] hover:text-navy-900 hover:bg-slate-100 rounded-xl transition" title="{{ __('Messages') }}">
-                        <i data-lucide="message-square" class="w-5 h-5"></i>
-                    </a>
-
-                    <!-- User Profile Dropdown -->
-                    <div class="relative" x-data="{ open: false }" @click.outside="open = false">
-                        <button @click="open = !open" class="flex items-center space-x-2 p-1 rounded-xl hover:bg-slate-100 transition focus:outline-none cursor-pointer">
-                            <div class="w-9 h-9 rounded-xl bg-navy-900 text-teal-300 flex items-center justify-center font-bold text-xs uppercase shadow-xs">
-                                {{ auth()->user()->initials }}
-                            </div>
-                            <span class="hidden md:inline-block text-xs font-bold text-navy-900 max-w-[120px] truncate">
-                                {{ auth()->user()->first_name }}
-                            </span>
-                            <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-[#98A2B3]"></i>
-                        </button>
-
-                        <div x-show="open" x-cloak class="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-elevated border border-[#E5E7EB] py-2 z-50 text-xs">
-                            <div class="px-4 py-2.5 border-b border-[#E5E7EB]">
-                                <p class="font-bold text-navy-900 truncate">{{ auth()->user()->full_name }}</p>
-                                <p class="text-[11px] text-[#667085] font-mono truncate">{{ auth()->user()->phone ?? auth()->user()->email }}</p>
-                            </div>
-
-                            @if(auth()->user()->isAdmin())
-                                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-2 text-navy-900 hover:bg-[#F0FDFB] hover:text-teal-700 font-semibold transition">
-                                    <i data-lucide="shield" class="w-4 h-4 mr-2.5 text-teal-600"></i> {{ __('Admin Center') }}
-                                </a>
-                            @elseif(auth()->user()->isTechnician())
-                                <a href="{{ route('technician.subscription') }}" class="flex items-center px-4 py-2 text-navy-900 hover:bg-[#F0FDFB] hover:text-teal-700 font-semibold transition">
-                                    <i data-lucide="credit-card" class="w-4 h-4 mr-2.5 text-teal-600"></i> {{ __('My Subscription') }}
-                                </a>
-                                <a href="{{ route('technician.availability') }}" class="flex items-center px-4 py-2 text-navy-900 hover:bg-[#F0FDFB] hover:text-teal-700 font-semibold transition">
-                                    <i data-lucide="clock" class="w-4 h-4 mr-2.5 text-teal-600"></i> {{ __('Set Availability') }}
-                                </a>
-                            @elseif(auth()->user()->isClient())
-                                @php
-                                    $hasApp = \App\Models\TechnicianApplication::where('user_id', auth()->id())->first();
-                                @endphp
-                                @if($hasApp)
-                                    <a href="{{ route('client.technician-application.status') }}" class="flex items-center px-4 py-2 text-amber-800 bg-amber-50/70 hover:bg-amber-100 font-semibold transition">
-                                        <i data-lucide="clock" class="w-4 h-4 mr-2.5 text-amber-600"></i> {{ __('Technician Application Status') }}
-                                    </a>
-                                @else
-                                    <a href="{{ route('client.become-technician') }}" class="flex items-center px-4 py-2 text-teal-700 bg-teal-50/70 hover:bg-teal-100 font-bold transition">
-                                        <i data-lucide="award" class="w-4 h-4 mr-2.5 text-teal-600"></i> {{ __('Join as Technician') }}
-                                    </a>
-                                @endif
                             @endif
+                        </a>
+                    </div>
 
-                            <form method="POST" action="{{ route('logout') }}" data-turbo="false" class="border-t border-[#E5E7EB] mt-1 pt-1">
-                                @csrf
-                                <button type="submit" class="w-full flex items-center px-4 py-2 text-[#F04438] hover:bg-rose-50 font-bold transition cursor-pointer">
-                                    <i data-lucide="log-out" class="w-4 h-4 mr-2.5"></i> {{ __('Logout') }}
-                                </button>
-                            </form>
+                    <!-- Client Career / Verification -->
+                    <div class="space-y-1">
+                        <span class="px-3 text-[10px] font-bold text-[#98A2B3] uppercase tracking-wider block mb-2">{{ __('OPPORTUNITIES') }}</span>
+                        @php
+                            $hasApp = \App\Models\TechnicianApplication::where('user_id', auth()->id())->first();
+                        @endphp
+                        @if($hasApp)
+                            <a href="{{ route('client.technician-application.status') }}" class="flex items-center px-3.5 py-2.5 rounded-xl text-amber-800 bg-amber-50/70 hover:bg-amber-100 font-semibold transition border border-amber-200">
+                                <i data-lucide="clock" class="w-4 h-4 mr-3 text-amber-600"></i>
+                                <span>{{ __('Application Status') }}</span>
+                            </a>
+                        @else
+                            <a href="{{ route('client.become-technician') }}" class="flex items-center px-3.5 py-2.5 rounded-xl text-teal-700 bg-teal-50/70 hover:bg-teal-100 font-bold transition border border-teal-200">
+                                <i data-lucide="award" class="w-4 h-4 mr-3 text-teal-600"></i>
+                                <span>{{ __('Join as Technician') }}</span>
+                            </a>
+                        @endif
+                    </div>
+                    @endif
+
+                    @if(auth()->user()->isTechnician())
+                    <!-- Technician Workspace Links -->
+                    <div class="space-y-1">
+                        <span class="px-3 text-[10px] font-bold text-[#98A2B3] uppercase tracking-wider block mb-2">{{ __('WORKSPACE') }}</span>
+                        
+                        <a href="{{ route('technician.dashboard') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('technician.dashboard') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4 mr-3 {{ request()->routeIs('technician.dashboard') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Dashboard') }}</span>
+                        </a>
+
+                        <a href="{{ route('technician.requests.index') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('technician.requests.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="inbox" class="w-4 h-4 mr-3 {{ request()->routeIs('technician.requests.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Job Requests') }}</span>
+                        </a>
+
+                        <a href="{{ route('technician.subscription') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('technician.subscription*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="credit-card" class="w-4 h-4 mr-3 {{ request()->routeIs('technician.subscription*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Subscription Plan') }}</span>
+                        </a>
+
+                        <a href="{{ route('technician.portfolios.index') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('technician.portfolios.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="image" class="w-4 h-4 mr-3 {{ request()->routeIs('technician.portfolios.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Portfolio Works') }}</span>
+                        </a>
+
+                        <a href="{{ route('technician.reviews.index') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('technician.reviews.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="star" class="w-4 h-4 mr-3 {{ request()->routeIs('technician.reviews.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Client Reviews') }}</span>
+                        </a>
+                    </div>
+
+                    <!-- Technician Communication & Schedule -->
+                    <div class="space-y-1">
+                        <span class="px-3 text-[10px] font-bold text-[#98A2B3] uppercase tracking-wider block mb-2">{{ __('COMMUNICATION & AVAILABILITY') }}</span>
+                        
+                        <a href="{{ route('messages.index') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('messages.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="message-square" class="w-4 h-4 mr-3 {{ request()->routeIs('messages.*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Messages') }}</span>
+                        </a>
+
+                        <a href="{{ route('technician.availability') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('technician.availability') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="clock" class="w-4 h-4 mr-3 {{ request()->routeIs('technician.availability') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Set Availability') }}</span>
+                        </a>
+                    </div>
+                    @endif
+
+                    @if(auth()->user()->isAdmin())
+                    <!-- Admin Links -->
+                    <div class="space-y-1">
+                        <span class="px-3 text-[10px] font-bold text-[#98A2B3] uppercase tracking-wider block mb-2">{{ __('ADMINISTRATION') }}</span>
+                        
+                        <a href="{{ route('admin.dashboard') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="layout-dashboard" class="w-4 h-4 mr-3 {{ request()->routeIs('admin.dashboard') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Admin Overview') }}</span>
+                        </a>
+
+                        <a href="{{ route('admin.users') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.users*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="users" class="w-4 h-4 mr-3 {{ request()->routeIs('admin.users*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Users') }}</span>
+                        </a>
+
+                        <a href="{{ route('admin.applications') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.applications*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="check-square" class="w-4 h-4 mr-3 {{ request()->routeIs('admin.applications*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Verification') }}</span>
+                        </a>
+
+                        <a href="{{ route('admin.complaints') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.complaints*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="alert-circle" class="w-4 h-4 mr-3 {{ request()->routeIs('admin.complaints*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Issues & Disputes') }}</span>
+                        </a>
+
+                        <a href="{{ route('admin.logs') }}" class="flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('admin.logs*') ? 'bg-[#F0FDFB] text-teal-700 font-bold border border-teal-200 shadow-xs' : 'text-[#667085] hover:text-navy-900 hover:bg-[#F7F8F7]' }}">
+                            <i data-lucide="file-text" class="w-4 h-4 mr-3 {{ request()->routeIs('admin.logs*') ? 'text-teal-600' : 'text-[#98A2B3]' }}"></i>
+                            <span>{{ __('Audit Logs') }}</span>
+                        </a>
+                    </div>
+                    @endif
+
+                </nav>
+            </div>
+
+            <!-- Left Sidebar Footer: Language & Logout -->
+            <div class="pt-4 border-t border-[#E5E7EB] space-y-2">
+                <!-- Language Switcher Inline -->
+                <div class="flex items-center justify-between px-3 py-2 rounded-xl bg-[#F7F8F7] border border-[#E5E7EB] text-xs font-bold text-navy-900">
+                    <div class="flex items-center space-x-2">
+                        <i data-lucide="globe" class="w-3.5 h-3.5 text-teal-600"></i>
+                        <span>{{ app()->getLocale() === 'en' ? 'English' : 'Kiswahili' }}</span>
+                    </div>
+                    <a href="{{ route('language.switch', app()->getLocale() === 'en' ? 'sw' : 'en') }}" class="text-[10px] text-teal-600 hover:text-teal-700 font-bold uppercase underline">
+                        {{ app()->getLocale() === 'en' ? 'Badili (SW)' : 'Switch (EN)' }}
+                    </a>
+                </div>
+
+                <!-- Logout Form -->
+                <form method="POST" action="{{ route('logout') }}" data-turbo="false">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center px-3.5 py-2.5 text-xs font-bold text-[#F04438] hover:bg-rose-50 rounded-xl transition cursor-pointer">
+                        <i data-lucide="log-out" class="w-4 h-4 mr-3"></i>
+                        <span>{{ __('Logout') }}</span>
+                    </button>
+                </form>
+            </div>
+
+        </aside>
+
+        <!-- 2. MOBILE SLIDE-OVER DRAWER OVERLAY -->
+        <div x-show="mobileSidebarOpen" x-cloak class="fixed inset-0 z-50 lg:hidden flex">
+            <!-- Backdrop -->
+            <div x-show="mobileSidebarOpen" @click="mobileSidebarOpen = false" class="fixed inset-0 bg-navy-950/60 backdrop-blur-sm transition-opacity"></div>
+            
+            <!-- Drawer Menu -->
+            <div class="relative w-72 max-w-[85vw] bg-white h-full flex flex-col justify-between py-6 px-4 z-10 shadow-2xl custom-scrollbar overflow-y-auto">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between px-2">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-xl bg-navy-900 text-teal-400 flex items-center justify-center font-black">
+                                <i data-lucide="wrench" class="w-4 h-4"></i>
+                            </div>
+                            <span class="text-lg font-black text-navy-900">FUNDI</span>
+                        </div>
+                        <button @click="mobileSidebarOpen = false" class="p-1.5 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-navy-900">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+
+                    <!-- User Mini-Profile -->
+                    <div class="p-3 rounded-xl bg-[#F7F8F7] border border-[#E5E7EB] flex items-center space-x-3">
+                        <div class="w-9 h-9 rounded-lg bg-navy-900 text-teal-300 flex items-center justify-center font-bold text-xs uppercase">
+                            {{ auth()->user()->initials }}
+                        </div>
+                        <div class="min-w-0 flex-1">
+                            <h4 class="text-xs font-bold text-navy-900 truncate">{{ auth()->user()->full_name }}</h4>
+                            <span class="text-[10px] text-teal-700 font-bold uppercase">{{ auth()->user()->role }}</span>
                         </div>
                     </div>
 
+                    <!-- Drawer Links -->
+                    <nav class="space-y-1 text-xs font-semibold">
+                        @if(auth()->user()->isClient())
+                            <a href="{{ route('client.dashboard') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('client.dashboard') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4 mr-3"></i> {{ __('Dashboard') }}
+                            </a>
+                            <a href="{{ route('client.services.index') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('client.services.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="layers" class="w-4 h-4 mr-3"></i> {{ __('Services') }}
+                            </a>
+                            <a href="{{ route('client.technicians.index') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('client.technicians.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="search" class="w-4 h-4 mr-3"></i> {{ __('Find Technicians') }}
+                            </a>
+                            <a href="{{ route('client.requests.index') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('client.requests.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="inbox" class="w-4 h-4 mr-3"></i> {{ __('My Requests') }}
+                            </a>
+                            <a href="{{ route('client.favorites.index') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('client.favorites.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="bookmark" class="w-4 h-4 mr-3"></i> {{ __('Saved') }}
+                            </a>
+                        @elseif(auth()->user()->isTechnician())
+                            <a href="{{ route('technician.dashboard') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('technician.dashboard') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4 mr-3"></i> {{ __('Dashboard') }}
+                            </a>
+                            <a href="{{ route('technician.requests.index') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('technician.requests.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="inbox" class="w-4 h-4 mr-3"></i> {{ __('Job Requests') }}
+                            </a>
+                            <a href="{{ route('technician.subscription') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('technician.subscription*') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="credit-card" class="w-4 h-4 mr-3"></i> {{ __('Subscription') }}
+                            </a>
+                            <a href="{{ route('technician.portfolios.index') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('technician.portfolios.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                                <i data-lucide="image" class="w-4 h-4 mr-3"></i> {{ __('Portfolio') }}
+                            </a>
+                        @endif
+                        <a href="{{ route('messages.index') }}" class="flex items-center px-3 py-2 rounded-xl {{ request()->routeIs('messages.*') ? 'bg-[#F0FDFB] text-teal-700 font-bold' : 'text-[#667085]' }}">
+                            <i data-lucide="message-square" class="w-4 h-4 mr-3"></i> {{ __('Messages') }}
+                        </a>
+                    </nav>
                 </div>
 
+                <form method="POST" action="{{ route('logout') }}" data-turbo="false" class="pt-4 border-t border-[#E5E7EB]">
+                    @csrf
+                    <button type="submit" class="w-full flex items-center px-3 py-2 text-xs font-bold text-[#F04438] hover:bg-rose-50 rounded-xl">
+                        <i data-lucide="log-out" class="w-4 h-4 mr-3"></i> {{ __('Logout') }}
+                    </button>
+                </form>
             </div>
         </div>
-    </header>
+
+        <!-- 3. MAIN WORKSPACE CONTAINER (Header + Content + Footer) -->
+        <div class="flex-1 flex flex-col min-w-0">
+            
+            <!-- Top Workspace Header -->
+            <header class="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] transition-all">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="flex justify-between items-center h-16">
+                        
+                        <!-- Left: Hamburger (Mobile) & Workspace Breadcrumb -->
+                        <div class="flex items-center space-x-3">
+                            <button @click="mobileSidebarOpen = true" class="lg:hidden p-2 rounded-xl text-slate-600 hover:text-navy-900 hover:bg-slate-100 transition cursor-pointer">
+                                <i data-lucide="menu" class="w-5 h-5"></i>
+                            </button>
+                            <div class="hidden sm:flex items-center space-x-2 text-xs text-[#667085]">
+                                <span class="font-bold text-navy-900">FUNDI</span>
+                                <span>/</span>
+                                <span class="capitalize">{{ str_replace(['client.', 'technician.', 'admin.'], '', request()->route()->getName() ?? 'workspace') }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Right: Actions & User Dropdown -->
+                        <div class="flex items-center space-x-2 sm:space-x-3">
+                            <!-- Language Toggle -->
+                            <a href="{{ route('language.switch', app()->getLocale() === 'en' ? 'sw' : 'en') }}" class="px-2.5 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-slate-50 text-xs font-bold text-navy-900 transition shadow-xs flex items-center space-x-1">
+                                <i data-lucide="globe" class="w-3.5 h-3.5 text-teal-600"></i>
+                                <span>{{ app()->getLocale() === 'en' ? 'EN' : 'SW' }}</span>
+                            </a>
+
+                            <!-- Notifications -->
+                            <a href="{{ route('notifications.index') }}" class="relative p-2 text-[#667085] hover:text-navy-900 hover:bg-slate-100 rounded-xl transition">
+                                <i data-lucide="bell" class="w-5 h-5"></i>
+                                @php $unreadCount = auth()->user()->unreadNotificationsCount(); @endphp
+                                @if($unreadCount > 0)
+                                    <span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-[#F04438] text-[9px] font-bold text-white">
+                                        {{ $unreadCount > 9 ? '9+' : $unreadCount }}
+                                    </span>
+                                @endif
+                            </a>
+
+                            <!-- Messages -->
+                            <a href="{{ route('messages.index') }}" class="p-2 text-[#667085] hover:text-navy-900 hover:bg-slate-100 rounded-xl transition">
+                                <i data-lucide="message-square" class="w-5 h-5"></i>
+                            </a>
+
+                            <!-- User Profile Chip -->
+                            <div class="flex items-center space-x-2 pl-2 border-l border-[#E5E7EB]">
+                                <div class="w-8 h-8 rounded-xl bg-navy-900 text-teal-300 flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                                    {{ auth()->user()->initials }}
+                                </div>
+                                <span class="hidden md:inline-block text-xs font-bold text-navy-900 max-w-[120px] truncate">
+                                    {{ auth()->user()->first_name }}
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </header>
+
+            <!-- Flash Alerts Container -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+                @if(session('success'))
+                    <div class="flex items-center justify-between p-4 mb-3 rounded-2xl bg-[#F0FDFB] border border-teal-200 text-teal-900 text-xs font-medium shadow-subtle" role="alert">
+                        <div class="flex items-center space-x-2.5">
+                            <i data-lucide="check-circle" class="w-5 h-5 text-teal-600 flex-shrink-0"></i>
+                            <span>{{ session('success') }}</span>
+                        </div>
+                        <button type="button" @click="$el.parentElement.remove()" class="text-teal-600 hover:text-teal-900 p-1">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                @endif
+
+                @if(session('error'))
+                    <div class="flex items-center justify-between p-4 mb-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-medium shadow-subtle" role="alert">
+                        <div class="flex items-center space-x-2.5">
+                            <i data-lucide="alert-triangle" class="w-5 h-5 text-[#F04438] flex-shrink-0"></i>
+                            <span>{{ session('error') }}</span>
+                        </div>
+                        <button type="button" @click="$el.parentElement.remove()" class="text-rose-600 hover:text-rose-900 p-1">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    </div>
+                @endif
+            </div>
+
+            <!-- Page Main Content -->
+            <main class="flex-grow flex flex-col pb-20 lg:pb-8">
+                @yield('content')
+            </main>
+
+        </div>
+
+    </div>
     @endauth
 
     @guest
@@ -328,23 +564,11 @@
 
                     <!-- Right CTAs -->
                     <div class="flex items-center space-x-2 sm:space-x-3">
-                        <!-- Bilingual Switcher -->
-                        <div class="relative" x-data="{ langOpen: false }">
-                            <button @click="langOpen = !langOpen" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-slate-50 text-xs font-bold text-navy-900 transition shadow-xs cursor-pointer">
-                                <i data-lucide="globe" class="w-3.5 h-3.5 text-teal-600"></i>
-                                <span>{{ app()->getLocale() === 'en' ? 'EN' : 'SW' }}</span>
-                            </button>
-                            <div x-show="langOpen" @click.away="langOpen = false" x-cloak class="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-elevated border border-[#E5E7EB] py-1.5 z-50 text-xs font-semibold">
-                                <a href="{{ route('language.switch', 'sw') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-[#F0FDFB] hover:text-teal-700 transition {{ app()->getLocale() === 'sw' ? 'text-teal-700 font-bold bg-[#F0FDFB]' : 'text-[#111827]' }}">
-                                    <span>🇹🇿 Kiswahili</span>
-                                    @if(app()->getLocale() === 'sw') <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i> @endif
-                                </a>
-                                <a href="{{ route('language.switch', 'en') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-[#F0FDFB] hover:text-teal-700 transition {{ app()->getLocale() === 'en' ? 'text-teal-700 font-bold bg-[#F0FDFB]' : 'text-[#111827]' }}">
-                                    <span>🇬🇧 English</span>
-                                    @if(app()->getLocale() === 'en') <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i> @endif
-                                </a>
-                            </div>
-                        </div>
+                        <!-- Language Toggle -->
+                        <a href="{{ route('language.switch', app()->getLocale() === 'en' ? 'sw' : 'en') }}" class="px-2.5 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-slate-50 text-xs font-bold text-navy-900 transition shadow-xs flex items-center space-x-1">
+                            <i data-lucide="globe" class="w-3.5 h-3.5 text-teal-600"></i>
+                            <span>{{ app()->getLocale() === 'en' ? 'EN' : 'SW' }}</span>
+                        </a>
 
                         <a href="{{ route('login') }}" class="px-3.5 py-2 text-xs font-bold text-navy-900 hover:bg-slate-100 rounded-xl transition">
                             {{ __('Sign In') }}
@@ -357,41 +581,11 @@
             </div>
         </header>
         @endif
+
+        <main class="flex-grow flex flex-col">
+            @yield('content')
+        </main>
     @endguest
-
-    <!-- Flash Alerts Container (Only for Logged In Pages) -->
-    @auth
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
-        @if(session('success'))
-            <div class="flex items-center justify-between p-4 mb-3 rounded-2xl bg-[#F0FDFB] border border-teal-200 text-teal-900 text-xs font-medium shadow-subtle" role="alert">
-                <div class="flex items-center space-x-2.5">
-                    <i data-lucide="check-circle" class="w-5 h-5 text-teal-600 flex-shrink-0"></i>
-                    <span>{{ session('success') }}</span>
-                </div>
-                <button type="button" @click="$el.parentElement.remove()" class="text-teal-600 hover:text-teal-900 p-1">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-            </div>
-        @endif
-
-        @if(session('error'))
-            <div class="flex items-center justify-between p-4 mb-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-medium shadow-subtle" role="alert">
-                <div class="flex items-center space-x-2.5">
-                    <i data-lucide="alert-triangle" class="w-5 h-5 text-[#F04438] flex-shrink-0"></i>
-                    <span>{{ session('error') }}</span>
-                </div>
-                <button type="button" @click="$el.parentElement.remove()" class="text-rose-600 hover:text-rose-900 p-1">
-                    <i data-lucide="x" class="w-4 h-4"></i>
-                </button>
-            </div>
-        @endif
-    </div>
-    @endauth
-
-    <!-- Main Content Area -->
-    <main class="flex-grow flex flex-col">
-        @yield('content')
-    </main>
 
     @auth
     <!-- Mobile Bottom Navigation (Visible on Small Screens) -->

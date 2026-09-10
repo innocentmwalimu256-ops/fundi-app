@@ -117,7 +117,7 @@
                     </label>
                     <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white cursor-pointer flex items-center space-x-2 text-xs font-bold text-slate-700 has-[:checked]:border-rose-600 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-900 transition">
                         <input type="radio" name="urgency" value="urgent" class="text-rose-600 focus:ring-rose-500">
-                        <span>🚨 {{ __('Urgent') }}</span>
+                        <span>{{ __('Urgent') }}</span>
                     </label>
                 </div>
             </div>
@@ -174,7 +174,7 @@
 
                         <label :class="feeMethod === 'card' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
                             <input type="radio" name="payment_method" value="card" class="sr-only" x-model="feeMethod">
-                            <span class="w-6 h-6 rounded-lg bg-slate-800 text-white flex items-center justify-center font-black text-[10px]">💳</span>
+                            <span class="w-6 h-6 rounded-lg bg-slate-800 text-white flex items-center justify-center font-black text-[10px]"><i data-lucide="credit-card" class="w-3.5 h-3.5"></i></span>
                             <span>{{ __('Card') }}</span>
                         </label>
                     </div>
@@ -185,8 +185,9 @@
                     <input type="text" name="payment_phone" value="{{ auth()->user()->phone }}" placeholder="{{ __('07XXXXXXXX or 2557XXXXXXXX') }}" class="w-full py-2.5 px-3 rounded-xl bg-white/10 border border-white/20 text-xs text-white placeholder-slate-400 font-mono font-bold focus:ring-2 focus:ring-teal-400 focus:outline-none">
                 </div>
 
-                <p class="text-[11px] text-slate-400">
-                    💡 <em>{{ __('Note: Labour and material costs are settled directly with your technician upon completion (0% platform deduction).') }}</em>
+                <p class="text-[11px] text-slate-400 flex items-center space-x-1">
+                    <i data-lucide="info" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
+                    <span>{{ __('Note: Labour and material costs are settled directly with your technician upon completion (0% platform deduction).') }}</span>
                 </p>
 
                 <!-- Submit CTA -->

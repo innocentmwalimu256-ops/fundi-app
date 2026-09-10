@@ -42,7 +42,7 @@
                         <div class="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-0.5">
                             @if(($tp->average_rating ?? 0) > 0)
                             <span class="flex items-center font-bold text-amber-500">
-                                ★ {{ number_format($tp->average_rating, 1) }}
+                                <i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ number_format($tp->average_rating, 1) }}
                                 @if(($tp->total_reviews ?? 0) > 0)
                                     <span class="text-slate-400 font-normal ml-1">({{ $tp->total_reviews }} {{ __('reviews') }})</span>
                                 @endif
@@ -99,7 +99,7 @@
 
         <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-xs">
             <p class="text-[11px] font-bold uppercase tracking-wider text-slate-400">{{ __('Smart Match') }}</p>
-            <h3 class="text-2xl font-black text-teal-700 mt-0.5">⚡ {{ $matchScore ?? 92 }}%</h3>
+            <h3 class="text-2xl font-black text-teal-700 mt-0.5"><i data-lucide="zap" class="w-3.5 h-3.5 inline text-amber-500"></i> {{ $matchScore ?? 92 }}%</h3>
             <span class="text-[11px] text-teal-700 font-bold">{{ __('Top recommendation') }}</span>
         </div>
     </div>
@@ -126,7 +126,7 @@
                     <div class="flex flex-wrap gap-2">
                         @foreach($tp->skills as $skill)
                         <span class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-800 text-xs font-semibold">
-                            ✓ {{ __($skill) }}
+                            <i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> {{ __($skill) }}
                         </span>
                         @endforeach
                     </div>
@@ -190,7 +190,7 @@
                     </div>
                     @if(($tp->total_reviews ?? 0) > 0)
                     <span class="font-bold text-amber-500 text-sm">
-                        ★ {{ number_format($tp->average_rating, 1) }} / 5.0 ({{ $tp->total_reviews }} {{ __('reviews') }})
+                        <i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ number_format($tp->average_rating, 1) }} / 5.0 ({{ $tp->total_reviews }} {{ __('reviews') }})
                     </span>
                     @else
                     <span class="font-bold text-teal-700 bg-teal-50 px-3 py-1 rounded-xl border border-teal-100 text-xs">
@@ -203,19 +203,19 @@
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-100 text-xs text-center">
                     <div>
                         <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ __('Quality') }}</span>
-                        <span class="font-bold text-slate-900 mt-0.5 block">★ {{ $ratingStats['quality'] }}</span>
+                        <span class="font-bold text-slate-900 mt-0.5 block"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $ratingStats['quality'] }}</span>
                     </div>
                     <div>
                         <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ __('Punctuality') }}</span>
-                        <span class="font-bold text-slate-900 mt-0.5 block">★ {{ $ratingStats['punctuality'] }}</span>
+                        <span class="font-bold text-slate-900 mt-0.5 block"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $ratingStats['punctuality'] }}</span>
                     </div>
                     <div>
                         <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ __('Professionalism') }}</span>
-                        <span class="font-bold text-slate-900 mt-0.5 block">★ {{ $ratingStats['professionalism'] }}</span>
+                        <span class="font-bold text-slate-900 mt-0.5 block"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $ratingStats['professionalism'] }}</span>
                     </div>
                     <div>
                         <span class="text-slate-400 block text-[10px] uppercase font-bold">{{ __('Communication') }}</span>
-                        <span class="font-bold text-slate-900 mt-0.5 block">★ {{ $ratingStats['communication'] }}</span>
+                        <span class="font-bold text-slate-900 mt-0.5 block"><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ $ratingStats['communication'] }}</span>
                     </div>
                 </div>
 
@@ -230,7 +230,7 @@
                                 </div>
                                 <div>
                                     <h4 class="text-xs font-bold text-slate-900">{{ $rev->client->full_name }}</h4>
-                                    <span class="text-[10px] text-teal-700 font-medium">✓ {{ __('Verified Completed Job') }}</span>
+                                    <span class="text-[10px] text-teal-700 font-medium"><i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> {{ __('Verified Completed Job') }}</span>
                                 </div>
                             </div>
                             <div class="flex items-center text-amber-400 text-xs">
@@ -296,12 +296,12 @@
                     @if($technician->serviceAreas->isNotEmpty())
                         @foreach($technician->serviceAreas as $area)
                         <span class="px-3 py-1 rounded-xl bg-teal-50 text-teal-800 border border-teal-200 text-xs font-bold">
-                            📍 {{ $area->area_name }}
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-slate-400"></i> {{ $area->area_name }}
                         </span>
                         @endforeach
                     @else
                         <span class="px-3 py-1 rounded-xl bg-slate-100 text-slate-700 text-xs font-medium">
-                            📍 {{ $tp->service_area ?? $tp->location ?? __('Dar es Salaam Citywide') }}
+                            <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-slate-400"></i> {{ $tp->service_area ?? $tp->location ?? __('Dar es Salaam Citywide') }}
                         </span>
                     @endif
                 </div>

@@ -212,7 +212,7 @@
                         <td class="py-3 px-4">
                             @if($req->connection_fee_status === 'paid')
                                 <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                    ✓ {{ __('PAID') }} (TZS 2,000)
+                                    <i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> {{ __('PAID') }} (TZS 2,000)
                                 </span>
                             @else
                                 <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">

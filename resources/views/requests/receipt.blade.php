@@ -60,7 +60,7 @@
 
                 <div class="text-right space-y-1">
                     <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-100 text-emerald-800 border border-emerald-200">
-                        Job Completed ✓
+                        Job Completed <i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i>
                     </span>
                     <p class="text-xs font-mono font-bold text-slate-900 mt-1">{{ $request->reference_no }}</p>
                     <p class="text-[11px] text-slate-400">{{ now()->format('d M Y, H:i') }}</p>
@@ -116,7 +116,7 @@
 
             <!-- Service & Settlement Notice -->
             <div class="p-4 rounded-2xl bg-teal-50/60 border border-teal-100 text-[11px] text-teal-950 leading-relaxed space-y-1">
-                <p class="font-bold">✓ Service Completed & Verified by Client</p>
+                <p class="font-bold"><i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> Service Completed & Verified by Client</p>
                 <p class="text-teal-800">
                     Payment for this service was settled directly between Client and Technician via cash / mobile money as agreed. FUNDI verifies technician credentials, quotes, and job completion records.
                 </p>

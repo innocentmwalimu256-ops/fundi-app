@@ -51,8 +51,8 @@
                 <div>
                     <select name="rating" class="w-full py-2 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50/50 text-slate-700">
                         <option value="">{{ __('Any Rating') }}</option>
-                        <option value="4.5" {{ $rating === '4.5' ? 'selected' : '' }}>★ 4.5 & {{ __('Above') }}</option>
-                        <option value="4.0" {{ $rating === '4.0' ? 'selected' : '' }}>★ 4.0 & {{ __('Above') }}</option>
+                        <option value="4.5" {{ $rating === '4.5' ? 'selected' : '' }}><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> 4.5 & {{ __('Above') }}</option>
+                        <option value="4.0" {{ $rating === '4.0' ? 'selected' : '' }}><i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> 4.0 & {{ __('Above') }}</option>
                     </select>
                 </div>
 
@@ -77,7 +77,7 @@
                 <!-- Sort By -->
                 <div>
                     <select name="sort" class="w-full py-2 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50/50 text-slate-700 font-bold">
-                        <option value="smart_match" {{ $sortBy === 'smart_match' ? 'selected' : '' }}>⚡ {{ __('Smart Match') }}</option>
+                        <option value="smart_match" {{ $sortBy === 'smart_match' ? 'selected' : '' }}><i data-lucide="zap" class="w-3.5 h-3.5 inline text-amber-500"></i> {{ __('Smart Match') }}</option>
                         <option value="highest_rated" {{ $sortBy === 'highest_rated' ? 'selected' : '' }}>{{ __('Highest Rated') }}</option>
                         <option value="most_experienced" {{ $sortBy === 'most_experienced' ? 'selected' : '' }}>{{ __('Most Experienced') }}</option>
                         <option value="most_jobs" {{ $sortBy === 'most_jobs' ? 'selected' : '' }}>{{ __('Most Completed Jobs') }}</option>
@@ -88,7 +88,7 @@
                 <div class="col-span-2 sm:col-span-4 lg:col-span-2 flex items-center justify-between gap-3 pt-1">
                     <label class="flex items-center space-x-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
                         <input type="checkbox" name="verified_only" value="1" {{ $verifiedOnly ? 'checked' : '' }} class="w-4 h-4 rounded text-teal-600 border-slate-300 focus:ring-teal-500">
-                        <span>✓ {{ __('Verified Only') }}</span>
+                        <span><i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> {{ __('Verified Only') }}</span>
                     </label>
 
                     <button type="submit" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
@@ -117,7 +117,7 @@
                     </span>
                 @endif
                 <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-teal-50 text-teal-800 border border-teal-200 text-[11px] font-black">
-                    <span>⚡ {{ $tech->match_score ?? 90 }}% {{ __('Match') }}</span>
+                    <span><i data-lucide="zap" class="w-3.5 h-3.5 inline text-amber-500"></i> {{ $tech->match_score ?? 90 }}% {{ __('Match') }}</span>
                 </span>
             </div>
 
@@ -148,7 +148,7 @@
                     <div class="flex items-center space-x-3 text-xs pt-0.5">
                         @if(($tp->average_rating ?? 0) > 0)
                             <span class="font-bold text-amber-500 flex items-center">
-                                ★ {{ number_format($tp->average_rating, 1) }}
+                                <i data-lucide="star" class="w-3.5 h-3.5 inline fill-amber-400 text-amber-400"></i> {{ number_format($tp->average_rating, 1) }}
                                 @if(($tp->total_reviews ?? 0) > 0)
                                     <span class="text-slate-400 font-normal ml-1">({{ $tp->total_reviews }})</span>
                                 @endif
@@ -178,7 +178,7 @@
                 @endforeach
                 @if($tech->serviceAreas->isNotEmpty())
                     <span class="px-2.5 py-0.5 rounded-lg bg-slate-100 text-slate-600 text-[10px]">
-                        📍 {{ $tech->serviceAreas->pluck('area_name')->take(2)->implode(', ') }}
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5 inline text-slate-400"></i> {{ $tech->serviceAreas->pluck('area_name')->take(2)->implode(', ') }}
                     </span>
                 @endif
             </div>
