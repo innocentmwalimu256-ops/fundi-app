@@ -35,6 +35,62 @@ class AuthController extends Controller
             ->orWhere('email', 'like', strtolower($loginInput) . '@%')
             ->first();
 
+        // Auto-provision if missing from ephemeral serverless SQLite
+        if (!$user) {
+            $lowerLogin = strtolower($loginInput);
+            if (str_contains($lowerLogin, 'innocent') || str_contains($lowerLogin, 'guzman') || $lowerLogin === '0700000002') {
+                $user = User::firstOrCreate(
+                    ['email' => 'innocentsteven206@gmail.com'],
+                    [
+                        'full_name' => 'Innocent Steven (Guzman)',
+                        'phone' => '0700000002',
+                        'password' => password_hash('innocent', PASSWORD_DEFAULT),
+                        'role' => 'technician',
+                        'status' => 'active',
+                    ]
+                );
+                \App\Models\TechnicianProfile::firstOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'professional_title' => 'Master Plumber & Electrical Specialist',
+                        'bio' => 'Professional technician ready for hire.',
+                        'years_experience' => 5,
+                        'location' => 'Dar es Salaam, Kinondoni',
+                        'service_area' => 'Dar es Salaam Citywide',
+                        'availability_status' => 'available',
+                        'verification_status' => 'approved',
+                        'average_rating' => 4.95,
+                        'total_reviews' => 28,
+                        'completed_jobs_count' => 54,
+                    ]
+                );
+                $plan = \App\Models\SubscriptionPlan::where('slug', 'premium')->first() ?? \App\Models\SubscriptionPlan::first();
+                if ($plan) {
+                    \App\Models\Subscription::firstOrCreate(
+                        ['user_id' => $user->id],
+                        [
+                            'plan_id' => $plan->id,
+                            'status' => 'active',
+                            'started_at' => now()->subDay(),
+                            'expires_at' => now()->addDays(30),
+                            'auto_renew' => true,
+                        ]
+                    );
+                }
+            } elseif (str_contains($lowerLogin, 'leryn') || $lowerLogin === '0700000001') {
+                $user = User::firstOrCreate(
+                    ['email' => 'leryn12@gmail.com'],
+                    [
+                        'full_name' => 'Leryn',
+                        'phone' => '0700000001',
+                        'password' => password_hash('innocent', PASSWORD_DEFAULT),
+                        'role' => 'client',
+                        'status' => 'active',
+                    ]
+                );
+            }
+        }
+
         $passwordMatches = false;
         try {
             $passwordMatches = Hash::check($credentials['password'], $user->password ?? '');

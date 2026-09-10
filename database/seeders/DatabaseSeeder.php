@@ -317,14 +317,52 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        // F2. Client: Leryn
+        // F2. Client: Leryn (leryn12@gmail.com & leryn@fundi.test)
         $clientLeryn = User::create([
             'full_name' => 'Leryn',
-            'email' => 'leryn@fundi.test',
+            'email' => 'leryn12@gmail.com',
             'phone' => '0700000001',
-            'password' => Hash::make('password'),
+            'password' => Hash::make('innocent'),
             'role' => 'client',
             'status' => 'active',
+        ]);
+
+        // F3. Technician: Innocent Steven (Guzman)
+        $techGuzman = User::create([
+            'full_name' => 'Innocent Steven (Guzman)',
+            'email' => 'innocentsteven206@gmail.com',
+            'phone' => '0700000002',
+            'password' => Hash::make('innocent'),
+            'role' => 'technician',
+            'status' => 'active',
+        ]);
+
+        TechnicianProfile::create([
+            'user_id' => $techGuzman->id,
+            'professional_title' => 'Master Plumber & Electrical Specialist',
+            'bio' => 'Professional technician specializing in domestic wiring, plumbing fixtures, pipe fitting, and maintenance.',
+            'years_experience' => 5,
+            'location' => 'Dar es Salaam, Kinondoni',
+            'service_area' => 'Dar es Salaam Citywide',
+            'availability_status' => 'available',
+            'verification_status' => 'approved',
+            'average_rating' => 4.95,
+            'total_reviews' => 28,
+            'completed_jobs_count' => 54,
+            'completion_rate' => 99,
+            'response_rate' => 98,
+            'avg_response_time' => '10 min',
+            'skills' => ['House Wiring', 'Pipe Fitting', 'Drainage', 'Water Heating'],
+        ]);
+        $techGuzman->services()->sync([$services['Plumbing']->id, $services['Electrical']->id]);
+
+        Subscription::create([
+            'user_id' => $techGuzman->id,
+            'plan_id' => $planPremium->id,
+            'status' => 'active',
+            'started_at' => now()->subDays(2),
+            'expires_at' => now()->addDays(28),
+            'auto_renew' => true,
         ]);
 
 
