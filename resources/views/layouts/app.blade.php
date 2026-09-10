@@ -16,37 +16,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Chrome / Edge Native Speculation Rules (Instant 0ms Prerendering & Page Swapping) -->
-    <script type="speculationrules">
-    {
-      "prerender": [
-        {
-          "source": "document",
-          "where": {
-            "and": [
-              { "href_matches": "/*" },
-              { "not": { "href_matches": "*/logout*" } },
-              { "not": { "href_matches": "*#*" } }
-            ]
-          },
-          "eagerness": "moderate"
-        }
-      ],
-      "prefetch": [
-        {
-          "source": "document",
-          "where": {
-            "and": [
-              { "href_matches": "/*" },
-              { "not": { "href_matches": "*/logout*" } }
-            ]
-          },
-          "eagerness": "immediate"
-        }
-      ]
-    }
-    </script>
-    
     <!-- Tailwind CSS CDN with Specification Tokens -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
