@@ -56,7 +56,6 @@ try {
             @copy($preMigrated, $sqliteDb);
         } else {
             @touch($sqliteDb);
-            $needsSeed = true;
         }
     }
 
@@ -68,25 +67,20 @@ try {
     $app = require_once __DIR__ . '/../bootstrap/app.php';
     $app->useStoragePath($storagePath);
 
-    // 5. Fallback auto-migrate if database wasn't pre-migrated
-    if (isset($needsSeed) && $needsSeed) {
-        try {
-            $consoleKernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
-            $consoleKernel->bootstrap();
-            $consoleKernel->call('migrate', ['--force' => true]);
-            $consoleKernel->call('db:seed', ['--force' => true]);
-        } catch (\Throwable $e) {
-            error_log("Database initialization notice: " . $e->getMessage());
-        }
-    }
+    // 5. Explicitly handle HTTP request via Kernel
+    /** @var \Illuminate\Contracts\Http\Kernel $kernel */
+    $kernel = $app->make(\Illuminate\Contracts\Http\Kernel::class);
+    $kernel->bootstrap();
 
-    // 6. Capture request and handle request
     $request = \Illuminate\Http\Request::capture();
-    $app->handleRequest($request);
+    $response = $kernel->handle($request);
+    $response->send();
+    $kernel->terminate($request, $response);
 
 } catch (\Throwable $e) {
     http_response_code(500);
     echo "<h1>FUNDI Serverless Startup Error</h1>";
-    echo "<p><strong>Error:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "<p><strong>Message:</strong> " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "<p><strong>File:</strong> " . htmlspecialchars($e->getFile()) . ":" . $e->getLine() . "</p>";
     echo "<pre>" . htmlspecialchars($e->getTraceAsString()) . "</pre>";
 }
