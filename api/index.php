@@ -1,53 +1,88 @@
 <?php
 
-// 1. Ensure all storage and view directories exist in /tmp (writable in Vercel serverless)
+// Ensure all errors are logged and viewable
+ini_set('display_errors', '1');
+error_reporting(E_ALL);
+
+// 1. Setup writable storage directories in /tmp for Vercel Serverless
+$storagePath = '/tmp/storage';
 $tmpDirs = [
-    '/tmp/storage/framework/views',
-    '/tmp/storage/framework/cache',
-    '/tmp/storage/framework/cache/data',
-    '/tmp/storage/framework/sessions',
-    '/tmp/storage/logs',
-    '/tmp/storage/app/public',
+    $storagePath . '/app',
+    $storagePath . '/app/public',
+    $storagePath . '/framework',
+    $storagePath . '/framework/cache',
+    $storagePath . '/framework/cache/data',
+    $storagePath . '/framework/sessions',
+    $storagePath . '/framework/views',
+    $storagePath . '/logs',
 ];
 
 foreach ($tmpDirs as $dir) {
     if (!is_dir($dir)) {
-        @mkdir($dir, 0755, true);
+        @mkdir($dir, 0777, true);
     }
 }
 
-// 2. Set serverless environment variables
-putenv('VIEW_COMPILED_PATH=/tmp/storage/framework/views');
-putenv('APP_CONFIG_CACHE=/tmp/config.php');
-putenv('APP_EVENTS_CACHE=/tmp/events.php');
-putenv('APP_PACKAGES_CACHE=/tmp/packages.php');
-putenv('APP_ROUTES_CACHE=/tmp/routes.php');
-putenv('APP_SERVICES_CACHE=/tmp/services.php');
+// 2. Set environment variables
+putenv("LARAVEL_STORAGE_PATH={$storagePath}");
+$_ENV['LARAVEL_STORAGE_PATH'] = $storagePath;
+$_SERVER['LARAVEL_STORAGE_PATH'] = $storagePath;
 
-// 3. Setup SQLite database if DB_HOST is not provided
-$dbConnection = getenv('DB_CONNECTION') ?: 'sqlite';
-if ($dbConnection === 'sqlite' || !getenv('DB_HOST')) {
-    $sqliteDb = '/tmp/database.sqlite';
-    putenv('DB_CONNECTION=sqlite');
-    putenv("DB_DATABASE={$sqliteDb}");
-    $_ENV['DB_CONNECTION'] = 'sqlite';
-    $_ENV['DB_DATABASE'] = $sqliteDb;
+putenv("VIEW_COMPILED_PATH={$storagePath}/framework/views");
+$_ENV['VIEW_COMPILED_PATH'] = "{$storagePath}/framework/views";
 
-    if (!file_exists($sqliteDb) || filesize($sqliteDb) === 0) {
-        touch($sqliteDb);
-        $needsSeed = true;
-    }
+putenv("APP_CONFIG_CACHE=/tmp/config.php");
+putenv("APP_EVENTS_CACHE=/tmp/events.php");
+putenv("APP_PACKAGES_CACHE=/tmp/packages.php");
+putenv("APP_ROUTES_CACHE=/tmp/routes.php");
+putenv("APP_SERVICES_CACHE=/tmp/services.php");
+
+putenv("SESSION_DRIVER=cookie");
+$_ENV['SESSION_DRIVER'] = 'cookie';
+
+putenv("CACHE_STORE=array");
+$_ENV['CACHE_STORE'] = 'array';
+
+putenv("LOG_CHANNEL=stderr");
+$_ENV['LOG_CHANNEL'] = 'stderr';
+
+putenv("APP_KEY=base64:FIeQrllJrhhRUmbJwhiOE1vL/dL6sTY/dCu9BfvTiDE=");
+$_ENV['APP_KEY'] = 'base64:FIeQrllJrhhRUmbJwhiOE1vL/dL6sTY/dCu9BfvTiDE=';
+
+$sqliteDb = '/tmp/database.sqlite';
+putenv("DB_CONNECTION=sqlite");
+putenv("DB_DATABASE={$sqliteDb}");
+$_ENV['DB_CONNECTION'] = 'sqlite';
+$_ENV['DB_DATABASE'] = $sqliteDb;
+
+$needsSeed = false;
+if (!file_exists($sqliteDb) || filesize($sqliteDb) === 0) {
+    @touch($sqliteDb);
+    $needsSeed = true;
 }
 
-// 4. Forward request to Laravel public/index.php
-require __DIR__ . '/../public/index.php';
+// 3. Register Composer Autoloader
+require __DIR__ . '/../vendor/autoload.php';
 
-// 5. Auto-migrate SQLite on fresh boot
-if (isset($needsSeed) && $needsSeed && isset($app)) {
+// 4. Bootstrap Laravel Application
+/** @var \Illuminate\Foundation\Application $app */
+$app = require_once __DIR__ . '/../bootstrap/app.php';
+
+// Point storage path to writable /tmp
+$app->useStoragePath($storagePath);
+
+// 5. If fresh database, run migrations and seeders before processing request
+if ($needsSeed) {
     try {
         \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
         \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
     } catch (\Throwable $e) {
-        // Fallback gracefully
+        error_log("Database initialization notice: " . $e->getMessage());
     }
 }
+
+// 6. Capture request and send response
+$request = \Illuminate\Http\Request::capture();
+$response = $app->handleRequest($request);
+$response->send();
+$app->terminate();
