@@ -27,7 +27,7 @@
   "env": {
     "APP_NAME": "FUNDI",
     "APP_ENV": "production",
-    "APP_DEBUG": "true",
+    "APP_DEBUG": "false",
     "APP_KEY": "base64:FIeQrllJrhhRUmbJwhiOE1vL/dL6sTY/dCu9BfvTiDE=",
     "APP_STORAGE": "/tmp/storage",
     "LARAVEL_STORAGE_PATH": "/tmp/storage",

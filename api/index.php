@@ -1,9 +1,5 @@
 <?php
 
-// Ensure all errors are logged and viewable
-ini_set('display_errors', '1');
-error_reporting(E_ALL);
-
 // 1. Setup writable storage directories in /tmp for Vercel Serverless
 $storagePath = '/tmp/storage';
 $tmpDirs = [
@@ -31,12 +27,6 @@ $_SERVER['LARAVEL_STORAGE_PATH'] = $storagePath;
 putenv("VIEW_COMPILED_PATH={$storagePath}/framework/views");
 $_ENV['VIEW_COMPILED_PATH'] = "{$storagePath}/framework/views";
 
-putenv("APP_CONFIG_CACHE=/tmp/config.php");
-putenv("APP_EVENTS_CACHE=/tmp/events.php");
-putenv("APP_PACKAGES_CACHE=/tmp/packages.php");
-putenv("APP_ROUTES_CACHE=/tmp/routes.php");
-putenv("APP_SERVICES_CACHE=/tmp/services.php");
-
 putenv("SESSION_DRIVER=cookie");
 $_ENV['SESSION_DRIVER'] = 'cookie';
 
@@ -55,10 +45,15 @@ putenv("DB_DATABASE={$sqliteDb}");
 $_ENV['DB_CONNECTION'] = 'sqlite';
 $_ENV['DB_DATABASE'] = $sqliteDb;
 
-$needsSeed = false;
+// Copy pre-migrated SQLite database or initialize
+$preMigrated = __DIR__ . '/../database/database.sqlite';
 if (!file_exists($sqliteDb) || filesize($sqliteDb) === 0) {
-    @touch($sqliteDb);
-    $needsSeed = true;
+    if (file_exists($preMigrated) && filesize($preMigrated) > 0) {
+        @copy($preMigrated, $sqliteDb);
+    } else {
+        @touch($sqliteDb);
+        $needsSeed = true;
+    }
 }
 
 // 3. Register Composer Autoloader
@@ -67,22 +62,21 @@ require __DIR__ . '/../vendor/autoload.php';
 // 4. Bootstrap Laravel Application
 /** @var \Illuminate\Foundation\Application $app */
 $app = require_once __DIR__ . '/../bootstrap/app.php';
-
-// Point storage path to writable /tmp
 $app->useStoragePath($storagePath);
 
-// 5. If fresh database, run migrations and seeders before processing request
-if ($needsSeed) {
+// 5. Fallback auto-migrate if database wasn't pre-migrated
+if (isset($needsSeed) && $needsSeed) {
     try {
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
+        $consoleKernel = $app->make(\Illuminate\Contracts\Console\Kernel::class);
+        $consoleKernel->bootstrap();
+        $consoleKernel->call('migrate', ['--force' => true]);
+        $consoleKernel->call('db:seed', ['--force' => true]);
     } catch (\Throwable $e) {
-        error_log("Database initialization notice: " . $e->getMessage());
+        error_log("Database initialization error: " . $e->getMessage());
     }
 }
 
 // 6. Capture request and send response
 $request = \Illuminate\Http\Request::capture();
-$response = $app->handleRequest($request);
-$response->send();
+$app->handleRequest($request);
 $app->terminate();
