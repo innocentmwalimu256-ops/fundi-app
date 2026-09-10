@@ -327,43 +327,7 @@ class DatabaseSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        // F3. Verified Fundi: Guzman (Innocent Steven - Master Plumber & Electrical Specialist)
-        $techGuzman = User::create([
-            'full_name' => 'Innocent Steven (Guzman)',
-            'email' => 'innocentsteven206@gmail.com',
-            'phone' => '0700000002',
-            'password' => Hash::make('innocent'),
-            'role' => 'technician',
-            'status' => 'active',
-        ]);
 
-        TechnicianProfile::create([
-            'user_id' => $techGuzman->id,
-            'professional_title' => 'Master Plumber & Multi-Skilled Artisan',
-            'bio' => "Experienced technician specializing in sanitary pipework, bathroom fittings, water heating, and emergency plumbing & electrical repairs across Dar es Salaam.",
-            'years_experience' => 6,
-            'location' => 'Dar es Salaam, Kinondoni',
-            'service_area' => 'Kinondoni, Ilala, Ubungo & Masaki',
-            'availability_status' => 'available',
-            'verification_status' => 'approved',
-            'average_rating' => 4.95,
-            'total_reviews' => 64,
-            'completed_jobs_count' => 112,
-            'completion_rate' => 99,
-            'response_rate' => 98,
-            'avg_response_time' => '8 min',
-            'skills' => ['Pipe Fitting', 'Bathroom Installations', 'Drainage Unclogging', 'Water Heaters', 'Pressure Pumps'],
-        ]);
-        $techGuzman->services()->sync([$services['Plumbing']->id, $services['Electrical']->id]);
-
-        Subscription::create([
-            'user_id' => $techGuzman->id,
-            'plan_id' => $planPremium->id,
-            'status' => 'active',
-            'started_at' => now()->subDays(5),
-            'expires_at' => now()->addDays(25),
-            'auto_renew' => true,
-        ]);
 
         // G. Applicant (Baraka Peter - Pending Verification)
         $applicant = User::create([
