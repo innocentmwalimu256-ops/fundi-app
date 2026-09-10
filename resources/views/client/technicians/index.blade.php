@@ -84,14 +84,14 @@
                     </select>
                 </div>
 
-                <!-- Verified Only Checkbox -->
-                <div class="flex items-center space-x-2 sm:col-span-2">
-                    <label class="flex items-center space-x-2 text-xs font-bold text-slate-700 cursor-pointer">
+                <!-- Verified Only Checkbox & Apply Button -->
+                <div class="col-span-2 sm:col-span-4 lg:col-span-2 flex items-center justify-between gap-3 pt-1">
+                    <label class="flex items-center space-x-2 text-xs font-bold text-slate-700 cursor-pointer select-none">
                         <input type="checkbox" name="verified_only" value="1" {{ $verifiedOnly ? 'checked' : '' }} class="w-4 h-4 rounded text-teal-600 border-slate-300 focus:ring-teal-500">
                         <span>✓ {{ __('Verified Only') }}</span>
                     </label>
 
-                    <button type="submit" class="ml-auto px-5 py-2 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
+                    <button type="submit" class="px-5 py-2 bg-teal-600 hover:bg-teal-700 active:scale-[0.98] text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer">
                         {{ __('Apply Filters') }}
                     </button>
                 </div>

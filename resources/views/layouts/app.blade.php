@@ -2,7 +2,7 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full bg-[#F7F8F7]">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Sign In') — FUNDI | Find. Connect. Fix.</title>
     
@@ -88,17 +88,54 @@
 
     <style>
         [x-cloak] { display: none !important; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
+        :root {
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sat: env(safe-area-inset-top, 0px);
+        }
+        body { 
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #F7F8F7; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 9999px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #98A2B3; }
         .turbo-progress-bar { height: 3px; background: linear-gradient(90deg, #0F9F95, #14B8A6, #2DD4BF); }
+        
+        /* Touch & Native Mobile Enhancements */
+        .btn-tap {
+            transition: transform 0.12s cubic-bezier(0.4, 0, 0.2, 1), filter 0.12s ease;
+            user-select: none;
+        }
+        .btn-tap:active {
+            transform: scale(0.97);
+        }
+        .safe-bottom-nav {
+            padding-bottom: max(0.5rem, calc(0.4rem + env(safe-area-inset-bottom, 0px)));
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .touch-scroll {
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+        @media (max-width: 639px) {
+            input, select, textarea {
+                font-size: 16px !important; /* Prevents auto-zoom on iOS Safari */
+            }
+        }
     </style>
     @stack('styles')
 </head>
-<body class="h-full bg-[#F7F8F7] text-[#111827] flex flex-col antialiased selection:bg-teal-500 selection:text-white @auth pb-20 md:pb-0 @endauth">
+<body class="h-full bg-[#F7F8F7] text-[#111827] flex flex-col antialiased selection:bg-teal-500 selection:text-white @auth pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] md:pb-0 @endauth">
 
     @auth
     <!-- Global Top Navigation Bar (Only for Logged-In Users) -->
@@ -263,6 +300,65 @@
     </header>
     @endauth
 
+    @guest
+        @if(!request()->routeIs('login') && !request()->routeIs('register') && !request()->routeIs('password.*'))
+        <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#E5E7EB] transition-all">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex justify-between items-center h-16 sm:h-[72px]">
+                    <!-- Brand -->
+                    <a href="{{ url('/') }}" class="flex items-center space-x-2.5 group">
+                        <div class="w-10 h-10 rounded-xl bg-navy-900 text-teal-400 flex items-center justify-center font-black shadow-sm group-hover:bg-navy-800 transition">
+                            <i data-lucide="wrench" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-xl font-extrabold tracking-tight text-navy-900">FUNDI</span>
+                            <span class="text-[10px] text-[#667085] font-medium tracking-tight -mt-0.5 hidden sm:block">Find. Connect. Fix.</span>
+                        </div>
+                    </a>
+
+                    <!-- Desktop Nav Links -->
+                    <nav class="hidden md:flex items-center space-x-2">
+                        <a href="{{ route('client.services.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl text-[#667085] hover:text-[#111827] hover:bg-slate-100 transition">
+                            {{ __('Services') }}
+                        </a>
+                        <a href="{{ route('client.technicians.index') }}" class="px-3.5 py-2 text-sm font-semibold rounded-xl text-[#667085] hover:text-[#111827] hover:bg-slate-100 transition">
+                            {{ __('Find Technicians') }}
+                        </a>
+                    </nav>
+
+                    <!-- Right CTAs -->
+                    <div class="flex items-center space-x-2 sm:space-x-3">
+                        <!-- Bilingual Switcher -->
+                        <div class="relative" x-data="{ langOpen: false }">
+                            <button @click="langOpen = !langOpen" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-slate-50 text-xs font-bold text-navy-900 transition shadow-xs cursor-pointer">
+                                <i data-lucide="globe" class="w-3.5 h-3.5 text-teal-600"></i>
+                                <span>{{ app()->getLocale() === 'en' ? 'EN' : 'SW' }}</span>
+                            </button>
+                            <div x-show="langOpen" @click.away="langOpen = false" x-cloak class="absolute right-0 mt-2 w-36 bg-white rounded-xl shadow-elevated border border-[#E5E7EB] py-1.5 z-50 text-xs font-semibold">
+                                <a href="{{ route('language.switch', 'sw') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-[#F0FDFB] hover:text-teal-700 transition {{ app()->getLocale() === 'sw' ? 'text-teal-700 font-bold bg-[#F0FDFB]' : 'text-[#111827]' }}">
+                                    <span>🇹🇿 Kiswahili</span>
+                                    @if(app()->getLocale() === 'sw') <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i> @endif
+                                </a>
+                                <a href="{{ route('language.switch', 'en') }}" class="flex items-center justify-between px-3.5 py-2 hover:bg-[#F0FDFB] hover:text-teal-700 transition {{ app()->getLocale() === 'en' ? 'text-teal-700 font-bold bg-[#F0FDFB]' : 'text-[#111827]' }}">
+                                    <span>🇬🇧 English</span>
+                                    @if(app()->getLocale() === 'en') <i data-lucide="check" class="w-3.5 h-3.5 text-teal-600"></i> @endif
+                                </a>
+                            </div>
+                        </div>
+
+                        <a href="{{ route('login') }}" class="px-3.5 py-2 text-xs font-bold text-navy-900 hover:bg-slate-100 rounded-xl transition">
+                            {{ __('Sign In') }}
+                        </a>
+                        <a href="{{ route('register') }}" class="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold shadow-xs hover:shadow-subtle active:scale-[0.98] transition">
+                            {{ __('Join Now') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </header>
+        @endif
+    @endguest
+
     <!-- Flash Alerts Container (Only for Logged In Pages) -->
     @auth
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
@@ -299,44 +395,93 @@
 
     @auth
     <!-- Mobile Bottom Navigation (Visible on Small Screens) -->
-    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E5E7EB] px-4 py-1.5 flex justify-around items-center">
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-t border-[#E5E7EB]/80 shadow-[0_-4px_24px_rgba(11,18,32,0.06)] px-2 sm:px-4 py-1.5 safe-bottom-nav flex justify-around items-center">
         @if(auth()->user()->isClient())
-            <a href="{{ route('client.dashboard') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('client.dashboard') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('Dashboard') }}</span>
+            <a href="{{ route('client.dashboard') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('client.dashboard') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('client.dashboard') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Dashboard') }}</span>
             </a>
-            <a href="{{ route('client.technicians.index') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('client.technicians.*') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="users" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('Find Technicians') }}</span>
+            <a href="{{ route('client.technicians.index') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('client.technicians.*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('client.technicians.*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Find Fundi') }}</span>
             </a>
-            <a href="{{ route('client.requests.index') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('client.requests.*') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="inbox" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('My Requests') }}</span>
+            <a href="{{ route('client.requests.index') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('client.requests.*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('client.requests.*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="inbox" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Requests') }}</span>
             </a>
-            <a href="{{ route('messages.index') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('messages.*') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="message-square" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('Messages') }}</span>
+            <a href="{{ route('messages.index') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap relative {{ request()->routeIs('messages.*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition relative {{ request()->routeIs('messages.*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Messages') }}</span>
             </a>
-            <a href="{{ route('client.favorites.index') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('client.favorites.*') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="bookmark" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('Saved') }}</span>
+            <a href="{{ route('client.favorites.index') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('client.favorites.*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('client.favorites.*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="bookmark" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Saved') }}</span>
             </a>
         @elseif(auth()->user()->isTechnician())
-            <a href="{{ route('technician.dashboard') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('technician.dashboard') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="home" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('Dashboard') }}</span>
+            <a href="{{ route('technician.dashboard') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('technician.dashboard') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('technician.dashboard') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="home" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Dashboard') }}</span>
             </a>
-            <a href="{{ route('technician.requests.index') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('technician.requests.*') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="briefcase" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('My Requests') }}</span>
+            <a href="{{ route('technician.requests.index') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('technician.requests.*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('technician.requests.*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="briefcase" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Jobs') }}</span>
             </a>
-            <a href="{{ route('technician.subscription') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('technician.subscription*') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="credit-card" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('Subscriptions') }}</span>
+            <a href="{{ route('technician.subscription') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('technician.subscription*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('technician.subscription*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="credit-card" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Plan') }}</span>
             </a>
-            <a href="{{ route('messages.index') }}" class="flex flex-col items-center py-1 px-3 text-[10px] font-bold transition {{ request()->routeIs('messages.*') ? 'text-teal-600' : 'text-[#667085]' }}">
-                <i data-lucide="message-square" class="w-5 h-5 mb-0.5"></i>
-                <span>{{ __('Messages') }}</span>
+            <a href="{{ route('messages.index') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('messages.*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('messages.*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="message-square" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Chat') }}</span>
+            </a>
+            <a href="{{ route('technician.portfolios.index') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('technician.portfolios.*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('technician.portfolios.*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="image" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Works') }}</span>
+            </a>
+        @elseif(auth()->user()->isAdmin())
+            <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('admin.dashboard') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('admin.dashboard') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Admin') }}</span>
+            </a>
+            <a href="{{ route('admin.users') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('admin.users*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('admin.users*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="users" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Users') }}</span>
+            </a>
+            <a href="{{ route('admin.applications') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('admin.applications*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('admin.applications*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="check-square" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Verify') }}</span>
+            </a>
+            <a href="{{ route('admin.complaints') }}" class="flex flex-col items-center justify-center flex-1 min-w-0 py-1 text-[11px] font-bold transition btn-tap {{ request()->routeIs('admin.complaints*') ? 'text-teal-600' : 'text-[#667085] hover:text-navy-900' }}">
+                <div class="p-1 rounded-xl transition {{ request()->routeIs('admin.complaints*') ? 'bg-teal-50 text-teal-600' : '' }}">
+                    <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                </div>
+                <span class="truncate">{{ __('Issues') }}</span>
             </a>
         @endif
     </nav>
