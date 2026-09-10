@@ -51,6 +51,10 @@ try {
     putenv("VIEW_COMPILED_PATH={$storagePath}/framework/views");
     $_ENV['VIEW_COMPILED_PATH'] = "{$storagePath}/framework/views";
 
+    putenv("APP_MAINTENANCE_DRIVER=file");
+    $_ENV['APP_MAINTENANCE_DRIVER'] = 'file';
+    $_SERVER['APP_MAINTENANCE_DRIVER'] = 'file';
+
     putenv("SESSION_DRIVER=cookie");
     $_ENV['SESSION_DRIVER'] = 'cookie';
 
