@@ -68,17 +68,20 @@
             <!-- Quick Demo Role Switcher -->
             <div class="space-y-1.5">
                 <label class="block text-[11px] font-bold text-[#667085] uppercase tracking-wider text-center">
-                    {{ __('⚡ Quick Demo Login (Bonyeza Kuingia Moja kwa Moja)') }}
+                    {{ __('⚡ Quick 1-Click Login (Chagua Akaunti Kuingia Moja kwa Moja)') }}
                 </label>
                 <div class="grid grid-cols-3 gap-2">
-                    <button type="button" onclick="fillLogin('admin@fundi.test', 'password')" class="py-2 px-1.5 rounded-xl border border-[#E5E7EB] bg-[#F7F8F7] hover:bg-[#F0FDFB] hover:border-teal-500 hover:text-teal-700 text-center text-xs font-bold text-navy-900 transition">
-                        👑 Admin
+                    <button type="button" onclick="fillLogin('admin@fundi.test', 'password')" class="py-2.5 px-1.5 rounded-xl border border-[#E5E7EB] bg-[#F7F8F7] hover:bg-[#F0FDFB] hover:border-teal-500 hover:text-teal-700 text-center text-xs font-bold text-navy-900 transition flex flex-col items-center">
+                        <span class="text-xs">👑 Admin</span>
+                        <span class="text-[10px] text-[#98A2B3] font-normal">Msimamizi</span>
                     </button>
-                    <button type="button" onclick="fillLogin('tech@fundi.test', 'password')" class="py-2 px-1.5 rounded-xl border border-[#E5E7EB] bg-[#F7F8F7] hover:bg-[#F0FDFB] hover:border-teal-500 hover:text-teal-700 text-center text-xs font-bold text-navy-900 transition">
-                        🔧 Fundi
+                    <button type="button" onclick="fillLogin('guzman@fundi.test', 'password')" class="py-2.5 px-1.5 rounded-xl border border-[#E5E7EB] bg-[#F7F8F7] hover:bg-[#F0FDFB] hover:border-teal-500 hover:text-teal-700 text-center text-xs font-bold text-navy-900 transition flex flex-col items-center">
+                        <span class="text-xs">🔧 Guzman</span>
+                        <span class="text-[10px] text-teal-600 font-bold">Fundi (Tech)</span>
                     </button>
-                    <button type="button" onclick="fillLogin('client@fundi.test', 'password')" class="py-2 px-1.5 rounded-xl border border-[#E5E7EB] bg-[#F7F8F7] hover:bg-[#F0FDFB] hover:border-teal-500 hover:text-teal-700 text-center text-xs font-bold text-navy-900 transition">
-                        👤 Client
+                    <button type="button" onclick="fillLogin('leryn@fundi.test', 'password')" class="py-2.5 px-1.5 rounded-xl border border-[#E5E7EB] bg-[#F7F8F7] hover:bg-[#F0FDFB] hover:border-teal-500 hover:text-teal-700 text-center text-xs font-bold text-navy-900 transition flex flex-col items-center">
+                        <span class="text-xs">👤 Leryn</span>
+                        <span class="text-[10px] text-teal-600 font-bold">Mteja (Client)</span>
                     </button>
                 </div>
             </div>
