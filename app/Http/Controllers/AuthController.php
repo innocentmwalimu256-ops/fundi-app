@@ -27,6 +27,7 @@ class AuthController extends Controller
         ]);
 
         $loginInput = trim($credentials['login']);
+        $remember = $request->boolean('remember');
 
         $user = User::where('email', $loginInput)
             ->orWhere('phone', $loginInput)
