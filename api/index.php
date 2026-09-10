@@ -24,6 +24,10 @@ try {
     }
 
     // 2. Set environment variables
+    putenv("APP_DEBUG=true");
+    $_ENV['APP_DEBUG'] = 'true';
+    $_SERVER['APP_DEBUG'] = 'true';
+
     putenv("LARAVEL_STORAGE_PATH={$storagePath}");
     $_ENV['LARAVEL_STORAGE_PATH'] = $storagePath;
     $_SERVER['LARAVEL_STORAGE_PATH'] = $storagePath;
