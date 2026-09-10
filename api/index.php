@@ -87,9 +87,13 @@ try {
     if (!file_exists($sqliteDb) || filesize($sqliteDb) === 0) {
         if (file_exists($preMigrated) && filesize($preMigrated) > 0) {
             @copy($preMigrated, $sqliteDb);
+            @chmod($sqliteDb, 0666);
         } else {
             @touch($sqliteDb);
+            @chmod($sqliteDb, 0666);
         }
+    } else {
+        @chmod($sqliteDb, 0666);
     }
 
     // 3. Register Composer Autoloader
