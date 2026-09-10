@@ -95,12 +95,12 @@ try {
     $app = require_once __DIR__ . '/../bootstrap/app.php';
     $app->useStoragePath($storagePath);
 
-    // 5. Explicitly handle HTTP request via Kernel
+    // 5. Handle HTTP request via Kernel
+    $request = \Illuminate\Http\Request::capture();
+    $app->instance('request', $request);
+
     /** @var \Illuminate\Contracts\Http\Kernel $kernel */
     $kernel = $app->make(\Illuminate\Contracts\Http\Kernel::class);
-    $kernel->bootstrap();
-
-    $request = \Illuminate\Http\Request::capture();
     $response = $kernel->handle($request);
     $response->send();
     $kernel->terminate($request, $response);
