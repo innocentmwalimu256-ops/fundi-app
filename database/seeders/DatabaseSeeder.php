@@ -322,17 +322,17 @@ class DatabaseSeeder extends Seeder
             'full_name' => 'Leryn',
             'email' => 'leryn@fundi.test',
             'phone' => '0700000001',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('password'),
             'role' => 'client',
             'status' => 'active',
         ]);
 
-        // F3. Verified Fundi: Guzman (Plumbing & Electrical Specialist)
+        // F3. Verified Fundi: Guzman (Innocent Steven - Master Plumber & Electrical Specialist)
         $techGuzman = User::create([
-            'full_name' => 'Guzman',
-            'email' => 'guzman@fundi.test',
+            'full_name' => 'Innocent Steven (Guzman)',
+            'email' => 'innocentsteven206@gmail.com',
             'phone' => '0700000002',
-            'password' => Hash::make('password123'),
+            'password' => Hash::make('innocent'),
             'role' => 'technician',
             'status' => 'active',
         ]);

@@ -75,7 +75,7 @@
                         <span class="text-xs">👑 Admin</span>
                         <span class="text-[10px] text-[#98A2B3] font-normal">Msimamizi</span>
                     </button>
-                    <button type="button" onclick="fillLogin('guzman@fundi.test', 'password')" class="py-2.5 px-1.5 rounded-xl border border-[#E5E7EB] bg-[#F7F8F7] hover:bg-[#F0FDFB] hover:border-teal-500 hover:text-teal-700 text-center text-xs font-bold text-navy-900 transition flex flex-col items-center">
+                    <button type="button" onclick="fillLogin('innocentsteven206@gmail.com', 'password')" class="py-2.5 px-1.5 rounded-xl border border-[#E5E7EB] bg-[#F7F8F7] hover:bg-[#F0FDFB] hover:border-teal-500 hover:text-teal-700 text-center text-xs font-bold text-navy-900 transition flex flex-col items-center">
                         <span class="text-xs">🔧 Guzman</span>
                         <span class="text-[10px] text-teal-600 font-bold">Fundi (Tech)</span>
                     </button>
