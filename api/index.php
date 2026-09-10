@@ -28,6 +28,22 @@ try {
     $_ENV['LARAVEL_STORAGE_PATH'] = $storagePath;
     $_SERVER['LARAVEL_STORAGE_PATH'] = $storagePath;
 
+    putenv("APP_PACKAGES_CACHE={$storagePath}/packages.php");
+    $_ENV['APP_PACKAGES_CACHE'] = "{$storagePath}/packages.php";
+    $_SERVER['APP_PACKAGES_CACHE'] = "{$storagePath}/packages.php";
+
+    putenv("APP_SERVICES_CACHE={$storagePath}/services.php");
+    $_ENV['APP_SERVICES_CACHE'] = "{$storagePath}/services.php";
+    $_SERVER['APP_SERVICES_CACHE'] = "{$storagePath}/services.php";
+
+    putenv("APP_ROUTES_CACHE={$storagePath}/routes.php");
+    $_ENV['APP_ROUTES_CACHE'] = "{$storagePath}/routes.php";
+    $_SERVER['APP_ROUTES_CACHE'] = "{$storagePath}/routes.php";
+
+    putenv("APP_EVENTS_CACHE={$storagePath}/events.php");
+    $_ENV['APP_EVENTS_CACHE'] = "{$storagePath}/events.php";
+    $_SERVER['APP_EVENTS_CACHE'] = "{$storagePath}/events.php";
+
     putenv("VIEW_COMPILED_PATH={$storagePath}/framework/views");
     $_ENV['VIEW_COMPILED_PATH'] = "{$storagePath}/framework/views";
 
