@@ -24,6 +24,10 @@ try {
     }
 
     // 2. Set environment variables
+    if (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] === 'https') {
+        $_SERVER['HTTPS'] = 'on';
+        $_SERVER['SERVER_PORT'] = 443;
+    }
     putenv("APP_DEBUG=true");
     $_ENV['APP_DEBUG'] = 'true';
     $_SERVER['APP_DEBUG'] = 'true';
