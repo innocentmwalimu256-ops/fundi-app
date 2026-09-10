@@ -59,8 +59,8 @@ try {
     $_ENV['APP_MAINTENANCE_DRIVER'] = 'file';
     $_SERVER['APP_MAINTENANCE_DRIVER'] = 'file';
 
-    putenv("SESSION_DRIVER=cookie");
-    $_ENV['SESSION_DRIVER'] = 'cookie';
+    putenv("SESSION_DRIVER=file");
+    $_ENV['SESSION_DRIVER'] = 'file';
 
     putenv("CACHE_STORE=array");
     $_ENV['CACHE_STORE'] = 'array';

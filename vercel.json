@@ -27,14 +27,14 @@
   "env": {
     "APP_NAME": "FUNDI",
     "APP_ENV": "production",
-    "APP_DEBUG": "true",
+    "APP_DEBUG": "false",
     "APP_KEY": "base64:FIeQrllJrhhRUmbJwhiOE1vL/dL6sTY/dCu9BfvTiDE=",
     "APP_MAINTENANCE_DRIVER": "file",
     "APP_STORAGE": "/tmp/storage",
     "LARAVEL_STORAGE_PATH": "/tmp/storage",
     "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
     "CACHE_STORE": "array",
-    "SESSION_DRIVER": "cookie",
+    "SESSION_DRIVER": "file",
     "LOG_CHANNEL": "stderr",
     "DB_CONNECTION": "sqlite",
     "DB_DATABASE": "/tmp/database.sqlite"
