@@ -40,20 +40,60 @@
     </div>
 
     @if($request->connection_fee_status === 'pending')
-    <div class="p-5 rounded-3xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-2xl bg-amber-500 text-slate-950 font-black flex items-center justify-center flex-shrink-0">
-                <i data-lucide="clock" class="w-5 h-5"></i>
+    <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 text-white border border-teal-500/20 shadow-xl space-y-4" x-data="{ feeMethod: 'mpesa' }">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-teal-400 text-slate-950 font-black flex items-center justify-center flex-shrink-0">
+                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold text-white">{{ __('Pay Connection Fee (TZS 2,000) via Snippe') }}</h4>
+                    <p class="text-xs text-slate-300 mt-0.5">{{ __('Complete the TZS 2,000 payment to unlock direct phone and WhatsApp contact with') }} {{ $request->technician->full_name }}.</p>
+                </div>
             </div>
-            <div>
-                <h4 class="text-sm font-bold text-amber-950">{{ __('Connection Fee (TZS 2,000) Awaiting Admin Verification') }}</h4>
-                <p class="text-xs text-amber-800 mt-0.5">{{ __('Once paid via WhatsApp, Admin will verify and dispatch your request directly to') }} {{ $request->technician->full_name }}.</p>
+            <div class="text-right flex-shrink-0">
+                <span class="text-2xl font-black text-teal-300 font-mono">TZS 2,000</span>
+                <span class="text-[10px] text-slate-400 block">{{ __('Instant Activation') }}</span>
             </div>
         </div>
-        <a href="https://wa.me/255675315279?text={{ urlencode('Habari Admin wa FUNDI, nimelipia ada ya TZS 2,000 kwa ombi langu ' . $request->reference_no) }}" target="_blank" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition flex items-center justify-center space-x-1.5 flex-shrink-0 shadow-sm">
-            <i data-lucide="message-circle" class="w-4 h-4"></i>
-            <span>{{ __('Contact Admin on WhatsApp') }}</span>
-        </a>
+
+        <form method="POST" action="{{ route('client.requests.pay-fee', $request->id) }}" class="space-y-4">
+            @csrf
+            
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <label :class="feeMethod === 'mpesa' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
+                    <input type="radio" name="payment_method" value="mpesa" class="sr-only" x-model="feeMethod">
+                    <span class="w-6 h-6 rounded-lg bg-rose-600 text-white flex items-center justify-center font-black text-[10px]">M</span>
+                    <span>M-Pesa</span>
+                </label>
+
+                <label :class="feeMethod === 'tigopesa' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
+                    <input type="radio" name="payment_method" value="tigopesa" class="sr-only" x-model="feeMethod">
+                    <span class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-[10px]">T</span>
+                    <span>Tigo Pesa</span>
+                </label>
+
+                <label :class="feeMethod === 'airtelmoney' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
+                    <input type="radio" name="payment_method" value="airtelmoney" class="sr-only" x-model="feeMethod">
+                    <span class="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center font-black text-[10px]">A</span>
+                    <span>Airtel</span>
+                </label>
+
+                <label :class="feeMethod === 'card' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
+                    <input type="radio" name="payment_method" value="card" class="sr-only" x-model="feeMethod">
+                    <span class="w-6 h-6 rounded-lg bg-slate-800 text-white flex items-center justify-center font-black text-[10px]"><i data-lucide="credit-card" class="w-3.5 h-3.5"></i></span>
+                    <span>{{ __('Card') }}</span>
+                </label>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input type="text" name="phone_number" value="{{ auth()->user()->phone }}" placeholder="{{ __('07XXXXXXXX or 2557XXXXXXXX') }}" class="flex-1 py-3 px-4 rounded-xl bg-white/10 border border-white/20 text-xs text-white placeholder-slate-400 font-mono font-bold focus:ring-2 focus:ring-teal-400 focus:outline-none">
+                <button type="submit" class="btn-tap px-6 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-teal-500/25 transition flex items-center justify-center space-x-2">
+                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    <span>{{ __('Pay TZS 2,000 with Snippe') }}</span>
+                </button>
+            </div>
+        </form>
     </div>
     @endif
 

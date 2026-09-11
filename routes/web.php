@@ -71,6 +71,7 @@ Route::middleware(['auth', 'role:client'])->group(function () {
     Route::get('/requests/create', [ServiceRequestController::class, 'create'])->name('client.requests.create');
     Route::post('/requests', [ServiceRequestController::class, 'store'])->name('client.requests.store');
     Route::get('/requests/{id}', [ServiceRequestController::class, 'show'])->name('client.requests.show');
+    Route::post('/requests/{id}/pay-fee', [ServiceRequestController::class, 'payConnectionFee'])->name('client.requests.pay-fee');
     Route::post('/requests/{id}/accept-quotation', [ServiceRequestController::class, 'acceptQuotation'])->name('client.requests.accept-quotation');
     Route::post('/requests/{id}/reject-quotation', [ServiceRequestController::class, 'rejectQuotation'])->name('client.requests.reject-quotation');
     Route::post('/requests/{id}/cancel', [ServiceRequestController::class, 'cancelRequest'])->name('client.requests.cancel');

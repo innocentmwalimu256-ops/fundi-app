@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AuditLog;
 use App\Models\Notification;
+use App\Models\ServiceRequest;
 use App\Models\SubscriptionPayment;
 use App\Models\SubscriptionPlan;
 use App\Models\User;
@@ -66,13 +67,7 @@ class SnippeService
     }
 
     /**
-     * Initiate a payment session or charge via Snippe API.
-     *
-     * @param User $user
-     * @param SubscriptionPlan $plan
-     * @param string $phoneNumber
-     * @param string $paymentMethod
-     * @return array
+     * Initiate a subscription payment session or charge via Snippe API.
      */
     public static function initiateSubscriptionPayment(User $user, SubscriptionPlan $plan, string $phoneNumber, string $paymentMethod = 'mpesa'): array
     {
@@ -80,7 +75,6 @@ class SnippeService
         $formattedPhone = self::formatPhoneNumber($phoneNumber);
         $amount = (int) $plan->price;
 
-        // Record pending payment in database first
         $payment = SubscriptionPayment::create([
             'user_id' => $user->id,
             'plan_id' => $plan->id,
@@ -129,14 +123,124 @@ class SnippeService
             ],
         ];
 
-        Log::info("[Snippe] Initiating payment request", [
+        Log::info("[Snippe] Initiating subscription payment", [
             'reference' => $reference,
             'user_id' => $user->id,
             'amount' => $amount,
             'phone' => $formattedPhone,
-            'webhook_url' => $webhookUrl,
         ]);
 
+        return self::executeSnippeSessionCall($payload, $payment, $apiKey, $baseUrl, $reference);
+    }
+
+    /**
+     * Initiate a client connection fee payment (TZS 2,000) via Snippe API.
+     */
+    public static function initiateClientConnectionFeePayment(User $client, ServiceRequest $serviceRequest, string $phoneNumber, string $paymentMethod = 'mpesa'): array
+    {
+        $reference = $serviceRequest->connection_fee_reference ?: ('REQ-PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)));
+        $formattedPhone = self::formatPhoneNumber($phoneNumber);
+        $amount = (int) ($serviceRequest->connection_fee ?? 2000);
+
+        // Update request with reference
+        $serviceRequest->update([
+            'connection_fee_reference' => $reference,
+            'connection_fee_status' => 'pending',
+        ]);
+
+        $apiKey = self::getApiKey();
+        $baseUrl = self::getBaseUrl();
+        $webhookUrl = self::getWebhookUrl();
+        $redirectUrl = route('client.requests.show', $serviceRequest->id);
+
+        $payload = [
+            'amount' => $amount,
+            'currency' => 'TZS',
+            'customer' => [
+                'name' => $client->full_name,
+                'email' => $client->email,
+                'phone' => $formattedPhone,
+            ],
+            'customer_phone' => $formattedPhone,
+            'customer_name' => $client->full_name,
+            'customer_email' => $client->email,
+            'reference' => $reference,
+            'description' => "FUNDI Connection Fee: {$serviceRequest->reference_no}",
+            'webhook_url' => $webhookUrl,
+            'redirect_url' => $redirectUrl,
+            'metadata' => [
+                'client_id' => (string) $client->id,
+                'request_id' => (string) $serviceRequest->id,
+                'reference' => $reference,
+                'type' => 'client_connection_fee',
+            ],
+        ];
+
+        Log::info("[Snippe] Initiating client connection fee payment", [
+            'reference' => $reference,
+            'request_id' => $serviceRequest->id,
+            'amount' => $amount,
+            'phone' => $formattedPhone,
+        ]);
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => "Bearer {$apiKey}",
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->timeout(30)->post("{$baseUrl}/sessions", $payload);
+
+            $statusCode = $response->status();
+            $responseBody = $response->json() ?? [];
+
+            if ($response->successful()) {
+                $checkoutUrl = $responseBody['checkout_url'] 
+                    ?? $responseBody['url'] 
+                    ?? $responseBody['data']['checkout_url'] 
+                    ?? $responseBody['data']['url'] 
+                    ?? null;
+
+                return [
+                    'success' => true,
+                    'status_code' => $statusCode,
+                    'checkout_url' => $checkoutUrl,
+                    'reference' => $reference,
+                    'message' => __('Malipo ya ada ya TZS 2,000 yameanzishwa. Tafadhali kamilisha malipo yako.'),
+                    'data' => $responseBody,
+                ];
+            }
+
+            $errorMessage = self::parseSnippeError($statusCode, $responseBody, $response->body());
+
+            return [
+                'success' => false,
+                'status_code' => $statusCode,
+                'message' => $errorMessage,
+                'reference' => $reference,
+                'raw' => $responseBody,
+            ];
+
+        } catch (Throwable $e) {
+            Log::critical("[Snippe] Client Connection Fee Checkout Exception", [
+                'reference' => $reference,
+                'error' => $e->getMessage(),
+            ]);
+
+            return [
+                'success' => false,
+                'status_code' => 500,
+                'message' => __('Hitilafu ya mtandao wa malipo wa Snippe. Tafadhali jaribu tena.'),
+                'reference' => $reference,
+                'error_detail' => $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Shared caller for sessions.
+     */
+    private static function executeSnippeSessionCall(array $payload, SubscriptionPayment $payment, string $apiKey, string $baseUrl, string $reference): array
+    {
         try {
             $response = Http::withHeaders([
                 'Authorization' => "Bearer {$apiKey}",
@@ -153,7 +257,6 @@ class SnippeService
                 'body' => $responseBody,
             ]);
 
-            // Handle successful session creation (200 / 201)
             if ($response->successful()) {
                 $checkoutUrl = $responseBody['checkout_url'] 
                     ?? $responseBody['url'] 
@@ -178,20 +281,12 @@ class SnippeService
                     'status_code' => $statusCode,
                     'checkout_url' => $checkoutUrl,
                     'reference' => $reference,
-                    'message' => __('Malipo yameanzishwa kikamilifu. Tafadhali kamilisha uthibitisho kwenye simu yako.'),
+                    'message' => __('Malipo yameanzishwa kikamilifu. Tafadhali thibitisha ombi kwenye simu yako.'),
                     'data' => $responseBody,
                 ];
             }
 
-            // Handle Error responses with exact status code mapping
             $errorMessage = self::parseSnippeError($statusCode, $responseBody, $response->body());
-
-            Log::error("[Snippe] Payment initiation failed", [
-                'status_code' => $statusCode,
-                'reference' => $reference,
-                'error_message' => $errorMessage,
-                'raw_body' => $response->body(),
-            ]);
 
             $payment->update([
                 'status' => 'failed',
@@ -211,10 +306,9 @@ class SnippeService
             ];
 
         } catch (Throwable $e) {
-            Log::critical("[Snippe] Connection / Exception error during checkout", [
+            Log::critical("[Snippe] Checkout Exception", [
                 'reference' => $reference,
                 'exception' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
             ]);
 
             $payment->update([
@@ -249,9 +343,8 @@ class SnippeService
             ?? $body['error']['code'] 
             ?? null;
 
-        // Specific HTTP Status Code Interpretations
         switch ($statusCode) {
-            case 400: // Bad Request
+            case 400:
                 if ($errorCode === 'invalid_phone' || (is_string($rawMessage) && stripos($rawMessage, 'phone') !== false)) {
                     return __('Namba ya simu si sahihi. Hakikisha ni namba halisi ya Tanzania (mfano: 07XXXXXXXX au 2557XXXXXXXX).');
                 }
@@ -263,25 +356,25 @@ class SnippeService
                 }
                 return $rawMessage ? (string)$rawMessage : __('Taarifa za malipo hazikubaliwi (400 Bad Request).');
 
-            case 401: // Unauthorized
+            case 401:
                 return __('Hitilafu ya uthibitishaji wa API (401 Unauthorized). API Key ya Snippe si sahihi au imeisha muda.');
 
-            case 403: // Forbidden
+            case 403:
                 return __('Ufikiaji umezuiwa (403 Forbidden). Akaunti ya Snippe haina ruhusa ya kufanya muamala huu.');
 
-            case 404: // Not Found
+            case 404:
                 return __('Huduma ya malipo au URL haikupatikana (404 Not Found kwenye seva ya Snippe).');
 
-            case 405: // Method Not Allowed
+            case 405:
                 return __('Njia ya ombi hairuhusiwi (405 Method Not Allowed).');
 
-            case 409: // Conflict
+            case 409:
                 return __('Muamala wenye namba hii unaendelea kushughulikiwa tayari. Tafadhali subiri uthibitisho kwenye simu yako.');
 
-            case 410: // Gone / Expired
+            case 410:
                 return __('Muda wa kufanya muamala huu umekwisha (410 Payment Session Expired). Tafadhali fungua upya.');
 
-            case 422: // Validation Error
+            case 422:
                 if (!empty($body['errors']) && is_array($body['errors'])) {
                     $details = [];
                     foreach ($body['errors'] as $field => $errors) {
@@ -291,7 +384,7 @@ class SnippeService
                 }
                 return $rawMessage ? (string)$rawMessage : __('Taarifa ulizojaza hazijakamilika (422 Unprocessable Entity).');
 
-            case 429: // Rate Limited
+            case 429:
                 return __('Maombi mengi ya malipo kwa wakati mmoja (429 Too Many Requests). Tafadhali subiri kidogo kisha ujaribu tena.');
 
             case 500:
@@ -307,9 +400,6 @@ class SnippeService
 
     /**
      * Verify incoming Webhook signature from Snippe using HMAC-SHA256.
-     *
-     * @param Request $request
-     * @return bool
      */
     public static function verifyWebhookSignature(Request $request): bool
     {
@@ -333,7 +423,6 @@ class SnippeService
             return false;
         }
 
-        // Replay protection: Reject if timestamp is older than 5 minutes (300 seconds)
         if ($timestamp && is_numeric($timestamp)) {
             $currentTime = time();
             if (abs($currentTime - (int)$timestamp) > 300) {
@@ -345,31 +434,16 @@ class SnippeService
             }
         }
 
-        // Compute HMAC-SHA256 signature
         $dataToSign = $timestamp ? "{$timestamp}.{$rawBody}" : $rawBody;
         $expectedSignature = hash_hmac('sha256', $dataToSign, $secret);
-
-        // Also check if signature was computed directly on raw body without timestamp
         $expectedAltSignature = hash_hmac('sha256', $rawBody, $secret);
 
-        $isValid = hash_equals($expectedSignature, (string)$signature) 
+        return hash_equals($expectedSignature, (string)$signature) 
             || hash_equals($expectedAltSignature, (string)$signature);
-
-        if (!$isValid) {
-            Log::warning("[Snippe Webhook] Invalid signature match", [
-                'received_signature' => $signature,
-                'expected_signature' => $expectedSignature,
-            ]);
-        }
-
-        return $isValid;
     }
 
     /**
      * Process verified webhook event from Snippe.
-     *
-     * @param array $payload
-     * @return array
      */
     public static function processWebhookEvent(array $payload): array
     {
@@ -383,12 +457,14 @@ class SnippeService
 
         $gatewayId = $data['id'] ?? $payload['id'] ?? null;
         $status = strtolower($data['status'] ?? $event);
+        $metaType = $data['metadata']['type'] ?? $payload['metadata']['type'] ?? null;
 
         Log::info("[Snippe Webhook] Processing event", [
             'event' => $event,
             'reference' => $reference,
             'gateway_id' => $gatewayId,
             'status' => $status,
+            'meta_type' => $metaType,
         ]);
 
         if (!$reference) {
@@ -398,6 +474,71 @@ class SnippeService
             ];
         }
 
+        $isSuccess = in_array($event, ['payment.completed', 'payment.succeeded', 'charge.completed', 'session.completed'])
+            || in_array($status, ['completed', 'succeeded', 'paid', 'successful']);
+
+        $isFailed = in_array($event, ['payment.failed', 'charge.failed', 'session.expired'])
+            || in_array($status, ['failed', 'expired', 'canceled', 'cancelled']);
+
+        // 1. Check if this is a Client Connection Fee
+        $serviceRequest = ServiceRequest::where('connection_fee_reference', $reference)
+            ->orWhere('reference_no', $reference)
+            ->first();
+
+        if ($serviceRequest || $metaType === 'client_connection_fee') {
+            if (!$serviceRequest && !empty($data['metadata']['request_id'])) {
+                $serviceRequest = ServiceRequest::find($data['metadata']['request_id']);
+            }
+
+            if ($serviceRequest) {
+                if ($isSuccess) {
+                    $serviceRequest->update([
+                        'connection_fee_status' => 'paid',
+                    ]);
+
+                    AuditLog::log(
+                        'verify_client_connection_fee_snippe',
+                        "Client paid connection fee TZS " . number_format($serviceRequest->connection_fee ?? 2000, 0) . " for {$serviceRequest->reference_no} via Snippe Webhook.",
+                        'ServiceRequest',
+                        $serviceRequest->id
+                    );
+
+                    Notification::send(
+                        $serviceRequest->technician_id,
+                        'new_request',
+                        'New Verified Client Service Request Received!',
+                        "Client {$serviceRequest->client->full_name} has paid the connection fee via Snippe for {$serviceRequest->reference_no}.",
+                        route('technician.requests.show', $serviceRequest->id)
+                    );
+
+                    Notification::send(
+                        $serviceRequest->client_id,
+                        'payment_verified',
+                        'Malipo ya Ada ya Kuunganishwa Yamethibitishwa',
+                        "Ada yako ya TZS 2,000 imelipwa kikamilifu kupitia Snippe kwa ombi {$serviceRequest->reference_no}.",
+                        route('client.requests.show', $serviceRequest->id)
+                    );
+
+                    return [
+                        'success' => true,
+                        'message' => "Client connection fee verified for {$serviceRequest->reference_no}",
+                    ];
+                }
+
+                if ($isFailed) {
+                    $serviceRequest->update([
+                        'connection_fee_status' => 'failed',
+                    ]);
+
+                    return [
+                        'success' => true,
+                        'message' => "Client connection fee failed for {$serviceRequest->reference_no}",
+                    ];
+                }
+            }
+        }
+
+        // 2. Otherwise check if this is a Subscription Payment
         $payment = SubscriptionPayment::where('payment_reference', $reference)->first();
         if (!$payment) {
             Log::warning("[Snippe Webhook] Payment reference not found in DB", ['reference' => $reference]);
@@ -407,12 +548,7 @@ class SnippeService
             ];
         }
 
-        // Check if event is successful payment
-        $isSuccess = in_array($event, ['payment.completed', 'payment.succeeded', 'charge.completed', 'session.completed'])
-            || in_array($status, ['completed', 'succeeded', 'paid', 'successful']);
-
         if ($isSuccess) {
-            // If already processed successfully, return idempotent OK
             if ($payment->status === 'success') {
                 return [
                     'success' => true,
@@ -424,7 +560,6 @@ class SnippeService
             $plan = $payment->plan ?? SubscriptionPlan::find($payment->plan_id);
 
             if ($user && $plan) {
-                // Activate subscription
                 $subscription = SubscriptionService::activateSubscription(
                     $user,
                     $plan,
@@ -441,7 +576,6 @@ class SnippeService
                     ]),
                 ]);
 
-                // Create in-app notification for technician
                 Notification::create([
                     'user_id' => $user->id,
                     'type' => 'subscription_activated',
@@ -463,12 +597,6 @@ class SnippeService
                     ]
                 );
 
-                Log::info("[Snippe Webhook] Subscription successfully activated for user", [
-                    'user_id' => $user->id,
-                    'plan_id' => $plan->id,
-                    'reference' => $reference,
-                ]);
-
                 return [
                     'success' => true,
                     'message' => 'Subscription activated successfully',
@@ -476,10 +604,6 @@ class SnippeService
                 ];
             }
         }
-
-        // Check if event is failed payment
-        $isFailed = in_array($event, ['payment.failed', 'charge.failed', 'session.expired'])
-            || in_array($status, ['failed', 'expired', 'canceled', 'cancelled']);
 
         if ($isFailed) {
             $payment->update([
@@ -489,8 +613,6 @@ class SnippeService
                     'failed_at' => now()->toIso8601String(),
                 ]),
             ]);
-
-            Log::info("[Snippe Webhook] Payment marked as failed", ['reference' => $reference]);
 
             return [
                 'success' => true,

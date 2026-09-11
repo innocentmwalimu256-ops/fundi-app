@@ -14,6 +14,7 @@ use App\Models\Service;
 use App\Models\ServiceJob;
 use App\Models\ServiceRequest;
 use App\Models\User;
+use App\Services\SnippeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -119,7 +120,7 @@ class ServiceRequestController extends Controller
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
                 'connection_fee' => 2000,
-                'connection_fee_status' => 'paid',
+                'connection_fee_status' => 'pending',
                 'connection_fee_reference' => $paymentRef,
             ]);
 
@@ -137,18 +138,64 @@ class ServiceRequestController extends Controller
             return $req;
         });
 
-        AuditLog::log('create_request', "Client {$client->full_name} paid connection fee TZS 2,000 and created service request {$serviceRequest->reference_no}", 'ServiceRequest', $serviceRequest->id);
+        AuditLog::log('create_request', "Client {$client->full_name} created service request {$serviceRequest->reference_no} (Connection Fee Pending: TZS 2,000)", 'ServiceRequest', $serviceRequest->id);
 
         Notification::send(
             $technician->id,
             'new_request',
-            'New Verified Client Service Request Received!',
-            "Client {$client->full_name} has paid the connection fee and requested your service for {$serviceRequest->reference_no}.",
+            'New Client Service Request Received!',
+            "Client {$client->full_name} has submitted a service request for {$serviceRequest->reference_no}.",
             route('technician.requests.show', $serviceRequest->id)
         );
 
+        // Initiate real Snippe Payment for the TZS 2,000 Connection Fee
+        $paymentPhone = trim($request->input('payment_phone') ?? '') ?: ($client->phone ?? '');
+        $paymentMethod = $request->input('payment_method', 'mpesa');
+
+        $paymentResult = SnippeService::initiateClientConnectionFeePayment($client, $serviceRequest, $paymentPhone, $paymentMethod);
+
+        if (!empty($paymentResult['checkout_url'])) {
+            return redirect()->away($paymentResult['checkout_url']);
+        }
+
+        if (!empty($paymentResult['success'])) {
+            return redirect()->route('client.requests.show', $serviceRequest->id)
+                ->with('success', __('Ombi limetumwa na ombi la ada ya TZS 2,000 limetumwa kwenye simu yako.'));
+        }
+
         return redirect()->route('client.requests.show', $serviceRequest->id)
-            ->with('success', "Ombi lako limetumwa kwa fundi {$technician->full_name} na ada ya kuunganishwa ya TZS 2,000 imelipwa moja kwa moja!");
+            ->with('info', __('Ombi limetengenezwa. Tafadhali kamilisha malipo ya ada ya TZS 2,000 ili kufungua mawasiliano ya fundi.'));
+    }
+
+    /**
+     * Manually initiate or retry connection fee payment from request show page.
+     */
+    public function payConnectionFee(Request $request, $id)
+    {
+        $client = Auth::user();
+        $serviceRequest = ServiceRequest::where('client_id', $client->id)->findOrFail($id);
+
+        if ($serviceRequest->connection_fee_status === 'paid') {
+            return redirect()->route('client.requests.show', $serviceRequest->id)
+                ->with('info', __('Ada ya kuunganishwa tayari ilikwishalipwa.'));
+        }
+
+        $paymentPhone = trim($request->input('phone_number') ?? '') ?: ($client->phone ?? '');
+        $paymentMethod = $request->input('payment_method', 'mpesa');
+
+        $result = SnippeService::initiateClientConnectionFeePayment($client, $serviceRequest, $paymentPhone, $paymentMethod);
+
+        if (!empty($result['checkout_url'])) {
+            return redirect()->away($result['checkout_url']);
+        }
+
+        if (!empty($result['success'])) {
+            return redirect()->route('client.requests.show', $serviceRequest->id)
+                ->with('success', $result['message'] ?? __('Ombi la malipo limetumwa kwenye simu yako.'));
+        }
+
+        return redirect()->route('client.requests.show', $serviceRequest->id)
+            ->with('error', $result['message'] ?? __('Hitilafu wakati wa kuanzisha malipo.'));
     }
 
     public function show($id)
