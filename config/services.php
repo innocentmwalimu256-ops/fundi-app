@@ -38,7 +38,7 @@ return [
     'snippe' => [
         'api_key' => env('SNIPPE_API_KEY', 'snp_d72351fa5858490448258a2d515e5a8ad2439fca3ddf64a2123737fbc1c28ce8'),
         'webhook_secret' => env('SNIPPE_WEBHOOK_SECRET', 'whsec_0836d02c3d08337fe6597f9c199e2d82c98fea6c718cf3669bc08dc9b6485cf6'),
-        'base_url' => env('SNIPPE_BASE_URL', 'https://api.snippe.sh/v1'),
+        'base_url' => env('SNIPPE_BASE_URL', 'https://api.snippe.sh/api/v1'),
         'webhook_url' => env('SNIPPE_WEBHOOK_URL', 'https://fundi-app-one.vercel.app/api/webhook/snippe'),
     ],
 

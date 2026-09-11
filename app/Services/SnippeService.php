@@ -38,7 +38,7 @@ class SnippeService
      */
     public static function getBaseUrl(): string
     {
-        return rtrim(config('services.snippe.base_url') ?: env('SNIPPE_BASE_URL', 'https://api.snippe.sh/v1'), '/');
+        return rtrim(config('services.snippe.base_url') ?: env('SNIPPE_BASE_URL', 'https://api.snippe.sh/api/v1'), '/');
     }
 
     /**
