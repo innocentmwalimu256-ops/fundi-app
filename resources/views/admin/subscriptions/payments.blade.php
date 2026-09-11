@@ -72,8 +72,9 @@
                 </div>
 
                 <div class="flex items-end">
-                    <button type="submit" class="w-full py-2.5 px-4 bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition">
-                        {{ __('<i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> Washa Subscription') }}
+                    <button type="submit" class="w-full py-2.5 px-4 bg-teal-400 hover:bg-teal-300 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg transition flex items-center justify-center space-x-1.5">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                        <span>{{ __('Washa Subscription') }}</span>
                     </button>
                 </div>
             </form>
@@ -102,12 +103,16 @@
                             @if($pr->connection_fee_status !== 'paid')
                                 <form method="POST" action="{{ route('admin.subscriptions.client-payments.verify', $pr->id) }}">
                                     @csrf
-                                    <button type="submit" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-[11px] rounded-lg shadow whitespace-nowrap">
-                                        {{ __('<i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> Thibitisha') }}
+                                    <button type="submit" class="px-3 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-[11px] rounded-lg shadow whitespace-nowrap flex items-center space-x-1">
+                                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                        <span>{{ __('Thibitisha') }}</span>
                                     </button>
                                 </form>
                             @else
-                                <span class="text-[10px] text-emerald-300 font-bold bg-emerald-500/20 px-2 py-1 rounded">{{ __('<i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> Tayari') }}</span>
+                                <span class="text-[10px] text-emerald-300 font-bold bg-emerald-500/20 px-2 py-1 rounded inline-flex items-center space-x-1">
+                                    <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400"></i>
+                                    <span>{{ __('Tayari') }}</span>
+                                </span>
                             @endif
                         </div>
                     @empty
@@ -175,8 +180,17 @@
                             <td class="p-4 font-mono font-bold text-slate-900">{{ $pay->formatted_amount }}</td>
                             <td class="p-4 capitalize text-slate-600">{{ str_replace('_', ' ', $pay->payment_method) }}</td>
                             <td class="p-4">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $pay->status === 'success' ? 'bg-emerald-100 text-emerald-800' : ($pay->status === 'failed' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800') }}">
-                                    {{ $pay->status === 'success' ? __('<i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> ACTIVE') : ($pay->status === 'failed' ? __('INACTIVE') : __('PENDING')) }}
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase {{ $pay->status === 'success' ? 'bg-emerald-100 text-emerald-800' : ($pay->status === 'failed' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800') }}">
+                                    @if($pay->status === 'success')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                        <span>{{ __('ACTIVE') }}</span>
+                                    @elseif($pay->status === 'failed')
+                                        <i data-lucide="x" class="w-3.5 h-3.5 text-rose-600"></i>
+                                        <span>{{ __('INACTIVE') }}</span>
+                                    @else
+                                        <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+                                        <span>{{ __('PENDING') }}</span>
+                                    @endif
                                 </span>
                             </td>
                             <td class="p-4 text-slate-500">{{ $pay->created_at->format('d M Y, H:i') }}</td>
@@ -185,8 +199,9 @@
                                     @if($pay->status === 'pending')
                                         <form method="POST" action="{{ route('admin.subscriptions.payments.verify', $pay->id) }}">
                                             @csrf
-                                            <button type="submit" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-xl shadow-sm">
-                                                {{ __('<i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> Ruhusu & Washa') }}
+                                            <button type="submit" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-xl shadow-sm flex items-center space-x-1">
+                                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                                <span>{{ __('Ruhusu & Washa') }}</span>
                                             </button>
                                         </form>
                                         <form method="POST" action="{{ route('admin.subscriptions.payments.reject', $pay->id) }}">
@@ -199,14 +214,15 @@
                                         <form method="POST" action="{{ route('admin.subscriptions.payments.toggle', $pay->id) }}">
                                             @csrf
                                             <button type="submit" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-[11px] rounded-xl transition">
-                                                {{ __('⏸️ Sitisha / Zima') }}
+                                                {{ __('Sitisha / Zima') }}
                                             </button>
                                         </form>
                                     @else
                                         <form method="POST" action="{{ route('admin.subscriptions.payments.toggle', $pay->id) }}">
                                             @csrf
-                                            <button type="submit" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-xl shadow-sm transition">
-                                                {{ __('<i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> Washa Tena') }}
+                                            <button type="submit" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-xl shadow-sm transition flex items-center space-x-1">
+                                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                                <span>{{ __('Washa Tena') }}</span>
                                             </button>
                                         </form>
                                     @endif
@@ -267,8 +283,14 @@
                             <td class="p-4 font-semibold text-slate-800">{{ __($req->service->name) }}</td>
                             <td class="p-4 font-mono font-bold text-emerald-700">TZS 2,000</td>
                             <td class="p-4">
-                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase {{ $req->connection_fee_status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
-                                    {{ $req->connection_fee_status === 'paid' ? __('<i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> PAID') : __('PENDING') }}
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase {{ $req->connection_fee_status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
+                                    @if($req->connection_fee_status === 'paid')
+                                        <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                        <span>{{ __('PAID') }}</span>
+                                    @else
+                                        <i data-lucide="clock" class="w-3.5 h-3.5 text-amber-600"></i>
+                                        <span>{{ __('PENDING') }}</span>
+                                    @endif
                                 </span>
                             </td>
                             <td class="p-4 text-slate-500">{{ $req->created_at->format('d M Y, H:i') }}</td>
@@ -278,14 +300,15 @@
                                         <form method="POST" action="{{ route('admin.subscriptions.client-payments.toggle', $req->id) }}">
                                             @csrf
                                             <button type="submit" class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-[11px] rounded-xl transition">
-                                                {{ __('⏸️ Sitisha / Zuia') }}
+                                                {{ __('Sitisha / Zuia') }}
                                             </button>
                                         </form>
                                     @else
                                         <form method="POST" action="{{ route('admin.subscriptions.client-payments.verify', $req->id) }}">
                                             @csrf
-                                            <button type="submit" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-xl shadow-sm transition">
-                                                {{ __('<i data-lucide="check" class="w-3.5 h-3.5 inline text-emerald-600"></i> Washa / Ruhusu Ombi') }}
+                                            <button type="submit" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-xl shadow-sm transition flex items-center space-x-1">
+                                                <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                                                <span>{{ __('Washa / Ruhusu Ombi') }}</span>
                                             </button>
                                         </form>
                                         <form method="POST" action="{{ route('admin.subscriptions.client-payments.reject', $req->id) }}">
