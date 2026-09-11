@@ -36,12 +36,13 @@ class PaymentStatusController extends Controller
             ->first();
 
         if ($serviceRequest) {
+            $feeAmount = (int) ($serviceRequest->connection_fee ?? 500);
             if ($serviceRequest->connection_fee_status === 'paid') {
                 return response()->json([
                     'paid' => true,
                     'status' => 'paid',
                     'type' => 'connection_fee',
-                    'message' => __('Malipo ya ada ya TZS 2,000 yamethibitishwa kikamilifu!'),
+                    'message' => __("Malipo ya ada ya TZS :amount yamethibitishwa kikamilifu!", ['amount' => number_format($feeAmount, 0)]),
                     'redirect_url' => route('client.requests.show', $serviceRequest->id),
                 ]);
             }
@@ -53,7 +54,7 @@ class PaymentStatusController extends Controller
 
                 AuditLog::log(
                     'verify_client_connection_fee_polling',
-                    "Client paid connection fee TZS 2,000 for {$serviceRequest->reference_no} verified via live check.",
+                    "Client paid connection fee TZS " . number_format($feeAmount, 0) . " for {$serviceRequest->reference_no} verified via live check.",
                     'ServiceRequest',
                     $serviceRequest->id
                 );
@@ -70,7 +71,7 @@ class PaymentStatusController extends Controller
                     'paid' => true,
                     'status' => 'paid',
                     'type' => 'connection_fee',
-                    'message' => __('Malipo ya ada ya TZS 2,000 yamethibitishwa kikamilifu!'),
+                    'message' => __("Malipo ya ada ya TZS :amount yamethibitishwa kikamilifu!", ['amount' => number_format($feeAmount, 0)]),
                     'redirect_url' => route('client.requests.show', $serviceRequest->id),
                 ]);
             }
@@ -218,7 +219,7 @@ class PaymentStatusController extends Controller
             'reference' => $result['reference'] ?? $serviceRequest->connection_fee_reference,
             'message' => $result['message'] ?? '',
             'phone' => SnippeService::formatPhoneNumber($phone),
-            'amount' => 2000,
+            'amount' => (int) ($serviceRequest->connection_fee ?? 500),
         ], $result['success'] ? 200 : 400);
     }
 

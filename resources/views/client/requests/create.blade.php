@@ -19,7 +19,7 @@
             </div>
             <h1 class="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">{{ __('Submit Service Request') }}</h1>
             <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                {{ __('Describe your problem clearly. Pay a nominal connection fee of TZS 2,000 to instantly unlock verified technician contact and receive formal quotation.') }}
+                {{ __('Describe your problem clearly. Pay a nominal connection fee of TZS :amount to instantly unlock verified technician contact and receive formal quotation.', ['amount' => number_format($connectionFee ?? 500, 0)]) }}
             </p>
         </div>
 
@@ -78,61 +78,40 @@
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Problem Description') }}</label>
                 <textarea name="description" rows="4" required placeholder="{{ __('e.g. The main circuit breaker trips whenever the bedroom AC is turned on. Need full inspection and replacement of faulty breaker.') }}" class="w-full p-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50/50 leading-relaxed">{{ old('description') }}</textarea>
-                <p class="text-[11px] text-slate-400 mt-1">{{ __('Provide accurate details so the technician can arrive with the right tools and materials.') }}</p>
             </div>
 
-            <!-- Location & Scheduling -->
+            <!-- Location & Schedule -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="sm:col-span-1">
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Location') }}</label>
-                    <input type="text" name="location" value="{{ old('location', 'Dar es Salaam, Kinondoni') }}" required placeholder="{{ __('e.g. Mikocheni B, House #14') }}" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Location / Address') }}</label>
+                    <input type="text" name="location" value="{{ old('location', auth()->user()->city ?? 'Dar es Salaam') }}" required placeholder="{{ __('e.g. Mikocheni B, House 42') }}" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
                 </div>
-
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Preferred Date') }}</label>
-                    <input type="date" name="preferred_date" value="{{ old('preferred_date', now()->addDay()->format('Y-m-d')) }}" required min="{{ now()->format('Y-m-d') }}" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
+                    <input type="date" name="preferred_date" value="{{ old('preferred_date', date('Y-m-d')) }}" min="{{ date('Y-m-d') }}" required class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Preferred Time') }}</label>
-                    <input type="time" name="preferred_time" value="{{ old('preferred_time', '14:00') }}" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Urgency Level') }}</label>
+                    <select name="urgency" required class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
+                        <option value="normal" {{ old('urgency') === 'normal' ? 'selected' : '' }}>{{ __('Normal (Within 24-48 hrs)') }}</option>
+                        <option value="high" {{ old('urgency') === 'high' ? 'selected' : '' }}>{{ __('High (Same day)') }}</option>
+                        <option value="urgent" {{ old('urgency') === 'urgent' ? 'selected' : '' }}>{{ __('Urgent (Immediate)') }}</option>
+                        <option value="low" {{ old('urgency') === 'low' ? 'selected' : '' }}>{{ __('Flexible (This week)') }}</option>
+                    </select>
                 </div>
             </div>
 
-            <!-- Urgency Level -->
+            <!-- Upload Photos -->
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">{{ __('Urgency') }}</label>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white cursor-pointer flex items-center space-x-2 text-xs font-bold text-slate-700 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:text-teal-900 transition">
-                        <input type="radio" name="urgency" value="low" class="text-teal-600 focus:ring-teal-500">
-                        <span>{{ __('Low') }}</span>
-                    </label>
-                    <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white cursor-pointer flex items-center space-x-2 text-xs font-bold text-slate-700 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50 has-[:checked]:text-teal-900 transition">
-                        <input type="radio" name="urgency" value="normal" checked class="text-teal-600 focus:ring-teal-500">
-                        <span>{{ __('Standard') }}</span>
-                    </label>
-                    <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white cursor-pointer flex items-center space-x-2 text-xs font-bold text-slate-700 has-[:checked]:border-amber-500 has-[:checked]:bg-amber-50 has-[:checked]:text-amber-900 transition">
-                        <input type="radio" name="urgency" value="high" class="text-amber-600 focus:ring-amber-500">
-                        <span>{{ __('High Priority') }}</span>
-                    </label>
-                    <label class="p-3 rounded-xl border border-slate-200 bg-slate-50 hover:bg-white cursor-pointer flex items-center space-x-2 text-xs font-bold text-slate-700 has-[:checked]:border-rose-600 has-[:checked]:bg-rose-50 has-[:checked]:text-rose-900 transition">
-                        <input type="radio" name="urgency" value="urgent" class="text-rose-600 focus:ring-rose-500">
-                        <span>{{ __('Urgent') }}</span>
-                    </label>
-                </div>
-            </div>
-
-            <!-- Photos / Image Uploads -->
-            <div>
-                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Problem Photos (Optional)') }}</label>
-                <div class="border-2 border-dashed border-slate-200 hover:border-teal-400 rounded-2xl p-6 text-center bg-slate-50/50 cursor-pointer transition">
-                    <i data-lucide="image-plus" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
+                <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Attach Problem Photos (Optional)') }}</label>
+                <div class="p-6 rounded-2xl border-2 border-dashed border-slate-200 text-center bg-slate-50/50 hover:bg-slate-50 transition">
+                    <i data-lucide="camera" class="w-8 h-8 text-slate-400 mx-auto mb-2"></i>
                     <p class="text-xs font-bold text-slate-700">{{ __('Upload photos here (JPEG, PNG)') }}</p>
                     <input type="file" name="images[]" multiple accept="image/*" class="mt-3 text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-teal-50 file:text-teal-700 hover:file:bg-teal-100">
                 </div>
             </div>
 
-            <!-- Connection Fee Direct In-App Checkout Box (TZS 2,000) -->
+            <!-- Connection Fee Direct In-App Checkout Box -->
             <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 text-white space-y-4 border border-teal-500/20 shadow-xl" x-data="{ feeMethod: 'mpesa' }">
                 <div class="flex items-center justify-between border-b border-white/10 pb-4">
                     <div class="flex items-center space-x-3">
@@ -145,7 +124,7 @@
                         </div>
                     </div>
                     <div class="text-right flex-shrink-0">
-                        <span class="text-2xl font-black text-teal-300 font-mono">TZS 2,000</span>
+                        <span class="text-2xl font-black text-teal-300 font-mono">TZS {{ number_format($connectionFee ?? 500, 0) }}</span>
                         <span class="text-[10px] text-slate-400 block">{{ __('Connection Fee') }}</span>
                     </div>
                 </div>
@@ -194,7 +173,7 @@
                 <div class="pt-4 border-t border-white/10">
                     <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-teal-500 hover:bg-teal-400 active:scale-[0.99] text-slate-950 font-black text-sm shadow-lg shadow-teal-500/25 transition flex items-center justify-center space-x-2">
                         <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        <span>{{ __('Pay Fee TZS 2,000 & Submit Request Instantly') }}</span>
+                        <span>{{ __('Pay Fee TZS :amount & Submit Request Instantly', ['amount' => number_format($connectionFee ?? 500, 0)]) }}</span>
                     </button>
                 </div>
             </div>

@@ -68,7 +68,7 @@ class ServiceRequestController extends Controller
         $services = Service::where('status', 'active')->get();
         $selectedService = $serviceId ? Service::find($serviceId) : ($technician && $technician->services->isNotEmpty() ? $technician->services->first() : null);
 
-        $connectionFee = 2000;
+        $connectionFee = 500;
         $admin = User::where('role', 'admin')->first();
         $adminPhone = $admin ? $admin->phone : '0675315279';
         $cleanPhone = preg_replace('/[^0-9]/', '', $adminPhone);
@@ -79,7 +79,7 @@ class ServiceRequestController extends Controller
         }
 
         $techName = $technician ? $technician->full_name : 'Fundi';
-        $waMsg = "Habari Admin wa FUNDI, mimi ni Mteja " . Auth::user()->full_name . ". Nahitaji kulipia Ada ya Kuunganishwa na Fundi {$techName} (TZS 2,000). Naomba maelekezo ya malipo.";
+        $waMsg = "Habari Admin wa FUNDI, mimi ni Mteja " . Auth::user()->full_name . ". Nahitaji kulipia Ada ya Kuunganishwa na Fundi {$techName} (TZS 500). Naomba maelekezo ya malipo.";
         $adminWhatsappUrl = 'https://wa.me/' . $cleanPhone . '?text=' . urlencode($waMsg);
 
         return view('client.requests.create', compact('technician', 'services', 'selectedService', 'connectionFee', 'adminWhatsappUrl', 'adminPhone'));
@@ -119,7 +119,7 @@ class ServiceRequestController extends Controller
                 'urgency' => $validated['urgency'],
                 'status' => 'pending',
                 'payment_status' => 'unpaid',
-                'connection_fee' => 2000,
+                'connection_fee' => 500,
                 'connection_fee_status' => 'pending',
                 'connection_fee_reference' => $paymentRef,
             ]);
@@ -138,7 +138,7 @@ class ServiceRequestController extends Controller
             return $req;
         });
 
-        AuditLog::log('create_request', "Client {$client->full_name} created service request {$serviceRequest->reference_no} (Connection Fee Pending: TZS 2,000)", 'ServiceRequest', $serviceRequest->id);
+        AuditLog::log('create_request', "Client {$client->full_name} created service request {$serviceRequest->reference_no} (Connection Fee Pending: TZS 500)", 'ServiceRequest', $serviceRequest->id);
 
         Notification::send(
             $technician->id,
@@ -148,7 +148,7 @@ class ServiceRequestController extends Controller
             route('technician.requests.show', $serviceRequest->id)
         );
 
-        // Initiate real Snippe Payment for the TZS 2,000 Connection Fee
+        // Initiate real Snippe Payment for the TZS 500 Connection Fee
         $paymentPhone = trim($request->input('payment_phone') ?? '') ?: ($client->phone ?? '');
         $paymentMethod = $request->input('payment_method', 'mpesa');
 
@@ -160,11 +160,11 @@ class ServiceRequestController extends Controller
 
         if (!empty($paymentResult['success'])) {
             return redirect()->route('client.requests.show', $serviceRequest->id)
-                ->with('success', __('Ombi limetumwa na ombi la ada ya TZS 2,000 limetumwa kwenye simu yako.'));
+                ->with('success', __('Ombi limetumwa na ombi la ada ya TZS 500 limetumwa kwenye simu yako.'));
         }
 
         return redirect()->route('client.requests.show', $serviceRequest->id)
-            ->with('info', __('Ombi limetengenezwa. Tafadhali kamilisha malipo ya ada ya TZS 2,000 ili kufungua mawasiliano ya fundi.'));
+            ->with('info', __('Ombi limetengenezwa. Tafadhali kamilisha malipo ya ada ya TZS 500 ili kufungua mawasiliano ya fundi.'));
     }
 
     /**

@@ -211,13 +211,13 @@ class SnippeService
     }
 
     /**
-     * Initiate a client connection fee payment (TZS 2,000) via Snippe API.
+     * Initiate a client connection fee payment (TZS 500) via Snippe API.
      */
     public static function initiateClientConnectionFeePayment(User $client, ServiceRequest $serviceRequest, string $phoneNumber, string $paymentMethod = 'mpesa'): array
     {
         $reference = $serviceRequest->connection_fee_reference ?: ('REQ-PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)));
         $formattedPhone = self::formatPhoneNumber($phoneNumber);
-        $amount = (int) ($serviceRequest->connection_fee ?? 2000);
+        $amount = (int) ($serviceRequest->connection_fee ?? 500);
 
         // Update request with reference
         $serviceRequest->update([
@@ -283,7 +283,7 @@ class SnippeService
                         'status_code' => $statusCode,
                         'checkout_url' => null,
                         'reference' => $reference,
-                        'message' => __("Ombi la malipo ya ada ya TZS 2,000 limetumwa kwenye namba yako ya simu (:phone). Tafadhali weka PIN kuthibitisha.", [
+                        'message' => __("Ombi la malipo ya ada ya TZS 500 limetumwa kwenye namba yako ya simu (:phone). Tafadhali weka PIN kuthibitisha.", [
                             'phone' => $formattedPhone,
                         ]),
                         'data' => $responseBody,
@@ -657,7 +657,7 @@ class SnippeService
 
                     AuditLog::log(
                         'verify_client_connection_fee_snippe',
-                        "Client paid connection fee TZS " . number_format($serviceRequest->connection_fee ?? 2000, 0) . " for {$serviceRequest->reference_no} via Snippe Webhook.",
+                        "Client paid connection fee TZS " . number_format($serviceRequest->connection_fee ?? 500, 0) . " for {$serviceRequest->reference_no} via Snippe Webhook.",
                         'ServiceRequest',
                         $serviceRequest->id
                     );
@@ -674,7 +674,7 @@ class SnippeService
                         $serviceRequest->client_id,
                         'payment_verified',
                         'Malipo ya Ada ya Kuunganishwa Yamethibitishwa',
-                        "Ada yako ya TZS 2,000 imelipwa kikamilifu kupitia Snippe kwa ombi {$serviceRequest->reference_no}.",
+                        "Ada yako ya TZS 500 imelipwa kikamilifu kupitia Snippe kwa ombi {$serviceRequest->reference_no}.",
                         route('client.requests.show', $serviceRequest->id)
                     );
 

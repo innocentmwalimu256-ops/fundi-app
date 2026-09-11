@@ -42,7 +42,7 @@
         <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
             <p class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('Client Connection Fees') }}</p>
             <h3 class="text-2xl font-black text-emerald-700 mt-1">TZS {{ number_format($revenue['client_connection_revenue'], 0) }}</h3>
-            <span class="text-[11px] text-emerald-600 font-bold">{{ __('TZS 2,000 per request') }}</span>
+            <span class="text-[11px] text-emerald-600 font-bold">{{ __('TZS 500 per request') }}</span>
         </div>
 
         <div class="bg-white rounded-3xl p-5 border border-slate-200 shadow-sm">
@@ -79,7 +79,7 @@
         <div class="bg-white rounded-3xl p-6 border border-slate-200 shadow-sm space-y-4">
             <div class="flex items-center justify-between">
                 <h3 class="text-base font-bold text-slate-900">{{ __('2. Client Request Connection Fees') }}</h3>
-                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl">{{ __('TZS 2,000 / Request') }}</span>
+                <span class="text-xs font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-xl">{{ __('TZS 500 / Request') }}</span>
             </div>
 
             <div class="divide-y divide-slate-100 text-xs">
@@ -90,7 +90,7 @@
                         <p class="text-slate-500 text-[11px]">{{ __($req->service->name) }} • {{ $req->created_at->diffForHumans() }}</p>
                     </div>
                     <div class="text-right">
-                        <span class="font-mono font-bold text-emerald-700">+ TZS 2,000</span>
+                        <span class="font-mono font-bold text-emerald-700">+ TZS {{ number_format($req->connection_fee ?? 500, 0) }}</span>
                         <span class="text-[10px] text-slate-400 block font-mono">{{ $req->connection_fee_reference ?: $req->reference_no }}</span>
                     </div>
                 </div>

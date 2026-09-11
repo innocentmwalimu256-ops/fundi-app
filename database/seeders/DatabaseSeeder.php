@@ -61,7 +61,7 @@ class DatabaseSeeder extends Seeder
         $planStarter = SubscriptionPlan::create([
             'name' => 'Starter',
             'slug' => 'starter',
-            'price' => 10000,
+            'price' => 700,
             'currency' => 'TZS',
             'duration_days' => 30,
             'description' => 'Essential marketplace access for newly onboarded artisans and technicians.',
@@ -81,7 +81,7 @@ class DatabaseSeeder extends Seeder
         $planPro = SubscriptionPlan::create([
             'name' => 'Professional',
             'slug' => 'professional',
-            'price' => 20000,
+            'price' => 800,
             'currency' => 'TZS',
             'duration_days' => 30,
             'description' => 'Full-powered toolkit with priority matching and expanded coverage areas.',
@@ -101,11 +101,11 @@ class DatabaseSeeder extends Seeder
         $planPremium = SubscriptionPlan::create([
             'name' => 'Premium',
             'slug' => 'premium',
-            'price' => 35000,
+            'price' => 1000,
             'currency' => 'TZS',
             'duration_days' => 30,
             'description' => 'Maximum visibility with Featured Technician badge and unlimited projects.',
-            'features' => ['Unlimited client service requests', 'Direct WhatsApp & chat communication', 'Unlimited portfolio project gallery', 'Up to 5 Service coverage areas', '⭐ Featured Technician profile badge', 'Top ranked priority matching', 'Advanced analytics & revenue tracking', 'Dedicated priority support desk'],
+            'features' => ['Unlimited client service requests', 'Direct WhatsApp & chat communication', 'Unlimited portfolio project gallery', 'Up to 5 Service coverage areas', 'Featured Technician profile badge', 'Top ranked priority matching', 'Advanced analytics & revenue tracking', 'Dedicated priority support desk'],
             'request_limit' => 0,
             'portfolio_limit' => 0,
             'service_area_limit' => 5,

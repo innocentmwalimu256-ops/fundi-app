@@ -68,7 +68,7 @@ return new class extends Migration
                 $table->decimal('service_cost_agreed', 12, 2)->nullable()->after('payment_status');
             }
             if (!Schema::hasColumn('service_requests', 'connection_fee')) {
-                $table->decimal('connection_fee', 12, 2)->default(2000)->after('payment_status');
+                $table->decimal('connection_fee', 12, 2)->default(500)->after('payment_status');
             }
             if (!Schema::hasColumn('service_requests', 'connection_fee_status')) {
                 $table->string('connection_fee_status')->default('paid')->after('connection_fee');

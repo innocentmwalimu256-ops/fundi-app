@@ -400,15 +400,16 @@ class SubscriptionController extends Controller
             route('technician.requests.show', $serviceRequest->id)
         );
 
+        $feeAmt = number_format((int) ($serviceRequest->connection_fee ?? 500), 0);
         Notification::send(
             $serviceRequest->client_id,
             'fee_verified',
             'Payment Verified! Request Sent to Technician',
-            "Your TZS 2,000 connection fee for request {$serviceRequest->reference_no} has been verified by Admin and sent to {$serviceRequest->technician->full_name}.",
+            "Your TZS {$feeAmt} connection fee for request {$serviceRequest->reference_no} has been verified by Admin and sent to {$serviceRequest->technician->full_name}.",
             route('client.requests.show', $serviceRequest->id)
         );
 
-        return back()->with('success', "Ada ya Mteja (TZS 2,000) kwa ombi #{$serviceRequest->reference_no} IMETHIBITISHWA na ombi limetumwa kwa fundi!");
+        return back()->with('success', "Ada ya Mteja (TZS {$feeAmt}) kwa ombi #{$serviceRequest->reference_no} IMETHIBITISHWA na ombi limetumwa kwa fundi!");
     }
 
     public function rejectClientFee(Request $request, $id)
@@ -551,7 +552,7 @@ class SubscriptionController extends Controller
                     $r->client->phone ?? 'N/A',
                     $r->technician->full_name ?? 'N/A',
                     $r->service->name ?? 'N/A',
-                    number_format($r->connection_fee ?? 2000, 2),
+                    number_format($r->connection_fee ?? 500, 2),
                     $r->connection_fee_reference ?? 'N/A',
                     strtoupper($r->connection_fee_status ?? 'paid'),
                 ]);

@@ -91,10 +91,10 @@
             <div>
                 @php
                     $totalRev = (\App\Models\SubscriptionPayment::where('status', 'success')->sum('amount') ?? 0) +
-                                (\App\Models\ServiceRequest::where('connection_fee_status', 'paid')->count() * 2000);
+                                (\App\Models\ServiceRequest::where('connection_fee_status', 'paid')->sum('connection_fee') ?: (\App\Models\ServiceRequest::where('connection_fee_status', 'paid')->count() * 500));
                 @endphp
                 <h3 class="text-2xl sm:text-3xl font-black text-emerald-700 tracking-tight font-mono">TZS {{ number_format($totalRev) }}</h3>
-                <p class="text-[11px] text-slate-500 mt-1">{{ __('Subscriptions + TZS 2k Fees') }}</p>
+                <p class="text-[11px] text-slate-500 mt-1">{{ __('Subscriptions + Connection Fees') }}</p>
             </div>
         </div>
 

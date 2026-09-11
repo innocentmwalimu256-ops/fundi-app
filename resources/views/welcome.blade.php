@@ -243,7 +243,7 @@
             <div class="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-subtle space-y-3 relative">
                 <span class="text-2xl font-black text-teal-600 font-mono">02</span>
                 <h4 class="text-base font-bold text-navy-900">Connect with a fundi</h4>
-                <p class="text-xs text-[#667085] leading-relaxed">Pay a small TZS 2,000 connection fee to instantly unlock verified phone & WhatsApp access.</p>
+                <p class="text-xs text-[#667085] leading-relaxed">Pay a small TZS 500 connection fee to instantly unlock verified phone & WhatsApp access.</p>
             </div>
 
             <div class="p-6 rounded-2xl bg-white border border-[#E5E7EB] shadow-subtle space-y-3 relative">
@@ -270,7 +270,7 @@
                 </div>
                 <h3 class="text-2xl sm:text-3xl font-black tracking-tight text-white">Connect directly with your fundi</h3>
                 <p class="text-xs sm:text-sm text-[#98A2B3] leading-relaxed">
-                    A small <strong class="text-white font-bold">TZS 2,000 connection fee</strong> unlocks direct, unrestricted communication with your chosen verified technician.
+                    A small <strong class="text-white font-bold">TZS 500 connection fee</strong> unlocks direct, unrestricted communication with your chosen verified technician.
                 </p>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
                     <div class="flex items-center space-x-2 text-xs font-semibold text-teal-300">
@@ -310,7 +310,7 @@
                         <p class="text-xs text-[#667085] mt-1">Ideal for individual artisans starting out</p>
                     </div>
                     <div>
-                        <span class="text-3xl font-black text-navy-900 font-mono">TZS 10,000</span>
+                        <span class="text-3xl font-black text-navy-900 font-mono">TZS 700</span>
                         <span class="text-xs text-[#667085]">/ month</span>
                     </div>
                     <ul class="space-y-2.5 text-xs text-[#667085] pt-4 border-t border-[#E5E7EB]">
@@ -336,7 +336,7 @@
                         <p class="text-xs text-[#667085] mt-1">For active fundis wanting steady jobs</p>
                     </div>
                     <div>
-                        <span class="text-3xl font-black text-teal-600 font-mono">TZS 20,000</span>
+                        <span class="text-3xl font-black text-teal-600 font-mono">TZS 800</span>
                         <span class="text-xs text-[#667085]">/ month</span>
                     </div>
                     <ul class="space-y-2.5 text-xs text-[#111827] pt-4 border-t border-[#E5E7EB]">
@@ -359,7 +359,7 @@
                         <p class="text-xs text-[#667085] mt-1">For established contractors & teams</p>
                     </div>
                     <div>
-                        <span class="text-3xl font-black text-navy-900 font-mono">TZS 35,000</span>
+                        <span class="text-3xl font-black text-navy-900 font-mono">TZS 1,000</span>
                         <span class="text-xs text-[#667085]">/ month</span>
                     </div>
                     <ul class="space-y-2.5 text-xs text-[#667085] pt-4 border-t border-[#E5E7EB]">

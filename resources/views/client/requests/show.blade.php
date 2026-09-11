@@ -18,7 +18,7 @@
                 </span>
                 @if($request->connection_fee_status === 'paid')
                     <span class="px-3 py-1 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm flex items-center space-x-1">
-                        <span>{{ __('Connection Fee (TZS 2,000): PAID') }}</span>
+                        <span>{{ __('Connection Fee (TZS :amount): PAID', ['amount' => number_format($request->connection_fee ?? 500, 0)]) }}</span>
                     </span>
                 @else
                     <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
@@ -136,12 +136,12 @@
                             <i data-lucide="shield-check" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-bold text-white">{{ __('Pay Connection Fee (TZS 2,000) via Mobile Money') }}</h4>
+                            <h4 class="text-sm font-bold text-white">{{ __('Pay Connection Fee (TZS :amount) via Mobile Money', ['amount' => number_format($request->connection_fee ?? 500, 0)]) }}</h4>
                             <p class="text-xs text-slate-300 mt-0.5">{{ __('Direct USSD Push: Weka namba yako, utapokea ombi la kuingiza PIN kwenye simu papo hapo.') }}</p>
                         </div>
                     </div>
                     <div class="text-right flex-shrink-0">
-                        <span class="text-2xl font-black text-teal-300 font-mono">TZS 2,000</span>
+                        <span class="text-2xl font-black text-teal-300 font-mono">TZS {{ number_format($request->connection_fee ?? 500, 0) }}</span>
                         <span class="text-[10px] text-slate-400 block">{{ __('Instant Activation') }}</span>
                     </div>
                 </div>
@@ -177,7 +177,7 @@
                     <button type="button" @click="startPayment()" :disabled="loading" class="btn-tap px-6 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-teal-500/25 transition flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50">
                         <template x-if="!loading">
                             <span class="flex items-center space-x-1.5">
-                                <span>{{ __('Lipa TZS 2,000 Moja kwa Moja') }}</span>
+                                <span>{{ __('Lipa TZS :amount Moja kwa Moja', ['amount' => number_format($request->connection_fee ?? 500, 0)]) }}</span>
                                 <i data-lucide="arrow-right" class="w-4 h-4"></i>
                             </span>
                         </template>
@@ -272,7 +272,7 @@
                     </div>
                     <h4 class="text-xs font-bold text-slate-900">{{ __('1. Request & Fee') }}</h4>
                 </div>
-                <p class="text-[11px] text-slate-500">{{ __('Request sent and fee (TZS 2,000) verified') }}</p>
+                <p class="text-[11px] text-slate-500">{{ __('Request sent and fee (:amount) verified', ['amount' => 'TZS ' . number_format($request->connection_fee ?? 500, 0)]) }}</p>
             </div>
 
             <!-- Step 2 -->

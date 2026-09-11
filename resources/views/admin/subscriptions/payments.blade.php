@@ -25,7 +25,7 @@
                 <!-- 2. BUTTON FOR TAB 2: ADD/APPROVE CLIENT REQUEST FEE -->
                 <button type="button" x-show="tab === 'clients'" x-cloak @click="showClientModal = !showClientModal" class="px-4 py-2.5 bg-gradient-to-r from-teal-600 to-indigo-700 hover:from-teal-700 hover:to-indigo-800 text-white font-bold text-xs rounded-2xl shadow-lg shadow-teal-700/20 transition flex items-center space-x-2">
                     <i data-lucide="check-circle-2" class="w-4 h-4"></i>
-                    <span>{{ __('+ Thibitisha Ada ya Ombi la Mteja (TZS 2,000)') }}</span>
+                    <span>{{ __('+ Thibitisha Ada ya Ombi la Mteja (TZS 500)') }}</span>
                 </button>
             </div>
         </div>
@@ -85,7 +85,7 @@
             <div class="flex items-center justify-between border-b border-white/10 pb-3">
                 <div class="flex items-center space-x-2">
                     <i data-lucide="check-circle" class="w-4 h-4 text-teal-400"></i>
-                    <h3 class="text-xs font-bold uppercase tracking-wider text-teal-300">{{ __('Thibitisha Ada ya Ombi la Mteja (TZS 2,000)') }}</h3>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-teal-300">{{ __('Thibitisha Ada ya Ombi la Mteja (TZS 500)') }}</h3>
                 </div>
                 <button type="button" @click="showClientModal = false" class="text-slate-400 hover:text-white text-xs font-bold"><i data-lucide="x" class="w-3.5 h-3.5 inline text-rose-500"></i> {{ __('Funga') }}</button>
             </div>
@@ -98,7 +98,7 @@
                             <div class="min-w-0">
                                 <div class="font-bold text-white truncate">{{ $pr->client->full_name }} &rarr; {{ $pr->technician->full_name }}</div>
                                 <div class="text-[10px] text-slate-300 font-mono">{{ $pr->reference_no }} • {{ __($pr->service->name) }}</div>
-                                <div class="text-[10px] text-emerald-400 font-bold">{{ __('Ada') }}: TZS 2,000 ({{ strtoupper($pr->connection_fee_status) }})</div>
+                                <div class="text-[10px] text-emerald-400 font-bold">{{ __('Ada') }}: TZS {{ number_format($pr->connection_fee ?? 500, 0) }} ({{ strtoupper($pr->connection_fee_status) }})</div>
                             </div>
                             @if($pr->connection_fee_status !== 'paid')
                                 <form method="POST" action="{{ route('admin.subscriptions.client-payments.verify', $pr->id) }}">
@@ -134,7 +134,7 @@
 
             <button type="button" @click="tab = 'clients'; showTechModal = false;" :class="tab === 'clients' ? 'bg-white text-slate-900 shadow-sm font-black' : 'text-slate-600 font-bold hover:text-slate-900'" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs transition flex items-center justify-center space-x-2">
                 <i data-lucide="user" class="w-4 h-4 text-teal-700"></i>
-                <span>{{ __('2. Ada za Wateja (TZS 2,000)') }}</span>
+                <span>{{ __('2. Ada za Wateja (TZS 500)') }}</span>
                 @if($pendingClientFeeCount > 0)
                 <span class="w-5 h-5 rounded-full bg-emerald-500 text-white text-[10px] flex items-center justify-center font-bold">{{ $pendingClientFeeCount }}</span>
                 @endif
@@ -240,13 +240,13 @@
         </div>
     </div>
 
-    <!-- TAB 2: CLIENT REQUEST CONNECTION FEES (TZS 2,000) -->
+    <!-- TAB 2: CLIENT REQUEST CONNECTION FEES (TZS 500) -->
     <div x-show="tab === 'clients'" class="space-y-4" style="display: none;">
         <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                 <div class="flex items-center space-x-2">
                     <span class="w-3 h-3 rounded-full bg-teal-600"></span>
-                    <h3 class="text-sm font-bold text-slate-900">{{ __('Uhakiki wa Ada za Wateja Kuunganishwa na Mafundi (TZS 2,000)') }}</h3>
+                    <h3 class="text-sm font-bold text-slate-900">{{ __('Uhakiki wa Ada za Wateja Kuunganishwa na Mafundi (TZS 500)') }}</h3>
                 </div>
                 <span class="text-xs font-bold text-slate-500">{{ $clientRequests->total() }} {{ __('Maombi') }}</span>
             </div>
@@ -281,7 +281,7 @@
                                 <span class="text-[10px] text-slate-400">{{ $req->technician->phone }}</span>
                             </td>
                             <td class="p-4 font-semibold text-slate-800">{{ __($req->service->name) }}</td>
-                            <td class="p-4 font-mono font-bold text-emerald-700">TZS 2,000</td>
+                            <td class="p-4 font-mono font-bold text-emerald-700">TZS {{ number_format($req->connection_fee ?? 500, 0) }}</td>
                             <td class="p-4">
                                 <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase {{ $req->connection_fee_status === 'paid' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800' }}">
                                     @if($req->connection_fee_status === 'paid')
