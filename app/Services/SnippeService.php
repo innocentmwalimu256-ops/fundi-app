@@ -99,15 +99,24 @@ class SnippeService
         $webhookUrl = self::getWebhookUrl();
         $redirectUrl = route('technician.subscription', ['ref' => $reference]);
 
+        $nameParts = explode(' ', trim($user->full_name), 2);
+        $firstName = $nameParts[0] ?? 'User';
+        $lastName = $nameParts[1] ?? 'Fundi';
+
         $payload = [
             'amount' => $amount,
             'currency' => 'TZS',
             'customer' => [
+                'firstname' => $firstName,
+                'lastname' => $lastName,
                 'name' => $user->full_name,
                 'email' => $user->email,
-                'phone' => $formattedPhone,
+                'phone' => '+' . $formattedPhone,
+                'address' => 'Dar es Salaam',
+                'city' => 'Dar es Salaam',
+                'country' => 'TZ',
             ],
-            'customer_phone' => $formattedPhone,
+            'customer_phone' => '+' . $formattedPhone,
             'customer_name' => $user->full_name,
             'customer_email' => $user->email,
             'reference' => $reference,
@@ -153,15 +162,25 @@ class SnippeService
         $webhookUrl = self::getWebhookUrl();
         $redirectUrl = route('client.requests.show', $serviceRequest->id);
 
+        $clientNameParts = explode(' ', trim($client->full_name), 2);
+        $clientFirstName = $clientNameParts[0] ?? 'Client';
+        $clientLastName = $clientNameParts[1] ?? 'Customer';
+        $clientLocation = $serviceRequest->location ?: 'Dar es Salaam';
+
         $payload = [
             'amount' => $amount,
             'currency' => 'TZS',
             'customer' => [
+                'firstname' => $clientFirstName,
+                'lastname' => $clientLastName,
                 'name' => $client->full_name,
                 'email' => $client->email,
-                'phone' => $formattedPhone,
+                'phone' => '+' . $formattedPhone,
+                'address' => $clientLocation,
+                'city' => 'Dar es Salaam',
+                'country' => 'TZ',
             ],
-            'customer_phone' => $formattedPhone,
+            'customer_phone' => '+' . $formattedPhone,
             'customer_name' => $client->full_name,
             'customer_email' => $client->email,
             'reference' => $reference,
