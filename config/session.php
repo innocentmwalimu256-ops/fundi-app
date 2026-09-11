@@ -10,7 +10,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'driver' => env('SESSION_DRIVER') ?: 'database',
+    'driver' => env('SESSION_DRIVER', 'cookie'),
 
     /*
     |--------------------------------------------------------------------------
@@ -18,7 +18,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'lifetime' => (int) (env('SESSION_LIFETIME') ?: 120),
+    'lifetime' => (int) (env('SESSION_LIFETIME', 10080)),
 
     'expire_on_close' => false,
 

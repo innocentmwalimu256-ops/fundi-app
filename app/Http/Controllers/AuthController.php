@@ -118,7 +118,7 @@ class AuthController extends Controller
             ]);
         }
 
-        Auth::login($user, $remember);
+        Auth::login($user, true);
         $request->session()->regenerate();
 
         AuditLog::log('login', "User {$user->full_name} logged in", 'User', $user->id);

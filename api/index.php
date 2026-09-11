@@ -59,13 +59,13 @@ try {
     $_ENV['APP_MAINTENANCE_DRIVER'] = 'file';
     $_SERVER['APP_MAINTENANCE_DRIVER'] = 'file';
 
-    putenv("SESSION_DRIVER=database");
-    $_ENV['SESSION_DRIVER'] = 'database';
-    $_SERVER['SESSION_DRIVER'] = 'database';
+    putenv("SESSION_DRIVER=cookie");
+    $_ENV['SESSION_DRIVER'] = 'cookie';
+    $_SERVER['SESSION_DRIVER'] = 'cookie';
 
-    putenv("SESSION_LIFETIME=120");
-    $_ENV['SESSION_LIFETIME'] = '120';
-    $_SERVER['SESSION_LIFETIME'] = '120';
+    putenv("SESSION_LIFETIME=10080");
+    $_ENV['SESSION_LIFETIME'] = '10080';
+    $_SERVER['SESSION_LIFETIME'] = '10080';
 
     putenv("CACHE_STORE=array");
     $_ENV['CACHE_STORE'] = 'array';

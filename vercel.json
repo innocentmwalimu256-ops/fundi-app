@@ -34,8 +34,8 @@
     "LARAVEL_STORAGE_PATH": "/tmp/storage",
     "VIEW_COMPILED_PATH": "/tmp/storage/framework/views",
     "CACHE_STORE": "array",
-    "SESSION_DRIVER": "database",
-    "SESSION_LIFETIME": "120",
+    "SESSION_DRIVER": "cookie",
+    "SESSION_LIFETIME": "10080",
     "LOG_CHANNEL": "stderr",
     "DB_CONNECTION": "sqlite",
     "DB_DATABASE": "/tmp/database.sqlite"
