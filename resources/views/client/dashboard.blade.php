@@ -129,305 +129,173 @@
         </div>
     </div>
 
-    <!-- 3. Main 2-Column Split Layout (8 Col Left / 4 Col Right) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    <!-- 3. Main Section: Requests, Categories & Verified Artisans (Full Width Clean Layout) -->
+    <div class="space-y-6">
         
-        <!-- LEFT COLUMN (8 cols): Requests & Discovery -->
-        <div class="lg:col-span-8 space-y-6">
-            
-            <!-- Card 1: Recent Service Requests Feed -->
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
-                <div class="px-6 py-4.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-                    <div>
-                        <h2 class="text-sm sm:text-base font-bold text-slate-900">{{ __('Recent Service Requests') }}</h2>
-                        <p class="text-[11px] text-slate-500">{{ __('Live updates, quotation reviews, and technician execution') }}</p>
-                    </div>
-                    <a href="{{ route('client.requests.index') }}" class="text-xs font-bold text-teal-700 hover:text-teal-800 transition flex items-center space-x-1">
-                        <span>{{ __('View all') }}</span>
-                        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                    </a>
+        <!-- Card 1: Recent Service Requests Feed -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+            <div class="px-6 py-4.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                <div>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900">{{ __('Recent Service Requests') }}</h2>
+                    <p class="text-[11px] text-slate-500">{{ __('Live updates, quotation reviews, and technician execution') }}</p>
                 </div>
-
-                @if(isset($activeRequests) && count($activeRequests) > 0)
-                    <div class="divide-y divide-slate-100">
-                        @foreach($activeRequests as $req)
-                            <div class="p-5 hover:bg-slate-50/80 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                                <div class="space-y-1.5 flex-1 min-w-0">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="text-[11px] font-mono font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
-                                            {{ $req->reference_no ?? ('REQ-' . str_pad($req->id, 6, '0', STR_PAD_LEFT)) }}
-                                        </span>
-                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
-                                            @if(in_array($req->status, ['in_progress', 'accepted', 'scheduled'])) bg-blue-50 text-blue-700 border border-blue-200
-                                            @elseif($req->status === 'completed') bg-emerald-50 text-emerald-700 border border-emerald-200
-                                            @else bg-amber-50 text-amber-700 border border-amber-200 @endif">
-                                            {{ $req->status_label ?? ucfirst(str_replace('_', ' ', $req->status)) }}
-                                        </span>
-                                    </div>
-                                    <h3 class="text-sm font-bold text-slate-900 truncate">
-                                        {{ $req->service->name ?? $req->title ?? __('Service Request') }}
-                                    </h3>
-                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 pt-0.5">
-                                        <span class="flex items-center">
-                                            <i data-lucide="user-check" class="w-3.5 h-3.5 text-teal-600 mr-1"></i>
-                                            <strong class="text-slate-800 ml-0.5">{{ $req->technician->full_name ?? __('Matching Technician...') }}</strong>
-                                        </span>
-                                        <span>&bull;</span>
-                                        <span class="text-slate-400 flex items-center">
-                                            <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400 mr-1"></i>
-                                            {{ $req->created_at ? $req->created_at->diffForHumans() : __('Recently') }}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center space-x-2 flex-shrink-0">
-                                    <a href="{{ route('client.requests.show', $req->id) }}" class="btn-tap px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition flex items-center space-x-1.5">
-                                        <span>{{ __('Track Progress') }}</span>
-                                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="p-8 text-center space-y-3">
-                        <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center mx-auto border border-teal-200">
-                            <i data-lucide="wrench" class="w-6 h-6"></i>
-                        </div>
-                        <div class="space-y-1">
-                            <h4 class="text-sm font-bold text-slate-900">{{ __('No active service requests right now') }}</h4>
-                            <p class="text-xs text-slate-500 max-w-sm mx-auto">{{ __('Need help with plumbing, electrical, AC, or carpentry? Post a request in under 60 seconds.') }}</p>
-                        </div>
-                        <div class="pt-2">
-                            <a href="{{ route('client.requests.create') }}" class="btn-tap inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                                <span>{{ __('Post Your First Request') }}</span>
-                            </a>
-                        </div>
-                    </div>
-                @endif
+                <a href="{{ route('client.requests.index') }}" class="text-xs font-bold text-teal-700 hover:text-teal-800 transition flex items-center space-x-1">
+                    <span>{{ __('View all') }}</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </a>
             </div>
 
-            <!-- Card 2: Explore Trade Categories Grid -->
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-sm sm:text-base font-bold text-slate-900">{{ __('Popular Trade Categories') }}</h2>
-                        <p class="text-[11px] text-slate-500">{{ __('Connect directly with certified specialists in your neighborhood') }}</p>
-                    </div>
-                    <a href="{{ route('client.services.index') }}" class="text-xs font-bold text-teal-700 hover:text-teal-800 transition flex items-center space-x-1">
-                        <span>{{ __('All services') }}</span>
-                        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                    </a>
-                </div>
-
-                @php
-                    $trades = [
-                        ['name' => 'Electrical', 'label' => __('Electrical'), 'icon' => 'zap', 'color' => 'bg-amber-50 text-amber-700 border-amber-200', 'desc' => __('Wiring, sockets & breakers')],
-                        ['name' => 'Plumbing', 'label' => __('Plumbing'), 'icon' => 'droplets', 'color' => 'bg-blue-50 text-blue-700 border-blue-200', 'desc' => __('Pipes, leaks & water pumps')],
-                        ['name' => 'AC & Cooling', 'label' => __('AC & Cooling'), 'icon' => 'wind', 'color' => 'bg-cyan-50 text-cyan-700 border-cyan-200', 'desc' => __('AC service & gas refill')],
-                        ['name' => 'Carpentry', 'label' => __('Carpentry'), 'icon' => 'hammer', 'color' => 'bg-emerald-50 text-emerald-700 border-emerald-200', 'desc' => __('Doors, cabinets & locks')],
-                        ['name' => 'Painting', 'label' => __('Painting'), 'icon' => 'brush', 'color' => 'bg-purple-50 text-purple-700 border-purple-200', 'desc' => __('Interior & exterior coats')],
-                        ['name' => 'Construction', 'label' => __('Construction'), 'icon' => 'hard-hat', 'color' => 'bg-rose-50 text-rose-700 border-rose-200', 'desc' => __('Tiles, masonry & repairs')],
-                    ];
-                @endphp
-
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    @foreach($trades as $t)
-                        <a href="{{ route('client.technicians.index', ['search' => $t['name']]) }}" class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-teal-500 hover:bg-white hover:shadow-xs transition group flex flex-col justify-between space-y-3">
-                            <div class="w-9 h-9 rounded-xl {{ $t['color'] }} border flex items-center justify-center transition group-hover:scale-105">
-                                <i data-lucide="{{ $t['icon'] }}" class="w-4.5 h-4.5"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-700 transition">{{ $t['label'] }}</h4>
-                                <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{{ $t['desc'] }}</p>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-
-            <!-- Card 3: Top Verified Technicians Showcase -->
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 space-y-4">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <h2 class="text-sm sm:text-base font-bold text-slate-900">{{ __('Verified Technicians Near You') }}</h2>
-                        <p class="text-[11px] text-slate-500">{{ __('Top-rated artisans with active subscriptions ready for hire') }}</p>
-                    </div>
-                    <a href="{{ route('client.technicians.index') }}" class="text-xs font-bold text-teal-700 hover:text-teal-800 transition flex items-center space-x-1">
-                        <span>{{ __('Browse all') }}</span>
-                        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
-                    </a>
-                </div>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    @forelse($recommendedTechnicians ?? [] as $tech)
-                        <div class="p-4.5 rounded-2xl border border-slate-200/80 hover:border-teal-400 hover:shadow-xs transition bg-white flex flex-col justify-between space-y-3.5">
-                            <div class="flex items-start space-x-3.5">
-                                <div class="w-11 h-11 rounded-xl bg-slate-900 text-teal-300 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
-                                    {{ $tech->initials }}
+            @if(isset($activeRequests) && count($activeRequests) > 0)
+                <div class="divide-y divide-slate-100">
+                    @foreach($activeRequests as $req)
+                        <div class="p-5 hover:bg-slate-50/80 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="space-y-1.5 flex-1 min-w-0">
+                                <div class="flex items-center space-x-2">
+                                    <span class="text-[11px] font-mono font-bold text-teal-800 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200">
+                                        {{ $req->reference_no ?? ('REQ-' . str_pad($req->id, 6, '0', STR_PAD_LEFT)) }}
+                                    </span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
+                                        @if(in_array($req->status, ['in_progress', 'accepted', 'scheduled'])) bg-blue-50 text-blue-700 border border-blue-200
+                                        @elseif($req->status === 'completed') bg-emerald-50 text-emerald-700 border border-emerald-200
+                                        @else bg-amber-50 text-amber-700 border border-amber-200 @endif">
+                                        {{ $req->status_label ?? ucfirst(str_replace('_', ' ', $req->status)) }}
+                                    </span>
                                 </div>
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center space-x-1.5">
-                                        <h4 class="text-xs sm:text-sm font-bold text-slate-900 truncate">{{ $tech->full_name }}</h4>
-                                        <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 text-[9px] font-bold border border-emerald-200 flex items-center flex-shrink-0">
-                                            <i data-lucide="check" class="w-2.5 h-2.5 mr-0.5"></i> Verified
-                                        </span>
-                                    </div>
-                                    <p class="text-xs text-teal-700 font-semibold truncate mt-0.5">{{ $tech->technicianProfile->specialty ?? __('Certified Artisan') }}</p>
-                                    <p class="text-[11px] text-slate-400 flex items-center mt-0.5">
-                                        <i data-lucide="map-pin" class="w-3 h-3 mr-1 text-slate-400"></i>
-                                        {{ $tech->technicianProfile->location ?? 'Dar es Salaam' }}
-                                    </p>
+                                <h3 class="text-sm font-bold text-slate-900 truncate">
+                                    {{ $req->service->name ?? $req->title ?? __('Service Request') }}
+                                </h3>
+                                <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500 pt-0.5">
+                                    <span class="flex items-center">
+                                        <i data-lucide="user-check" class="w-3.5 h-3.5 text-teal-600 mr-1"></i>
+                                        <strong class="text-slate-800 ml-0.5">{{ $req->technician->full_name ?? __('Matching Technician...') }}</strong>
+                                    </span>
+                                    <span>&bull;</span>
+                                    <span class="text-slate-400 flex items-center">
+                                        <i data-lucide="clock" class="w-3.5 h-3.5 text-slate-400 mr-1"></i>
+                                        {{ $req->created_at ? $req->created_at->diffForHumans() : __('Recently') }}
+                                    </span>
                                 </div>
                             </div>
 
-                            <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
-                                <div class="flex items-center space-x-1 font-bold text-slate-900 text-[11px]">
-                                    <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-400"></i>
-                                    <span>{{ number_format($tech->technicianProfile->average_rating ?? 4.9, 1) }}</span>
-                                    <span class="text-slate-400 font-normal">({{ $tech->technicianProfile->completed_jobs_count ?? 0 }} {{ __('jobs') }})</span>
-                                </div>
-                                <a href="{{ route('client.technicians.show', $tech->id) }}" class="btn-tap px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-600 hover:text-white text-teal-700 font-bold transition text-xs border border-teal-200">
-                                    {{ __('View Profile') }}
+                            <div class="flex items-center space-x-2 flex-shrink-0">
+                                <a href="{{ route('client.requests.show', $req->id) }}" class="btn-tap px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition flex items-center space-x-1.5">
+                                    <span>{{ __('Track Progress') }}</span>
+                                    <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                                 </a>
                             </div>
                         </div>
-                    @empty
-                        <div class="p-6 text-center text-xs text-slate-400 col-span-full">
-                            {{ __('No active artisans listed right now.') }}
-                        </div>
-                    @endforelse
+                    @endforeach
                 </div>
-            </div>
-
+            @else
+                <div class="p-8 text-center space-y-3">
+                    <div class="w-12 h-12 rounded-2xl bg-teal-50 text-teal-700 flex items-center justify-center mx-auto border border-teal-200">
+                        <i data-lucide="wrench" class="w-6 h-6"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="text-sm font-bold text-slate-900">{{ __('No active service requests right now') }}</h4>
+                        <p class="text-xs text-slate-500 max-w-sm mx-auto">{{ __('Need help with plumbing, electrical, AC, or carpentry? Post a request in under 60 seconds.') }}</p>
+                    </div>
+                    <div class="pt-2">
+                        <a href="{{ route('client.requests.create') }}" class="btn-tap inline-flex items-center space-x-2 px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition">
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+                            <span>{{ __('Post Your First Request') }}</span>
+                        </a>
+                    </div>
+                </div>
+            @endif
         </div>
 
-        <!-- RIGHT COLUMN (4 cols): Quick Actions & Guarantee -->
-        <div class="lg:col-span-4 space-y-6">
-            
-            <!-- Quick Actions Stack -->
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 space-y-3">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 px-1">{{ __('Quick Actions') }}</h3>
-
-                <div class="space-y-2">
-                    <a href="{{ route('client.requests.create') }}" class="btn-tap flex items-center justify-between p-3.5 rounded-2xl bg-slate-50/80 hover:bg-teal-50/70 border border-slate-200/70 hover:border-teal-200 transition group">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-9 h-9 rounded-xl bg-teal-600 text-white flex items-center justify-center flex-shrink-0 shadow-xs">
-                                <i data-lucide="plus" class="w-4.5 h-4.5"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-900 group-hover:text-teal-700 transition">{{ __('Post New Request') }}</h4>
-                                <p class="text-[11px] text-slate-500">{{ __('Get quotes from artisans') }}</p>
-                            </div>
-                        </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition"></i>
-                    </a>
-
-                    <a href="{{ route('client.technicians.index') }}" class="btn-tap flex items-center justify-between p-3.5 rounded-2xl bg-slate-50/80 hover:bg-teal-50/70 border border-slate-200/70 hover:border-teal-200 transition group">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-9 h-9 rounded-xl bg-slate-900 text-teal-400 flex items-center justify-center flex-shrink-0 shadow-xs">
-                                <i data-lucide="search" class="w-4.5 h-4.5"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-900 group-hover:text-teal-700 transition">{{ __('Find Technicians') }}</h4>
-                                <p class="text-[11px] text-slate-500">{{ __('Direct directory search') }}</p>
-                            </div>
-                        </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition"></i>
-                    </a>
-
-                    <a href="{{ route('client.services.index') }}" class="btn-tap flex items-center justify-between p-3.5 rounded-2xl bg-slate-50/80 hover:bg-teal-50/70 border border-slate-200/70 hover:border-teal-200 transition group">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-9 h-9 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center flex-shrink-0 shadow-xs">
-                                <i data-lucide="layers" class="w-4.5 h-4.5"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-900 group-hover:text-teal-700 transition">{{ __('Browse Services') }}</h4>
-                                <p class="text-[11px] text-slate-500">{{ __('Explore 12+ categories') }}</p>
-                            </div>
-                        </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition"></i>
-                    </a>
-
-                    <a href="{{ route('client.favorites.index') }}" class="btn-tap flex items-center justify-between p-3.5 rounded-2xl bg-slate-50/80 hover:bg-teal-50/70 border border-slate-200/70 hover:border-teal-200 transition group">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center flex-shrink-0 shadow-xs">
-                                <i data-lucide="bookmark" class="w-4.5 h-4.5"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-900 group-hover:text-teal-700 transition">{{ __('Saved Artisans') }}</h4>
-                                <p class="text-[11px] text-slate-500">{{ __('Quick access bookmarks') }}</p>
-                            </div>
-                        </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition"></i>
-                    </a>
-
-                    <a href="{{ route('messages.index') }}" class="btn-tap flex items-center justify-between p-3.5 rounded-2xl bg-slate-50/80 hover:bg-teal-50/70 border border-slate-200/70 hover:border-teal-200 transition group">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center flex-shrink-0 shadow-xs">
-                                <i data-lucide="message-square" class="w-4.5 h-4.5"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-900 group-hover:text-teal-700 transition">{{ __('Messages') }}</h4>
-                                <p class="text-[11px] text-slate-500">{{ __('Direct chat with fundis') }}</p>
-                            </div>
-                        </div>
-                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition"></i>
-                    </a>
+        <!-- Card 2: Explore Trade Categories Grid -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900">{{ __('Popular Trade Categories') }}</h2>
+                    <p class="text-[11px] text-slate-500">{{ __('Connect directly with certified specialists in your neighborhood') }}</p>
                 </div>
+                <a href="{{ route('client.services.index') }}" class="text-xs font-bold text-teal-700 hover:text-teal-800 transition flex items-center space-x-1">
+                    <span>{{ __('All services') }}</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </a>
             </div>
 
-            <!-- Platform Direct Guarantee Card -->
-            <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 space-y-4">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center flex-shrink-0">
-                        <i data-lucide="shield-check" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xs font-bold text-slate-900 uppercase tracking-wider">{{ __('Platform Guarantee') }}</h3>
-                        <p class="text-[11px] text-slate-500">{{ __('Safe, transparent & direct') }}</p>
-                    </div>
-                </div>
+            @php
+                $trades = [
+                    ['name' => 'Electrical', 'label' => __('Electrical'), 'icon' => 'zap', 'color' => 'bg-amber-50 text-amber-700 border-amber-200', 'desc' => __('Wiring, sockets & breakers')],
+                    ['name' => 'Plumbing', 'label' => __('Plumbing'), 'icon' => 'droplets', 'color' => 'bg-blue-50 text-blue-700 border-blue-200', 'desc' => __('Pipes, leaks & water pumps')],
+                    ['name' => 'AC & Cooling', 'label' => __('AC & Cooling'), 'icon' => 'wind', 'color' => 'bg-cyan-50 text-cyan-700 border-cyan-200', 'desc' => __('AC service & gas refill')],
+                    ['name' => 'Carpentry', 'label' => __('Carpentry'), 'icon' => 'hammer', 'color' => 'bg-emerald-50 text-emerald-700 border-emerald-200', 'desc' => __('Doors, cabinets & locks')],
+                    ['name' => 'Painting', 'label' => __('Painting'), 'icon' => 'brush', 'color' => 'bg-purple-50 text-purple-700 border-purple-200', 'desc' => __('Interior & exterior coats')],
+                    ['name' => 'Construction', 'label' => __('Construction'), 'icon' => 'hard-hat', 'color' => 'bg-rose-50 text-rose-700 border-rose-200', 'desc' => __('Tiles, masonry & repairs')],
+                ];
+            @endphp
 
-                <div class="space-y-3 text-xs text-slate-600 pt-2 border-t border-slate-100">
-                    <div class="flex items-start space-x-2.5">
-                        <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
-                        <span class="text-[11px] leading-relaxed"><strong>{{ __('Verified Credentials:') }}</strong> {{ __('NIDA and trade certificate vetted technicians.') }}</span>
-                    </div>
-                    <div class="flex items-start space-x-2.5">
-                        <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
-                        <span class="text-[11px] leading-relaxed"><strong>{{ __('0% Labour Commission:') }}</strong> {{ __('Settle directly with your fundi via cash or M-Pesa.') }}</span>
-                    </div>
-                    <div class="flex items-start space-x-2.5">
-                        <i data-lucide="check" class="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5"></i>
-                        <span class="text-[11px] leading-relaxed"><strong>{{ __('Direct Phone & WhatsApp:') }}</strong> {{ __('Instant connection without middlemen.') }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 24/7 Support Card -->
-            <div class="bg-slate-900 rounded-3xl p-6 text-white space-y-3 border border-slate-800 shadow-md">
-                <div class="flex items-center space-x-3">
-                    <div class="w-9 h-9 rounded-xl bg-teal-400 text-slate-950 flex items-center justify-center font-bold flex-shrink-0">
-                        <i data-lucide="headphones" class="w-4.5 h-4.5"></i>
-                    </div>
-                    <div>
-                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">{{ __('Need Help Finding a Fundi?') }}</h4>
-                        <p class="text-[11px] text-slate-400">{{ __('Our support team is available 24/7') }}</p>
-                    </div>
-                </div>
-                <p class="text-[11px] text-slate-300 leading-relaxed">
-                    {{ __('Chat directly with our administrative desk for priority technician dispatching or urgent assistance.') }}
-                </p>
-                <div class="pt-1">
-                    <a href="https://wa.me/255675315279?text={{ urlencode('Habari Admin wa FUNDI, nahitaji msaada wa kupata fundi.') }}" target="_blank" class="btn-tap w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition flex items-center justify-center space-x-2 shadow-sm">
-                        <i data-lucide="message-circle" class="w-4 h-4"></i>
-                        <span>{{ __('WhatsApp Support Desk') }}</span>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                @foreach($trades as $t)
+                    <a href="{{ route('client.technicians.index', ['search' => $t['name']]) }}" class="p-4 rounded-2xl bg-slate-50/70 border border-slate-200/80 hover:border-teal-500 hover:bg-white hover:shadow-xs transition group flex flex-col justify-between space-y-3">
+                        <div class="w-9 h-9 rounded-xl {{ $t['color'] }} border flex items-center justify-center transition group-hover:scale-105">
+                            <i data-lucide="{{ $t['icon'] }}" class="w-4.5 h-4.5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-xs sm:text-sm font-bold text-slate-900 group-hover:text-teal-700 transition">{{ $t['label'] }}</h4>
+                            <p class="text-[11px] text-slate-400 mt-0.5 line-clamp-1">{{ $t['desc'] }}</p>
+                        </div>
                     </a>
+                @endforeach
+            </div>
+        </div>
+
+        <!-- Card 3: Top Verified Technicians Showcase -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 shadow-xs p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h2 class="text-sm sm:text-base font-bold text-slate-900">{{ __('Verified Technicians Near You') }}</h2>
+                    <p class="text-[11px] text-slate-500">{{ __('Top-rated artisans with active subscriptions ready for hire') }}</p>
                 </div>
+                <a href="{{ route('client.technicians.index') }}" class="text-xs font-bold text-teal-700 hover:text-teal-800 transition flex items-center space-x-1">
+                    <span>{{ __('Browse all') }}</span>
+                    <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                </a>
             </div>
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                @forelse($recommendedTechnicians ?? [] as $tech)
+                    <div class="p-4.5 rounded-2xl border border-slate-200/80 hover:border-teal-400 hover:shadow-xs transition bg-white flex flex-col justify-between space-y-3.5">
+                        <div class="flex items-start space-x-3.5">
+                            <div class="w-11 h-11 rounded-xl bg-slate-900 text-teal-300 flex items-center justify-center font-bold text-xs flex-shrink-0 shadow-xs">
+                                {{ $tech->initials }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center space-x-1.5">
+                                    <h4 class="text-xs sm:text-sm font-bold text-slate-900 truncate">{{ $tech->full_name }}</h4>
+                                    <span class="px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 text-[9px] font-bold border border-emerald-200 flex items-center flex-shrink-0">
+                                        <i data-lucide="check" class="w-2.5 h-2.5 mr-0.5"></i> Verified
+                                    </span>
+                                </div>
+                                <p class="text-xs text-teal-700 font-semibold truncate mt-0.5">{{ $tech->technicianProfile->specialty ?? __('Certified Artisan') }}</p>
+                                <p class="text-[11px] text-slate-400 flex items-center mt-0.5">
+                                    <i data-lucide="map-pin" class="w-3 h-3 mr-1 text-slate-400"></i>
+                                    {{ $tech->technicianProfile->location ?? 'Dar es Salaam' }}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+                            <div class="flex items-center space-x-1 font-bold text-slate-900 text-[11px]">
+                                <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-400"></i>
+                                <span>{{ number_format($tech->technicianProfile->average_rating ?? 4.9, 1) }}</span>
+                                <span class="text-slate-400 font-normal">({{ $tech->technicianProfile->completed_jobs_count ?? 0 }} {{ __('jobs') }})</span>
+                            </div>
+                            <a href="{{ route('client.technicians.show', $tech->id) }}" class="btn-tap px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-600 hover:text-white text-teal-700 font-bold transition text-xs border border-teal-200">
+                                {{ __('View Profile') }}
+                            </a>
+                        </div>
+                    </div>
+                @empty
+                    <div class="p-6 text-center text-xs text-slate-400 col-span-full">
+                        {{ __('No active artisans listed right now.') }}
+                    </div>
+                @endforelse
+            </div>
         </div>
 
     </div>
