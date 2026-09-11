@@ -77,7 +77,8 @@ class SubscriptionController extends Controller
             ->first() ?? SubscriptionPlan::first();
 
         if (!$plan) {
-            return redirect()->route('technician.subscription')->with('error', 'Kifurushi hakijapatikana.');
+            return redirect()->route('technician.subscription')
+                ->with('error', __('Kifurushi ulichochagua hakijapatikana. Tafadhali chagua kifurushi sahihi.'));
         }
 
         $paymentMethod = strtolower(trim($request->input('payment_method', 'mpesa')));
@@ -85,14 +86,32 @@ class SubscriptionController extends Controller
             $paymentMethod = 'mpesa';
         }
 
-        $phoneNumber = trim($request->input('phone_number') ?? '') ?: ($technician->phone ?? '0712345678');
+        $phoneNumber = trim($request->input('phone_number') ?? '') ?: ($technician->phone ?? '');
+        if (empty($phoneNumber)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', __('Tafadhali weka namba yako ya simu ya kulipia (mfano: 07XXXXXXXX).'));
+        }
 
         $result = PaymentService::processSubscriptionPayment($technician, $plan, $paymentMethod, [
             'phone_number' => $phoneNumber,
         ]);
 
-        return redirect()->route('technician.subscription')
-            ->with('success', "Malipo ya TZS " . number_format($plan->price, 0) . " yamekubaliwa moja kwa moja bila usumbufu! Kifurushi chako cha {$plan->name} kimewashwa kikamilifu.");
+        // If checkout URL is provided by Snippe, redirect user to the secure payment page
+        if (!empty($result['checkout_url'])) {
+            return redirect()->away($result['checkout_url']);
+        }
+
+        // If payment initiated successfully
+        if (!empty($result['success'])) {
+            return redirect()->route('technician.subscription')
+                ->with('success', $result['message'] ?? __("Ombi la malipo ya TZS :amount limetumwa kwenye namba yako ya simu. Tafadhali weka PIN kukamilisha.", ['amount' => number_format($plan->price, 0)]));
+        }
+
+        // If error occurred (400, 401, 403, 404, 405, 422, 500, etc.)
+        return redirect()->back()
+            ->withInput()
+            ->with('error', $result['message'] ?? __('Kuna hitilafu imetokea wakati wa kuanzisha malipo. Tafadhali jaribu tena.'));
     }
 
     // ==========================================

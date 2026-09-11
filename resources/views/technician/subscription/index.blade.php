@@ -50,8 +50,9 @@
                     @endif
 
                     @if($technician->isFeaturedTechnician())
-                        <span class="px-3 py-1 rounded-full text-xs font-black uppercase bg-amber-50 text-amber-900 border border-amber-300">
-                            ⭐ {{ __('FEATURED TECHNICIAN') }}
+                        <span class="px-3 py-1 rounded-full text-xs font-black uppercase bg-amber-50 text-amber-900 border border-amber-300 flex items-center space-x-1">
+                            <i data-lucide="star" class="w-3.5 h-3.5 text-amber-500 fill-amber-500"></i>
+                            <span>{{ __('FEATURED TECHNICIAN') }}</span>
                         </span>
                     @endif
                 </div>

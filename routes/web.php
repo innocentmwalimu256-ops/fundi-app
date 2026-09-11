@@ -6,9 +6,14 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ServiceRequestController;
+use App\Http\Controllers\SnippeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TechnicianController;
 use Illuminate\Support\Facades\Route;
+
+// Snippe Payment Webhook Endpoint (Exempt from CSRF)
+Route::post('/api/webhook/snippe', [SnippeWebhookController::class, 'handle'])->name('webhook.snippe');
+Route::post('/snippe/payment/webhook', [SnippeWebhookController::class, 'handle'])->name('webhook.snippe.alt');
 
 // Root Route: Shows Login Page Directly (or redirects to dashboard if already logged in)
 Route::get('/', [AuthController::class, 'showLogin'])->name('home');

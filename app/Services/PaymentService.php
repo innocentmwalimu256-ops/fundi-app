@@ -9,21 +9,12 @@ use App\Models\User;
 class PaymentService
 {
     /**
-     * Initiate and process a subscription payment.
-     * In production, this dispatches to Vodacom M-Pesa / Tigo Pesa / Airtel Money API or Card Gateway.
+     * Initiate and process a subscription payment via Snippe Payment Gateway.
      */
-    public static function processSubscriptionPayment(User $user, SubscriptionPlan $plan, string $paymentMethod = 'mobile_money', array $payload = []): array
+    public static function processSubscriptionPayment(User $user, SubscriptionPlan $plan, string $paymentMethod = 'mpesa', array $payload = []): array
     {
-        $reference = SubscriptionPayment::generateReference();
+        $phoneNumber = $payload['phone_number'] ?? $user->phone ?? '';
 
-        // Simulated robust gateway processing
-        $subscription = SubscriptionService::activateSubscription($user, $plan, $paymentMethod, $reference);
-
-        return [
-            'success' => true,
-            'message' => "Payment of {$plan->currency} " . number_format($plan->price, 0) . " processed successfully.",
-            'reference' => $reference,
-            'subscription' => $subscription,
-        ];
+        return SnippeService::initiateSubscriptionPayment($user, $plan, $phoneNumber, $paymentMethod);
     }
 }

@@ -15,6 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'logout',
             'logout/*',
+            'api/webhook/snippe',
+            'snippe/payment/webhook',
         ]);
         $middleware->web(append: [
             \App\Http\Middleware\SetLocaleMiddleware::class,
