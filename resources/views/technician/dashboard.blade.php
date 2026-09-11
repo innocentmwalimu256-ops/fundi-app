@@ -13,15 +13,21 @@
 
         <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
             <div class="space-y-2">
-                <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded-full bg-teal-400/20 text-teal-300 text-[10px] font-black uppercase tracking-wider border border-teal-400/30 flex items-center">
-                        <span class="w-1.5 h-1.5 rounded-full bg-teal-400 mr-1.5 animate-pulse"></span>
-                        {{ __('Technician Workspace') }}
+                <div class="flex items-center space-x-2">
+                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold bg-white/10 text-teal-300 border border-white/15">
+                        <i data-lucide="wrench" class="w-3.5 h-3.5 mr-1.5 text-teal-400"></i>
+                        {{ __('Fundi Workspace') }}
                     </span>
                     <span class="text-xs text-slate-400">&bull;</span>
-                    <span class="text-xs text-emerald-400 font-medium flex items-center">
-                        <i data-lucide="shield-check" class="w-3.5 h-3.5 mr-1"></i> {{ __('Verified Specialist') }}
-                    </span>
+                    @if($subscription && $subscription->isActive())
+                        <span class="text-xs text-emerald-400 font-medium flex items-center">
+                            <i data-lucide="shield-check" class="w-3.5 h-3.5 mr-1"></i> {{ __('Active Subscriber') }} ({{ optional($subscription->plan)->name }})
+                        </span>
+                    @else
+                        <span class="text-xs text-amber-400 font-medium flex items-center">
+                            <i data-lucide="alert-circle" class="w-3.5 h-3.5 mr-1"></i> {{ __('Unsubscribed (Inactive)') }}
+                        </span>
+                    @endif
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight">
                     {{ __('Welcome back') }}, {{ $technician->full_name }}
@@ -144,11 +150,15 @@
             </div>
             <div class="mt-3">
                 <div class="text-2xl sm:text-3xl font-black text-slate-900 font-mono tracking-tight">
-                    {{ ($profile->average_rating ?? 0) > 0 ? number_format($profile->average_rating, 1) : '5.0' }}
+                    {{ ($profile->average_rating ?? 0) > 0 ? number_format($profile->average_rating, 1) : '0.0' }}
                 </div>
                 <div class="flex items-center space-x-1.5 mt-1 text-[11px] text-slate-500 font-medium">
-                    <i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i>
-                    <span>{{ $profile->total_reviews ?? 0 }} {{ __('verified client reviews') }}</span>
+                    @if(($profile->average_rating ?? 0) > 0)
+                        <i data-lucide="star" class="w-3 h-3 text-amber-400 fill-amber-400"></i>
+                        <span>{{ $profile->total_reviews ?? 0 }} {{ __('verified client reviews') }}</span>
+                    @else
+                        <span class="text-slate-400">{{ __('Earned via subscription & reviews') }}</span>
+                    @endif
                 </div>
             </div>
         </div>

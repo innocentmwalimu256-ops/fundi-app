@@ -113,7 +113,8 @@
             <div class="flex items-center space-x-1.5 absolute top-4 right-14">
                 @if($tech->isFeaturedTechnician())
                     <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-amber-50 text-amber-900 border border-amber-300 text-[10px] font-black shadow-xs">
-                        <span>⭐ {{ __('Featured') }}</span>
+                        <i data-lucide="sparkles" class="w-3 h-3 text-amber-600"></i>
+                        <span>{{ __('Featured') }}</span>
                     </span>
                 @endif
                 <span class="inline-flex items-center space-x-1 px-2.5 py-1 rounded-xl bg-teal-50 text-teal-800 border border-teal-200 text-[11px] font-black">

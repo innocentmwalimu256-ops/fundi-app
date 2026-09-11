@@ -66,22 +66,25 @@ class TechnicianProfile extends Model
         if ($sub && $sub->isActive() && $sub->plan) {
             $planSlug = strtolower($sub->plan->slug);
             $baseRating = match ($planSlug) {
-                'premium' => 3.00,          // 3.0 Stars for Premium (TZS 35,000)
-                'professional' => 2.50,     // 2.5 Stars for Professional (TZS 20,000)
-                'basic', 'starter' => 2.00, // 2.0 Stars for Starter/Basic (TZS 10,000)
+                'premium' => 3.00,          // 3.0 Base for Premium Plan (TZS 35,000)
+                'professional' => 2.50,     // 2.5 Base for Professional Plan (TZS 20,000)
+                'basic', 'starter' => 2.00, // 2.0 Base for Starter Plan (TZS 10,000)
                 default => 2.00,
             };
         }
 
         if ($count === 0) {
-            // If fundi has no client reviews yet, rating equals the base subscription stars
+            // Unsubscribed fundis have 0.00; Subscribed fundis start at base tier rating
             $finalRating = $baseRating;
         } else {
-            // Confidence / Damping quota factor K: requires a high volume of positive verified client reviews to climb to 4.0, 4.5, and 5.0
-            $k = 6;
+            // Strict Damping Factor K = 8: High review volume and completed jobs are required to climb to 4.0, 4.5, 5.0
+            $k = 8;
             $sumClientRatings = $reviews->sum('rating');
             $rawScore = (($baseRating * $k) + $sumClientRatings) / ($k + $count);
-            $finalRating = min(5.00, max(1.00, $rawScore));
+            
+            // Job Completion Volume Multiplier (Reward high completed jobs)
+            $jobBonus = min(0.30, ($completedCount * 0.02)); // +0.02 per job up to +0.30
+            $finalRating = min(5.00, max(1.00, $rawScore + $jobBonus));
         }
 
         $this->update([

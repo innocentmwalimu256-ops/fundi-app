@@ -280,9 +280,13 @@
                         </div>
 
                         <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
-                            <div class="flex items-center space-x-1 font-bold text-slate-900 text-[11px]">
-                                <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-400"></i>
-                                <span>{{ number_format($tech->technicianProfile->average_rating ?? 4.9, 1) }}</span>
+                            <div class="flex items-center space-x-1 text-slate-900 text-[11px]">
+                                @if(($tech->technicianProfile->average_rating ?? 0) > 0)
+                                    <i data-lucide="star" class="w-3.5 h-3.5 fill-amber-400 text-amber-400"></i>
+                                    <span class="font-bold">{{ number_format($tech->technicianProfile->average_rating, 1) }}</span>
+                                @else
+                                    <span class="px-2 py-0.5 rounded bg-teal-50 text-teal-700 font-bold text-[10px] border border-teal-100">{{ __('New') }}</span>
+                                @endif
                                 <span class="text-slate-400 font-normal">({{ $tech->technicianProfile->completed_jobs_count ?? 0 }} {{ __('jobs') }})</span>
                             </div>
                             <a href="{{ route('client.technicians.show', $tech->id) }}" class="btn-tap px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-600 hover:text-white text-teal-700 font-bold transition text-xs border border-teal-200">

@@ -30,11 +30,15 @@
                         <h3 class="text-sm font-bold text-slate-900">{{ $tech->full_name }}</h3>
                         <p class="text-xs text-teal-700 font-medium">{{ __($profile->professional_title ?? 'Verified Fundi') }}</p>
                         <div class="flex items-center text-xs text-slate-500 mt-1">
-                            <span class="text-amber-500 font-bold flex items-center mr-1">
-                                <i data-lucide="star" class="w-3 h-3 fill-amber-400 stroke-amber-400 mr-0.5"></i>
-                                {{ number_format($profile->average_rating ?? 5.0, 1) }}
-                            </span>
-                            <span>({{ $profile->total_reviews ?? 0 }} {{ __('reviews') }})</span>
+                            @if(($profile->average_rating ?? 0) > 0)
+                                <span class="text-amber-500 font-bold flex items-center mr-1">
+                                    <i data-lucide="star" class="w-3 h-3 fill-amber-400 stroke-amber-400 mr-0.5"></i>
+                                    {{ number_format($profile->average_rating, 1) }}
+                                </span>
+                                <span>({{ $profile->total_reviews ?? 0 }} {{ __('reviews') }})</span>
+                            @else
+                                <span class="px-2 py-0.5 rounded bg-teal-50 text-teal-700 font-bold text-[10px] border border-teal-100">{{ __('New') }}</span>
+                            @endif
                         </div>
                     </div>
                 </div>
