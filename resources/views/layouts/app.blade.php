@@ -159,13 +159,16 @@
                     </div>
                 </a>
 
-                <!-- User Mini-Profile Card -->
-                <div class="p-3 rounded-2xl bg-slate-50/90 border border-slate-200/80 flex items-center space-x-3 hover:border-slate-300 transition shadow-xs">
-                    <div class="w-10 h-10 rounded-xl bg-slate-900 text-teal-300 flex items-center justify-center font-bold text-xs uppercase shadow-xs flex-shrink-0">
+                <!-- User Mini-Profile Card (Clickable to Edit Profile) -->
+                <a href="{{ auth()->user()->isAdmin() ? route('admin.profile') : (auth()->user()->isTechnician() ? route('technician.profile') : route('client.profile')) }}" class="btn-tap p-3 rounded-2xl bg-slate-50/90 border border-slate-200/80 hover:border-teal-400 hover:bg-teal-50/40 flex items-center space-x-3 transition shadow-xs group" title="{{ __('View and Edit Profile') }}">
+                    <div class="w-10 h-10 rounded-xl bg-slate-900 text-teal-300 group-hover:bg-teal-600 group-hover:text-white transition flex items-center justify-center font-bold text-xs uppercase shadow-xs flex-shrink-0">
                         {{ auth()->user()->initials }}
                     </div>
                     <div class="min-w-0 flex-1">
-                        <h4 class="text-xs font-bold text-slate-900 truncate">{{ auth()->user()->full_name }}</h4>
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-xs font-bold text-slate-900 truncate group-hover:text-teal-700 transition">{{ auth()->user()->full_name }}</h4>
+                            <i data-lucide="edit-3" class="w-3 h-3 text-slate-400 group-hover:text-teal-600 transition ml-1 flex-shrink-0"></i>
+                        </div>
                         <div class="flex items-center space-x-2 mt-0.5">
                             <span class="px-1.5 py-0.2 rounded bg-teal-50 text-teal-700 text-[9px] font-bold border border-teal-200 uppercase tracking-wider">
                                 {{ auth()->user()->role }}
@@ -175,7 +178,7 @@
                             </span>
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <!-- Navigation Groups -->
                 <nav class="space-y-6 text-xs font-semibold">
@@ -233,6 +236,14 @@
                             @endif
                             <i data-lucide="bookmark" class="w-4 h-4 mr-3 {{ request()->routeIs('client.favorites.*') ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600' }}"></i>
                             <span>{{ __('Saved') }}</span>
+                        </a>
+
+                        <a href="{{ route('client.profile') }}" class="group relative flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('client.profile*') ? 'bg-teal-50/80 text-teal-800 font-bold border border-teal-200 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }}">
+                            @if(request()->routeIs('client.profile*'))
+                                <span class="absolute left-0 top-2 bottom-2 w-1 bg-teal-600 rounded-r-full"></span>
+                            @endif
+                            <i data-lucide="user" class="w-4 h-4 mr-3 {{ request()->routeIs('client.profile*') ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600' }}"></i>
+                            <span>{{ __('My Profile') }}</span>
                         </a>
                     </div>
 
@@ -341,6 +352,14 @@
                             <i data-lucide="star" class="w-4 h-4 mr-3 {{ request()->routeIs('technician.reviews.*') ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600' }}"></i>
                             <span>{{ __('Client Reviews') }}</span>
                         </a>
+
+                        <a href="{{ route('technician.profile') }}" class="group relative flex items-center px-3.5 py-2.5 rounded-xl transition {{ request()->routeIs('technician.profile*') ? 'bg-teal-50/80 text-teal-800 font-bold border border-teal-200 shadow-xs' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50' }}">
+                            @if(request()->routeIs('technician.profile*'))
+                                <span class="absolute left-0 top-2 bottom-2 w-1 bg-teal-600 rounded-r-full"></span>
+                            @endif
+                            <i data-lucide="user" class="w-4 h-4 mr-3 {{ request()->routeIs('technician.profile*') ? 'text-teal-600' : 'text-slate-400 group-hover:text-slate-600' }}"></i>
+                            <span>{{ __('Technician Profile') }}</span>
+                        </a>
                     </div>
 
                     <!-- Technician Communication & Schedule -->
@@ -445,16 +464,19 @@
                         </button>
                     </div>
 
-                    <!-- User Mini-Profile -->
-                    <div class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center space-x-3">
-                        <div class="w-9 h-9 rounded-lg bg-slate-900 text-teal-300 flex items-center justify-center font-bold text-xs uppercase">
-                            {{ auth()->user()->initials }}
+                    <!-- User Mini-Profile (Clickable) -->
+                    <a href="{{ auth()->user()->isAdmin() ? route('admin.profile') : (auth()->user()->isTechnician() ? route('technician.profile') : route('client.profile')) }}" class="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between hover:bg-teal-50/50 transition group" title="{{ __('Edit Profile') }}">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-9 h-9 rounded-lg bg-slate-900 text-teal-300 group-hover:bg-teal-600 group-hover:text-white transition flex items-center justify-center font-bold text-xs uppercase">
+                                {{ auth()->user()->initials }}
+                            </div>
+                            <div class="min-w-0 flex-1">
+                                <h4 class="text-xs font-bold text-slate-900 truncate group-hover:text-teal-700 transition">{{ auth()->user()->full_name }}</h4>
+                                <span class="text-[10px] text-teal-700 font-bold capitalize">{{ auth()->user()->role }} &bull; {{ __('Edit Profile') }}</span>
+                            </div>
                         </div>
-                        <div class="min-w-0 flex-1">
-                            <h4 class="text-xs font-bold text-slate-900 truncate">{{ auth()->user()->full_name }}</h4>
-                            <span class="text-[10px] text-teal-700 font-bold uppercase">{{ auth()->user()->role }}</span>
-                        </div>
-                    </div>
+                        <i data-lucide="chevron-right" class="w-4 h-4 text-slate-400 group-hover:text-teal-600 transition"></i>
+                    </a>
 
                     <!-- Drawer Links -->
                     <nav class="space-y-1 text-xs font-semibold">
@@ -474,6 +496,9 @@
                             <a href="{{ route('client.favorites.index') }}" class="flex items-center px-3 py-2.5 rounded-xl {{ request()->routeIs('client.favorites.*') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600' }}">
                                 <i data-lucide="bookmark" class="w-4 h-4 mr-3"></i> {{ __('Saved') }}
                             </a>
+                            <a href="{{ route('client.profile') }}" class="flex items-center px-3 py-2.5 rounded-xl {{ request()->routeIs('client.profile*') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600' }}">
+                                <i data-lucide="user" class="w-4 h-4 mr-3"></i> {{ __('My Profile') }}
+                            </a>
                         @elseif(auth()->user()->isTechnician())
                             <a href="{{ route('technician.dashboard') }}" class="flex items-center px-3 py-2.5 rounded-xl {{ request()->routeIs('technician.dashboard') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600' }}">
                                 <i data-lucide="layout-dashboard" class="w-4 h-4 mr-3"></i> {{ __('Dashboard') }}
@@ -486,6 +511,9 @@
                             </a>
                             <a href="{{ route('technician.portfolios.index') }}" class="flex items-center px-3 py-2.5 rounded-xl {{ request()->routeIs('technician.portfolios.*') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600' }}">
                                 <i data-lucide="image" class="w-4 h-4 mr-3"></i> {{ __('Portfolio') }}
+                            </a>
+                            <a href="{{ route('technician.profile') }}" class="flex items-center px-3 py-2.5 rounded-xl {{ request()->routeIs('technician.profile*') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600' }}">
+                                <i data-lucide="user" class="w-4 h-4 mr-3"></i> {{ __('Technician Profile') }}
                             </a>
                         @endif
                         <a href="{{ route('messages.index') }}" class="flex items-center px-3 py-2.5 rounded-xl {{ request()->routeIs('messages.*') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600' }}">
@@ -558,20 +586,20 @@
                                 <i data-lucide="message-square" class="w-4 h-4"></i>
                             </a>
 
-                            <!-- User Profile Chip -->
-                            <div class="flex items-center space-x-2 pl-2 border-l border-slate-200">
-                                <div class="w-8 h-8 rounded-xl bg-slate-900 text-teal-300 flex items-center justify-center font-bold text-xs uppercase shadow-xs">
+                            <!-- User Profile Avatar Chip (Clickable to Edit Profile) -->
+                            <a href="{{ auth()->user()->isAdmin() ? route('admin.profile') : (auth()->user()->isTechnician() ? route('technician.profile') : route('client.profile')) }}" class="btn-tap flex items-center space-x-2 pl-2 border-l border-slate-200 group hover:opacity-95 transition cursor-pointer" title="{{ __('View and Edit Profile') }}">
+                                <div class="w-8 h-8 rounded-xl bg-slate-900 text-teal-300 group-hover:bg-teal-600 group-hover:text-white transition flex items-center justify-center font-bold text-xs uppercase shadow-xs flex-shrink-0">
                                     {{ auth()->user()->initials }}
                                 </div>
                                 <div class="hidden xl:flex flex-col text-left">
-                                    <span class="text-xs font-bold text-slate-900 max-w-[100px] truncate leading-tight">
+                                    <span class="text-xs font-bold text-slate-900 max-w-[100px] truncate leading-tight group-hover:text-teal-700 transition">
                                         {{ auth()->user()->first_name }}
                                     </span>
-                                    <span class="text-[10px] text-slate-400 capitalize leading-tight">
-                                        {{ auth()->user()->role }}
+                                    <span class="text-[10px] text-slate-400 capitalize leading-tight flex items-center">
+                                        {{ auth()->user()->role }} <i data-lucide="edit-3" class="w-2.5 h-2.5 ml-1 text-slate-400"></i>
                                     </span>
                                 </div>
-                            </div>
+                            </a>
                         </div>
 
                     </div>
