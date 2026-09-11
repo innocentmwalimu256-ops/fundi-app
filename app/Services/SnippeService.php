@@ -147,6 +147,66 @@ class SnippeService
             'phone' => $formattedPhone,
         ]);
 
+        // If mobile money (mpesa, tigopesa, airtelmoney, halopesa, etc.), use Direct USSD Push API
+        if ($paymentMethod !== 'card') {
+            $directPayload = [
+                'details' => [
+                    'amount' => $amount,
+                    'currency' => 'TZS',
+                ],
+                'amount' => $amount,
+                'currency' => 'TZS',
+                'phone_number' => $formattedPhone,
+                'customer' => [
+                    'firstname' => $firstName,
+                    'lastname' => $lastName,
+                    'email' => $user->email,
+                    'phone' => $formattedPhone,
+                ],
+                'reference' => $reference,
+                'webhook_url' => $webhookUrl,
+                'metadata' => [
+                    'user_id' => (string) $user->id,
+                    'plan_id' => (string) $plan->id,
+                    'payment_id' => (string) $payment->id,
+                    'reference' => $reference,
+                    'type' => 'subscription',
+                ],
+            ];
+
+            try {
+                $directRes = Http::withHeaders([
+                    'Authorization' => "Bearer {$apiKey}",
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])->timeout(30)->post("{$baseUrl}/payments", $directPayload);
+
+                if ($directRes->successful()) {
+                    $directBody = $directRes->json() ?? [];
+                    $payment->update([
+                        'gateway_transaction_id' => $directBody['data']['reference'] ?? $directBody['data']['id'] ?? $reference,
+                        'gateway_payload' => array_merge($payment->gateway_payload ?? [], [
+                            'direct_payment_response' => $directBody,
+                        ]),
+                    ]);
+
+                    return [
+                        'success' => true,
+                        'status_code' => $directRes->status(),
+                        'checkout_url' => null,
+                        'reference' => $reference,
+                        'message' => __("Ombi la malipo ya TZS :amount limetumwa kwenye namba yako ya simu (:phone). Tafadhali weka PIN kwenye simu yako kuthibitisha.", [
+                            'amount' => number_format($amount, 0),
+                            'phone' => $formattedPhone,
+                        ]),
+                        'data' => $directBody,
+                    ];
+                }
+            } catch (Throwable $e) {
+                Log::warning("[Snippe] Direct mobile payment fallback to session", ['error' => $e->getMessage()]);
+            }
+        }
+
         return self::executeSnippeSessionCall($payload, $payment, $apiKey, $baseUrl, $reference);
     }
 
@@ -175,6 +235,77 @@ class SnippeService
         $clientLastName = $clientNameParts[1] ?? 'Customer';
         $clientLocation = $serviceRequest->location ?: 'Dar es Salaam';
 
+        // 1. If mobile money, use Direct USSD push (Zero billing form, instant phone prompt!)
+        if ($paymentMethod !== 'card') {
+            $directPayload = [
+                'details' => [
+                    'amount' => $amount,
+                    'currency' => 'TZS',
+                ],
+                'amount' => $amount,
+                'currency' => 'TZS',
+                'phone_number' => $formattedPhone,
+                'customer' => [
+                    'firstname' => $clientFirstName,
+                    'lastname' => $clientLastName,
+                    'email' => $client->email,
+                    'phone' => $formattedPhone,
+                ],
+                'reference' => $reference,
+                'webhook_url' => $webhookUrl,
+                'metadata' => [
+                    'client_id' => (string) $client->id,
+                    'request_id' => (string) $serviceRequest->id,
+                    'reference' => $reference,
+                    'type' => 'client_connection_fee',
+                ],
+            ];
+
+            Log::info("[Snippe] Direct USSD push for client connection fee", [
+                'reference' => $reference,
+                'phone' => $formattedPhone,
+                'amount' => $amount,
+            ]);
+
+            try {
+                $response = Http::withHeaders([
+                    'Authorization' => "Bearer {$apiKey}",
+                    'Accept' => 'application/json',
+                    'Content-Type' => 'application/json',
+                ])->timeout(30)->post("{$baseUrl}/payments", $directPayload);
+
+                $statusCode = $response->status();
+                $responseBody = $response->json() ?? [];
+
+                if ($response->successful()) {
+                    return [
+                        'success' => true,
+                        'status_code' => $statusCode,
+                        'checkout_url' => null,
+                        'reference' => $reference,
+                        'message' => __("Ombi la malipo ya ada ya TZS 2,000 limetumwa kwenye namba yako ya simu (:phone). Tafadhali weka PIN kuthibitisha.", [
+                            'phone' => $formattedPhone,
+                        ]),
+                        'data' => $responseBody,
+                    ];
+                }
+
+                $errorMessage = self::parseSnippeError($statusCode, $responseBody, $response->body());
+
+                return [
+                    'success' => false,
+                    'status_code' => $statusCode,
+                    'message' => $errorMessage,
+                    'reference' => $reference,
+                    'raw' => $responseBody,
+                ];
+
+            } catch (Throwable $e) {
+                Log::error("[Snippe] Direct USSD push exception", ['error' => $e->getMessage()]);
+            }
+        }
+
+        // 2. Otherwise (card or fallback), use Hosted Session
         $payload = [
             'amount' => $amount,
             'currency' => 'TZS',
@@ -210,13 +341,6 @@ class SnippeService
                 'type' => 'client_connection_fee',
             ],
         ];
-
-        Log::info("[Snippe] Initiating client connection fee payment", [
-            'reference' => $reference,
-            'request_id' => $serviceRequest->id,
-            'amount' => $amount,
-            'phone' => $formattedPhone,
-        ]);
 
         try {
             $response = Http::withHeaders([
