@@ -67,29 +67,6 @@
 
 
 
-            <!-- Quick 1-Click Role Login Selector -->
-            <div class="p-3.5 bg-[#F0FDFB] rounded-2xl border border-teal-200 space-y-2">
-                <div class="flex items-center justify-between text-[11px] font-bold text-teal-900">
-                    <span class="flex items-center space-x-1">
-                        <i data-lucide="zap" class="w-3.5 h-3.5 text-teal-600"></i>
-                        <span>{{ __('Akaunti za Majaribio (Bofya Kuingia Moja kwa Moja):') }}</span>
-                    </span>
-                </div>
-                <div class="grid grid-cols-3 gap-1.5 text-[11px] font-bold">
-                    <button type="button" onclick="quickLogin('leryn12@gmail.com', 'innocent')" class="py-2 px-2 bg-white hover:bg-teal-50 text-slate-800 rounded-xl border border-teal-200 shadow-xs transition text-center truncate">
-                        <span class="block text-teal-700 font-extrabold">{{ __('Mteja') }}</span>
-                        <span class="text-[9px] text-slate-400 font-normal">Leryn</span>
-                    </button>
-                    <button type="button" onclick="quickLogin('tech@fundi.test', 'password123')" class="py-2 px-2 bg-white hover:bg-teal-50 text-slate-800 rounded-xl border border-teal-200 shadow-xs transition text-center truncate">
-                        <span class="block text-teal-700 font-extrabold">{{ __('Fundi') }}</span>
-                        <span class="text-[9px] text-slate-400 font-normal">John</span>
-                    </button>
-                    <button type="button" onclick="quickLogin('admin@fundi.test', 'password123')" class="py-2 px-2 bg-white hover:bg-teal-50 text-slate-800 rounded-xl border border-teal-200 shadow-xs transition text-center truncate">
-                        <span class="block text-teal-700 font-extrabold">{{ __('Admin') }}</span>
-                        <span class="text-[9px] text-slate-400 font-normal">Control</span>
-                    </button>
-                </div>
-            </div>
 
             <!-- Login Form -->
             <form id="login-form" method="POST" action="{{ route('login.submit') }}" data-turbo="false" class="space-y-4">
@@ -164,11 +141,4 @@
 
 </div>
 
-<script>
-function quickLogin(email, password) {
-    document.getElementById('login').value = email;
-    document.getElementById('password').value = password;
-    document.getElementById('login-form').submit();
-}
-</script>
 @endsection
