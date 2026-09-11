@@ -58,7 +58,7 @@
                      this.statusMsg = '{{ __('Inatuma ombi kwenye mtandao wa simu...') }}';
 
                      try {
-                         let res = await fetch('{{ route('api.payments.initiate-subscription', $plan->slug) }}', {
+                         let res = await fetch('{{ route('payments.initiate-subscription', $plan->slug) }}', {
                              method: 'POST',
                              headers: {
                                  'Content-Type': 'application/json',
@@ -99,7 +99,7 @@
                      this.pollInterval = setInterval(async () => {
                          if (!this.reference) return;
                          try {
-                             let res = await fetch('/api/payments/check-status/' + encodeURIComponent(this.reference));
+                             let res = await fetch('/payments/check-status/' + encodeURIComponent(this.reference));
                              let data = await res.json();
                              if (data.paid) {
                                  clearInterval(this.pollInterval);

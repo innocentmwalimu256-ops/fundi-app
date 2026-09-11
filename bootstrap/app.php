@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->validateCsrfTokens(except: [
             'logout',
             'logout/*',
+            'webhook/snippe',
             'api/webhook/snippe',
             'snippe/payment/webhook',
         ]);

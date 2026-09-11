@@ -13,13 +13,13 @@ use App\Http\Controllers\TechnicianController;
 use Illuminate\Support\Facades\Route;
 
 // Snippe Payment Webhook Endpoint (Exempt from CSRF)
-Route::post('/api/webhook/snippe', [SnippeWebhookController::class, 'handle'])->name('webhook.snippe');
+Route::post('/webhook/snippe', [SnippeWebhookController::class, 'handle'])->name('webhook.snippe');
 Route::post('/snippe/payment/webhook', [SnippeWebhookController::class, 'handle'])->name('webhook.snippe.alt');
 
 // In-App Live Payment Polling & Initiation Endpoints
-Route::get('/api/payments/check-status/{reference}', [PaymentStatusController::class, 'checkStatus'])->name('api.payments.check-status');
-Route::post('/api/payments/initiate-fee/{id}', [PaymentStatusController::class, 'initiateClientFeeAjax'])->name('api.payments.initiate-fee');
-Route::post('/api/payments/initiate-subscription/{slug}', [PaymentStatusController::class, 'initiateSubscriptionAjax'])->name('api.payments.initiate-subscription');
+Route::get('/payments/check-status/{reference}', [PaymentStatusController::class, 'checkStatus'])->name('payments.check-status');
+Route::post('/payments/initiate-fee/{id}', [PaymentStatusController::class, 'initiateClientFeeAjax'])->name('payments.initiate-fee');
+Route::post('/payments/initiate-subscription/{slug}', [PaymentStatusController::class, 'initiateSubscriptionAjax'])->name('payments.initiate-subscription');
 
 // Root Route: Shows Login Page Directly (or redirects to dashboard if already logged in)
 Route::get('/', [AuthController::class, 'showLogin'])->name('home');

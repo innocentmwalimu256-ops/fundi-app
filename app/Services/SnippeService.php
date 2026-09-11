@@ -47,7 +47,7 @@ class SnippeService
     public static function getWebhookUrl(): string
     {
         return config('services.snippe.webhook_url') 
-            ?: env('SNIPPE_WEBHOOK_URL', 'https://fundi-app-one.vercel.app/api/webhook/snippe');
+            ?: env('SNIPPE_WEBHOOK_URL', 'https://fundi-app-one.vercel.app/webhook/snippe');
     }
 
     /**
