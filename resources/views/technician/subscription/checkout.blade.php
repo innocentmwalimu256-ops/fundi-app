@@ -79,7 +79,7 @@
             <div>
                 <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Payment Phone Number') }}</label>
                 <div class="relative">
-                    <input type="text" name="phone_number" value="{{ auth()->user()->phone }}" required placeholder="07XXXXXXXX au 2557XXXXXXXX" class="w-full py-3.5 px-4 rounded-xl border border-slate-200 text-sm font-mono font-bold bg-slate-50/60 focus:ring-2 focus:ring-teal-500 focus:outline-none">
+                    <input type="text" name="phone_number" value="{{ auth()->user()->phone }}" required placeholder="{{ __('07XXXXXXXX or 2557XXXXXXXX') }}" class="w-full py-3.5 px-4 rounded-xl border border-slate-200 text-sm font-mono font-bold bg-slate-50/60 focus:ring-2 focus:ring-teal-500 focus:outline-none">
                     <span class="absolute right-3.5 top-3.5 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md">Direct In-App</span>
                 </div>
                 <p class="text-[11px] text-slate-400 mt-1">{{ __('Payment confirmation prompt will be sent directly to this number.') }}</p>

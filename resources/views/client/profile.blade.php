@@ -39,12 +39,12 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Full Name') }}</label>
-                    <input type="text" name="full_name" value="{{ old('full_name', $user->full_name) }}" required class="w-full py-2.5 px-4 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none bg-slate-50/50">
+                    <input type="text" name="full_name" value="{{ old('full_name', $user->full_name) }}" required placeholder="{{ __('Your full name') }}" class="w-full py-2.5 px-4 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none bg-slate-50/50">
                 </div>
 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Phone Number') }}</label>
-                    <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" required class="w-full py-2.5 px-4 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none bg-slate-50/50">
+                    <input type="text" name="phone" value="{{ old('phone', $user->phone) }}" required placeholder="{{ __('07XXXXXXXX') }}" class="w-full py-2.5 px-4 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-teal-500 focus:outline-none bg-slate-50/50">
                 </div>
             </div>
 

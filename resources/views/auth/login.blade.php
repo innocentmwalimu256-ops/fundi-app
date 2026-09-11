@@ -81,7 +81,7 @@
                             <i data-lucide="user" class="w-4 h-4"></i>
                         </div>
                         <input type="text" id="login" name="login" value="{{ old('login') }}" required autofocus
-                            placeholder="{{ __('e.g. client@fundi.test or 0712345678') }}"
+                            placeholder="{{ __('Your email or phone number') }}"
                             class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5E7EB] text-xs font-semibold text-navy-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-[#F7F8F7] transition">
                     </div>
                 </div>

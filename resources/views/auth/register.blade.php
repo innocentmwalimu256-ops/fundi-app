@@ -98,7 +98,7 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#98A2B3] pointer-events-none">
                             <i data-lucide="user" class="w-4 h-4"></i>
                         </span>
-                        <input type="text" name="full_name" value="{{ old('full_name') }}" required placeholder="e.g. Innocent Steven" class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5E7EB] text-xs font-semibold text-navy-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-[#F7F8F7] transition">
+                        <input type="text" name="full_name" value="{{ old('full_name') }}" required placeholder="{{ __('Your full name') }}" class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5E7EB] text-xs font-semibold text-navy-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-[#F7F8F7] transition">
                     </div>
                 </div>
 
@@ -109,7 +109,7 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#98A2B3] pointer-events-none">
                             <i data-lucide="mail" class="w-4 h-4"></i>
                         </span>
-                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="innocent@example.com" class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5E7EB] text-xs font-semibold text-navy-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-[#F7F8F7] transition">
+                        <input type="email" name="email" value="{{ old('email') }}" required placeholder="{{ __('your.email@example.com') }}" class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5E7EB] text-xs font-semibold text-navy-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-[#F7F8F7] transition">
                     </div>
                 </div>
 
@@ -120,7 +120,7 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-[#98A2B3] pointer-events-none">
                             <i data-lucide="phone" class="w-4 h-4"></i>
                         </span>
-                        <input type="tel" name="phone" value="{{ old('phone') }}" required placeholder="0712345678" class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5E7EB] text-xs font-semibold text-navy-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-[#F7F8F7] transition">
+                        <input type="tel" name="phone" value="{{ old('phone') }}" required placeholder="{{ __('07XXXXXXXX') }}" class="w-full pl-10 pr-4 py-3 rounded-xl border border-[#E5E7EB] text-xs font-semibold text-navy-900 focus:outline-none focus:border-teal-500 focus:ring-1 focus:ring-teal-500 bg-[#F7F8F7] transition">
                     </div>
                 </div>
 

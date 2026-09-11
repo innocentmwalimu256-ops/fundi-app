@@ -88,7 +88,7 @@
                         <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                             <i data-lucide="user" class="w-4 h-4"></i>
                         </span>
-                        <input type="text" name="identifier" value="{{ old('identifier') }}" required placeholder="{{ __('e.g. client@fundi.test or 0712345678') }}" class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50/50">
+                        <input type="text" name="identifier" value="{{ old('identifier') }}" required placeholder="{{ __('Your email or phone number') }}" class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50/50">
                     </div>
                 </div>
 

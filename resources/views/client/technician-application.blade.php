@@ -70,17 +70,17 @@
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Years of Experience') }}</label>
-                        <input type="number" name="years_experience" value="{{ old('years_experience', '3') }}" required min="0" max="50" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
+                        <input type="number" name="years_experience" value="{{ old('years_experience') }}" required min="0" max="50" placeholder="3" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Base Location') }}</label>
-                        <input type="text" name="location" value="{{ old('location', 'Dar es Salaam, Kinondoni') }}" required placeholder="e.g. Dar es Salaam, Kinondoni" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
+                        <input type="text" name="location" value="{{ old('location') }}" required placeholder="{{ __('e.g. Kinondoni, Dar es Salaam') }}" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Coverage Areas') }}</label>
-                        <input type="text" name="service_area" value="{{ old('service_area', 'Kinondoni, Ilala & Ubungo') }}" placeholder="e.g. Kinondoni, Ilala, Temeke" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
+                        <input type="text" name="service_area" value="{{ old('service_area') }}" placeholder="{{ __('e.g. Kinondoni, Ilala, Temeke') }}" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
                     </div>
                 </div>
             </div>
@@ -102,7 +102,7 @@
 
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">{{ __('Technical Skills (Comma separated)') }}</label>
-                    <input type="text" name="skills" value="{{ old('skills', 'House Wiring, Fault Diagnosis, Maintenance, Appliance Repair') }}" required placeholder="e.g. House Wiring, Circuit Breakers, Solar Power, CCTV" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
+                    <input type="text" name="skills" value="{{ old('skills') }}" required placeholder="{{ __('e.g. House Wiring, Circuit Breakers, Solar Power') }}" class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs sm:text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 bg-slate-50/50">
                 </div>
             </div>
 
