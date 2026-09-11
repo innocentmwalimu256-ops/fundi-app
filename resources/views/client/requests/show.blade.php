@@ -40,60 +40,201 @@
     </div>
 
     @if($request->connection_fee_status === 'pending')
-    <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 text-white border border-teal-500/20 shadow-xl space-y-4" x-data="{ feeMethod: 'mpesa' }">
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-2xl bg-teal-400 text-slate-950 font-black flex items-center justify-center flex-shrink-0">
-                    <i data-lucide="shield-check" class="w-5 h-5"></i>
+    <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 text-white border border-teal-500/20 shadow-xl space-y-5"
+         x-data="{
+             feeMethod: 'mpesa',
+             phone: '{{ auth()->user()->phone }}',
+             loading: false,
+             waitingPin: false,
+             verified: false,
+             reference: '{{ $request->connection_fee_reference }}',
+             statusMsg: '',
+             countdown: 60,
+             timerInterval: null,
+             pollInterval: null,
+
+             async startPayment() {
+                 if (!this.phone) {
+                     alert('{{ __('Tafadhali weka namba yako ya simu ya kulipia') }}');
+                     return;
+                 }
+                 this.loading = true;
+                 this.statusMsg = '{{ __('Inawasiliana na mtandao wa simu...') }}';
+
+                 try {
+                     let res = await fetch('{{ route('api.payments.initiate-fee', $request->id) }}', {
+                         method: 'POST',
+                         headers: {
+                             'Content-Type': 'application/json',
+                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                             'Accept': 'application/json'
+                         },
+                         body: JSON.stringify({
+                             payment_method: this.feeMethod,
+                             phone_number: this.phone
+                         })
+                     });
+                     let data = await res.json();
+                     if (data.success) {
+                         this.reference = data.reference;
+                         this.waitingPin = true;
+                         this.loading = false;
+                         this.statusMsg = data.message || '{{ __('Ombi la malipo limetumwa kwenye simu yako. Tafadhali ingiza PIN.') }}';
+                         this.startPolling();
+                     } else {
+                         this.loading = false;
+                         alert(data.message || '{{ __('Hitilafu ya kuanzisha malipo. Tafadhali jaribu tena.') }}');
+                     }
+                 } catch (e) {
+                     this.loading = false;
+                     alert('{{ __('Hitilafu ya mtandao. Tafadhali jaribu tena.') }}');
+                 }
+             },
+
+             startPolling() {
+                 this.countdown = 60;
+                 if (this.timerInterval) clearInterval(this.timerInterval);
+                 if (this.pollInterval) clearInterval(this.pollInterval);
+
+                 this.timerInterval = setInterval(() => {
+                     if (this.countdown > 0) this.countdown--;
+                 }, 1000);
+
+                 this.pollInterval = setInterval(async () => {
+                     if (!this.reference) return;
+                     try {
+                         let res = await fetch('/api/payments/check-status/' + encodeURIComponent(this.reference));
+                         let data = await res.json();
+                         if (data.paid) {
+                             clearInterval(this.pollInterval);
+                             clearInterval(this.timerInterval);
+                             this.waitingPin = false;
+                             this.verified = true;
+                             this.statusMsg = '{{ __('Malipo Yamethibitishwa! Inafungua huduma...') }}';
+                             setTimeout(() => {
+                                 window.location.href = data.redirect_url || window.location.href;
+                             }, 1200);
+                         }
+                     } catch (e) {}
+                 }, 2000);
+             },
+
+             resetPayment() {
+                 if (this.pollInterval) clearInterval(this.pollInterval);
+                 if (this.timerInterval) clearInterval(this.timerInterval);
+                 this.waitingPin = false;
+                 this.loading = false;
+             }
+         }">
+
+        <!-- STATE 1: INITIAL SELECTION & PHONE INPUT -->
+        <template x-if="!waitingPin && !verified">
+            <div class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-2xl bg-teal-400 text-slate-950 font-black flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="shield-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-bold text-white">{{ __('Pay Connection Fee (TZS 2,000) via Mobile Money') }}</h4>
+                            <p class="text-xs text-slate-300 mt-0.5">{{ __('Direct USSD Push: Weka namba yako, utapokea ombi la kuingiza PIN kwenye simu papo hapo.') }}</p>
+                        </div>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <span class="text-2xl font-black text-teal-300 font-mono">TZS 2,000</span>
+                        <span class="text-[10px] text-slate-400 block">{{ __('Instant Activation') }}</span>
+                    </div>
                 </div>
-                <div>
-                    <h4 class="text-sm font-bold text-white">{{ __('Pay Connection Fee (TZS 2,000) via Snippe') }}</h4>
-                    <p class="text-xs text-slate-300 mt-0.5">{{ __('Complete the TZS 2,000 payment to unlock direct phone and WhatsApp contact with') }} {{ $request->technician->full_name }}.</p>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <label :class="feeMethod === 'mpesa' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
+                        <input type="radio" name="payment_method" value="mpesa" class="sr-only" x-model="feeMethod">
+                        <span class="w-6 h-6 rounded-lg bg-rose-600 text-white flex items-center justify-center font-black text-[10px]">M</span>
+                        <span>M-Pesa</span>
+                    </label>
+
+                    <label :class="feeMethod === 'tigopesa' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
+                        <input type="radio" name="payment_method" value="tigopesa" class="sr-only" x-model="feeMethod">
+                        <span class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-[10px]">T</span>
+                        <span>Tigo Pesa</span>
+                    </label>
+
+                    <label :class="feeMethod === 'airtelmoney' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
+                        <input type="radio" name="payment_method" value="airtelmoney" class="sr-only" x-model="feeMethod">
+                        <span class="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center font-black text-[10px]">A</span>
+                        <span>Airtel</span>
+                    </label>
+
+                    <label :class="feeMethod === 'card' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
+                        <input type="radio" name="payment_method" value="card" class="sr-only" x-model="feeMethod">
+                        <span class="w-6 h-6 rounded-lg bg-slate-800 text-white flex items-center justify-center font-black text-[10px]"><i data-lucide="credit-card" class="w-3.5 h-3.5"></i></span>
+                        <span>{{ __('Card') }}</span>
+                    </label>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input type="text" x-model="phone" placeholder="{{ __('07XXXXXXXX or 2557XXXXXXXX') }}" class="flex-1 py-3 px-4 rounded-xl bg-white/10 border border-white/20 text-xs text-white placeholder-slate-400 font-mono font-bold focus:ring-2 focus:ring-teal-400 focus:outline-none">
+                    <button type="button" @click="startPayment()" :disabled="loading" class="btn-tap px-6 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-teal-500/25 transition flex items-center justify-center space-x-2 cursor-pointer disabled:opacity-50">
+                        <template x-if="!loading">
+                            <span class="flex items-center space-x-1.5">
+                                <span>{{ __('Lipa TZS 2,000 Moja kwa Moja') }}</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </span>
+                        </template>
+                        <template x-if="loading">
+                            <span class="flex items-center space-x-2">
+                                <svg class="animate-spin h-4 w-4 text-slate-950" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                <span>{{ __('Inatuma ombi...') }}</span>
+                            </span>
+                        </template>
+                    </button>
                 </div>
             </div>
-            <div class="text-right flex-shrink-0">
-                <span class="text-2xl font-black text-teal-300 font-mono">TZS 2,000</span>
-                <span class="text-[10px] text-slate-400 block">{{ __('Instant Activation') }}</span>
+        </template>
+
+        <!-- STATE 2: WAITING FOR USER PIN (LIVE RADAR PULSE) -->
+        <template x-if="waitingPin && !verified">
+            <div class="py-6 px-4 text-center space-y-4">
+                <div class="relative w-20 h-20 mx-auto flex items-center justify-center">
+                    <span class="absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-25 animate-ping"></span>
+                    <span class="relative inline-flex rounded-full h-16 w-16 bg-teal-500/30 border-2 border-teal-400 items-center justify-center text-teal-300">
+                        <i data-lucide="smartphone" class="w-8 h-8 animate-bounce"></i>
+                    </span>
+                </div>
+
+                <div class="space-y-1">
+                    <h3 class="text-base font-black text-white">{{ __('Tafadhali Ingiza PIN Kwenye Simu Yako') }}</h3>
+                    <p class="text-xs text-teal-300 font-mono" x-text="phone"></p>
+                    <p class="text-xs text-slate-300 max-w-md mx-auto mt-1" x-text="statusMsg"></p>
+                </div>
+
+                <div class="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full bg-white/10 text-xs font-mono text-slate-300">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>{{ __('Inasubiri uthibitisho...') }} <strong x-text="countdown + 's'"></strong></span>
+                </div>
+
+                <div class="pt-2">
+                    <button type="button" @click="resetPayment()" class="text-xs text-slate-400 hover:text-white underline font-semibold transition cursor-pointer">
+                        {{ __('Hukupokea ombi? Bonyeza hapa kujaribu tena') }}
+                    </button>
+                </div>
             </div>
-        </div>
+        </template>
 
-        <form method="POST" action="{{ route('client.requests.pay-fee', $request->id) }}" class="space-y-4">
-            @csrf
-            
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <label :class="feeMethod === 'mpesa' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
-                    <input type="radio" name="payment_method" value="mpesa" class="sr-only" x-model="feeMethod">
-                    <span class="w-6 h-6 rounded-lg bg-rose-600 text-white flex items-center justify-center font-black text-[10px]">M</span>
-                    <span>M-Pesa</span>
-                </label>
-
-                <label :class="feeMethod === 'tigopesa' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
-                    <input type="radio" name="payment_method" value="tigopesa" class="sr-only" x-model="feeMethod">
-                    <span class="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center font-black text-[10px]">T</span>
-                    <span>Tigo Pesa</span>
-                </label>
-
-                <label :class="feeMethod === 'airtelmoney' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
-                    <input type="radio" name="payment_method" value="airtelmoney" class="sr-only" x-model="feeMethod">
-                    <span class="w-6 h-6 rounded-lg bg-red-600 text-white flex items-center justify-center font-black text-[10px]">A</span>
-                    <span>Airtel</span>
-                </label>
-
-                <label :class="feeMethod === 'card' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
-                    <input type="radio" name="payment_method" value="card" class="sr-only" x-model="feeMethod">
-                    <span class="w-6 h-6 rounded-lg bg-slate-800 text-white flex items-center justify-center font-black text-[10px]"><i data-lucide="credit-card" class="w-3.5 h-3.5"></i></span>
-                    <span>{{ __('Card') }}</span>
-                </label>
+        <!-- STATE 3: VERIFIED / AUTO-REDIRECTING -->
+        <template x-if="verified">
+            <div class="py-8 px-4 text-center space-y-3">
+                <div class="w-16 h-16 rounded-full bg-emerald-500 text-white flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/40">
+                    <i data-lucide="check" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-base font-black text-white">{{ __('Malipo Yamethibitishwa Kikamilifu!') }}</h3>
+                <p class="text-xs text-emerald-300" x-text="statusMsg"></p>
             </div>
+        </template>
 
-            <div class="flex flex-col sm:flex-row gap-3">
-                <input type="text" name="phone_number" value="{{ auth()->user()->phone }}" placeholder="{{ __('07XXXXXXXX or 2557XXXXXXXX') }}" class="flex-1 py-3 px-4 rounded-xl bg-white/10 border border-white/20 text-xs text-white placeholder-slate-400 font-mono font-bold focus:ring-2 focus:ring-teal-400 focus:outline-none">
-                <button type="submit" class="btn-tap px-6 py-3 bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-teal-500/25 transition flex items-center justify-center space-x-2">
-                    <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    <span>{{ __('Pay TZS 2,000 with Snippe') }}</span>
-                </button>
-            </div>
-        </form>
     </div>
     @endif
 
