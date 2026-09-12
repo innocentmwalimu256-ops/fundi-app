@@ -168,59 +168,5 @@
 
     </div>
 
-    <!-- Platform Pricing & Operating Rules Summary -->
-    <div class="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200 shadow-sm space-y-6">
-        
-        <div>
-            <h2 class="text-lg font-black text-slate-900">{{ __('Platform Operating Rules & Pricing Standards') }}</h2>
-            <p class="text-xs text-slate-500 mt-0.5">{{ __('Active parameters controlling fees, security guardrails, and user verification') }}</p>
-        </div>
-
-        <div class="space-y-4 text-xs divide-y divide-slate-100">
-            
-            <div class="flex items-center justify-between pt-3">
-                <div>
-                    <p class="font-bold text-slate-900">{{ __('Client Request Connection Fee') }}</p>
-                    <p class="text-slate-400">{{ __('Fixed nominal fee required to dispatch requests and unlock verified technician contact') }}</p>
-                </div>
-                <span class="font-mono font-black text-teal-800 bg-teal-50 px-3.5 py-1.5 rounded-xl border border-teal-200">TZS 500</span>
-            </div>
-
-            <div class="flex items-center justify-between pt-3">
-                <div>
-                    <p class="font-bold text-slate-900">{{ __('Technician Monthly Subscriptions') }}</p>
-                    <p class="text-slate-400">{{ __('Starter (TZS 700), Professional (TZS 800), Premium (TZS 1,000) for 30-day access') }}</p>
-                </div>
-                <span class="font-mono font-bold text-slate-800 bg-slate-100 px-3 py-1.5 rounded-xl">TZS 700 / 800 / 1,000</span>
-            </div>
-
-            <div class="flex items-center justify-between pt-3">
-                <div>
-                    <p class="font-bold text-slate-900">{{ __('Protected Contact Shield Guard') }}</p>
-                    <p class="text-slate-400">{{ __('Client telephone and direct WhatsApp links shielded server-side') }}</p>
-                </div>
-                <span class="font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">{{ __('Enforced') }}</span>
-            </div>
-
-            <div class="flex items-center justify-between pt-3">
-                <div>
-                    <p class="font-bold text-slate-900">{{ __('Technician Credential Vetting') }}</p>
-                    <p class="text-slate-400">{{ __('NIDA identification and trade certification verification before marketplace activation') }}</p>
-                </div>
-                <span class="font-bold text-emerald-700 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-200">{{ __('Enforced') }}</span>
-            </div>
-
-            <div class="flex items-center justify-between pt-3">
-                <div>
-                    <p class="font-bold text-slate-900">{{ __('Operating Currency & Local Timezone') }}</p>
-                    <p class="text-slate-400">{{ __('Tanzanian Shilling (TZS) / East Africa Time (UTC+3)') }}</p>
-                </div>
-                <span class="font-bold text-slate-800 bg-slate-100 px-3 py-1.5 rounded-xl">TZS (UTC+3)</span>
-            </div>
-
-        </div>
-
-    </div>
-
 </div>
 @endsection
