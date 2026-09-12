@@ -45,10 +45,10 @@
              feeMethod: 'mpesa',
              phone: '{{ auth()->user()->phone }}',
              loading: false,
-             waitingPin: false,
+             waitingPin: {{ !empty($request->connection_fee_reference) ? 'true' : 'false' }},
              verified: false,
              reference: '{{ $request->connection_fee_reference }}',
-             statusMsg: '',
+             statusMsg: '{{ !empty($request->connection_fee_reference) ? __('Ombi la malipo limetumwa kwenye simu yako. Tafadhali ingiza PIN.') : '' }}',
              countdown: 60,
              timerInterval: null,
              pollInterval: null,
@@ -110,9 +110,9 @@
                              clearInterval(this.timerInterval);
                              this.waitingPin = false;
                              this.verified = true;
-                             this.statusMsg = '{{ __('Malipo Yamethibitishwa! Inafungua huduma...') }}';
+                             this.statusMsg = '{{ __('Malipo Yamethibitishwa! Inafungua huduma na mawasiliano ya fundi...') }}';
                              setTimeout(() => {
-                                 window.location.href = data.redirect_url || window.location.href;
+                                 window.location.reload();
                              }, 1200);
                          }
                      } catch (e) {}
@@ -124,8 +124,10 @@
                  if (this.timerInterval) clearInterval(this.timerInterval);
                  this.waitingPin = false;
                  this.loading = false;
+                 this.countdown = 60;
              }
-         }">
+         }"
+         x-init="if (waitingPin && reference) { startPolling(); }">
 
         <!-- STATE 1: INITIAL SELECTION & PHONE INPUT -->
         <template x-if="!waitingPin && !verified">
