@@ -295,13 +295,43 @@
     <!-- Instant Page Prefetcher (Instant Loading on Hover/Touch) -->
     <script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.js" type="module"></script>
 
-    <!-- Initialize Lucide Icons & Turbo SPA Support -->
+    <!-- Initialize Lucide Icons & Ultra-Speed Turbo SPA Support -->
     <script>
         function initAdminIcons() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
         }
+
+        if (typeof Turbo !== 'undefined') {
+            Turbo.setProgressBarDelay(20);
+        }
+
+        // Ultra-Speed Turbo Instant Preloader for Admin (0ms Perceived Transition)
+        const ultraPreloadedAdminUrls = new Set();
+        function ultraPreloadAdmin(url) {
+            if (!url || ultraPreloadedAdminUrls.has(url) || url.includes('#') || url.includes('logout')) return;
+            ultraPreloadedAdminUrls.add(url);
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = url;
+            link.as = 'document';
+            document.head.appendChild(link);
+        }
+
+        document.addEventListener('mouseover', (e) => {
+            const a = e.target.closest('a');
+            if (a && a.href && a.origin === location.origin && a.getAttribute('data-turbo') !== 'false') {
+                ultraPreloadAdmin(a.href);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchstart', (e) => {
+            const a = e.target.closest('a');
+            if (a && a.href && a.origin === location.origin && a.getAttribute('data-turbo') !== 'false') {
+                ultraPreloadAdmin(a.href);
+            }
+        }, { passive: true });
 
         document.addEventListener('DOMContentLoaded', initAdminIcons);
         document.addEventListener('turbo:load', initAdminIcons);

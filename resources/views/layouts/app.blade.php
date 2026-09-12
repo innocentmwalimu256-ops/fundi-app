@@ -702,13 +702,43 @@
     <!-- Instant Page Prefetcher (Instant Loading on Hover/Touch) -->
     <script src="https://cdn.jsdelivr.net/npm/instant.page@5.2.0/instantpage.js" type="module"></script>
 
-    <!-- Initialize Lucide Icons & Turbo SPA Support -->
+    <!-- Initialize Lucide Icons & Ultra-Speed Turbo SPA Support -->
     <script>
         function initAppIcons() {
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
         }
+
+        if (typeof Turbo !== 'undefined') {
+            Turbo.setProgressBarDelay(20);
+        }
+
+        // Ultra-Speed Turbo Instant Preloader (0ms Perceived Transition)
+        const ultraPreloadedUrls = new Set();
+        function ultraPreload(url) {
+            if (!url || ultraPreloadedUrls.has(url) || url.includes('#') || url.includes('logout')) return;
+            ultraPreloadedUrls.add(url);
+            const link = document.createElement('link');
+            link.rel = 'prefetch';
+            link.href = url;
+            link.as = 'document';
+            document.head.appendChild(link);
+        }
+
+        document.addEventListener('mouseover', (e) => {
+            const a = e.target.closest('a');
+            if (a && a.href && a.origin === location.origin && a.getAttribute('data-turbo') !== 'false') {
+                ultraPreload(a.href);
+            }
+        }, { passive: true });
+
+        document.addEventListener('touchstart', (e) => {
+            const a = e.target.closest('a');
+            if (a && a.href && a.origin === location.origin && a.getAttribute('data-turbo') !== 'false') {
+                ultraPreload(a.href);
+            }
+        }, { passive: true });
 
         document.addEventListener('DOMContentLoaded', initAppIcons);
         document.addEventListener('turbo:load', initAppIcons);
