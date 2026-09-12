@@ -12,6 +12,7 @@ use App\Models\ServiceRequest;
 use App\Models\TechnicianApplication;
 use App\Models\TechnicianProfile;
 use App\Models\User;
+use App\Models\SystemSetting;
 use App\Models\UserReport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -732,6 +733,39 @@ class AdminController extends Controller
 
     public function settings()
     {
-        return view('admin.settings');
+        $apiKey = SystemSetting::get('snippe_api_key', config('services.snippe.api_key') ?: env('SNIPPE_API_KEY', ''));
+        $webhookSecret = SystemSetting::get('snippe_webhook_secret', config('services.snippe.webhook_secret') ?: env('SNIPPE_WEBHOOK_SECRET', ''));
+        $profileId = SystemSetting::get('snippe_profile_id', config('services.snippe.profile_id') ?: env('SNIPPE_PROFILE_ID', 'prof_4a8df29e81b67c94'));
+        $baseUrl = SystemSetting::get('snippe_base_url', config('services.snippe.base_url') ?: env('SNIPPE_BASE_URL', 'https://api.snippe.sh/api/v1'));
+        $webhookUrl = SystemSetting::get('snippe_webhook_url', config('services.snippe.webhook_url') ?: env('SNIPPE_WEBHOOK_URL', 'https://fundi-app-one.vercel.app/webhook/snippe'));
+
+        return view('admin.settings', compact('apiKey', 'webhookSecret', 'profileId', 'baseUrl', 'webhookUrl'));
+    }
+
+    public function updatePaymentSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'profile_id' => 'required|string|max:255',
+            'api_key' => 'required|string|max:500',
+            'webhook_secret' => 'required|string|max:500',
+            'base_url' => 'nullable|url|max:255',
+            'webhook_url' => 'nullable|url|max:255',
+        ]);
+
+        SystemSetting::set('snippe_profile_id', trim($validated['profile_id']), 'payment', 'Snippe Merchant Profile ID', false);
+        SystemSetting::set('snippe_api_key', trim($validated['api_key']), 'payment', 'Snippe Gateway API Key', true);
+        SystemSetting::set('snippe_webhook_secret', trim($validated['webhook_secret']), 'payment', 'Snippe Webhook Secret for HMAC verification', true);
+
+        if (!empty($validated['base_url'])) {
+            SystemSetting::set('snippe_base_url', rtrim(trim($validated['base_url']), '/'), 'payment', 'Snippe API Base URL', false);
+        }
+
+        if (!empty($validated['webhook_url'])) {
+            SystemSetting::set('snippe_webhook_url', trim($validated['webhook_url']), 'payment', 'Snippe Webhook Callback URL', false);
+        }
+
+        AuditLog::log('update_payment_gateway_settings', "Admin " . Auth::user()->full_name . " updated Snippe Payment Gateway API credentials (Profile ID, API Key, Webhook Secret)", 'SystemSetting', 0);
+
+        return back()->with('success', 'Mipangilio ya API za Malipo (Profile ID, API Key, na Webhook Secret) imesasishwa kikamilifu!');
     }
 }

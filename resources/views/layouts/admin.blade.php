@@ -188,7 +188,11 @@
 
             <!-- Group 4: Administration -->
             <div class="space-y-1">
-                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('Settings') }}</p>
+                <p class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">{{ __('Administration') }}</p>
+                <a href="{{ route('admin.settings.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.settings.*') ? 'bg-slate-800 text-white font-bold' : 'hover:bg-slate-800/60 hover:text-white text-slate-400' }}">
+                    <i data-lucide="sliders" class="w-4 h-4 {{ request()->routeIs('admin.settings.*') ? 'text-teal-400' : 'text-slate-400' }}"></i>
+                    <span>{{ __('Gateway & API Settings') }}</span>
+                </a>
                 <a href="{{ route('admin.profile.index') }}" class="flex items-center space-x-3 px-3 py-2.5 rounded-xl transition {{ request()->routeIs('admin.profile.*') ? 'bg-slate-800 text-white font-bold' : 'hover:bg-slate-800/60 hover:text-white text-slate-400' }}">
                     <i data-lucide="user" class="w-4 h-4 {{ request()->routeIs('admin.profile.*') ? 'text-teal-400' : 'text-slate-400' }}"></i>
                     <span>{{ __('Admin Profile') }}</span>

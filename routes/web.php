@@ -194,4 +194,5 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::put('/profile', [AdminController::class, 'updateProfile'])->name('profile.update');
     Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings.index');
+    Route::put('/settings/payment', [AdminController::class, 'updatePaymentSettings'])->name('settings.payment.update');
 });

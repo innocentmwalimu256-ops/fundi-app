@@ -488,6 +488,13 @@ class DatabaseSeeder extends Seeder
             'status' => 'published',
         ]);
 
+        // 7. Seed Payment Gateway API Settings
+        \App\Models\SystemSetting::set('snippe_profile_id', 'prof_4a8df29e81b67c94', 'payment', 'Snippe Merchant Profile ID', false);
+        \App\Models\SystemSetting::set('snippe_api_key', 'snp_d72351fa5858490448258a2d515e5a8ad2439fca3ddf64a2123737fbc1c28ce8', 'payment', 'Snippe Gateway API Key', true);
+        \App\Models\SystemSetting::set('snippe_webhook_secret', 'whsec_0836d02c3d08337fe6597f9c199e2d82c98fea6c718cf3669bc08dc9b6485cf6', 'payment', 'Snippe Webhook Secret for HMAC verification', true);
+        \App\Models\SystemSetting::set('snippe_base_url', 'https://api.snippe.sh/api/v1', 'payment', 'Snippe API Base URL', false);
+        \App\Models\SystemSetting::set('snippe_webhook_url', 'https://fundi-app-one.vercel.app/webhook/snippe', 'payment', 'Snippe Webhook Callback URL', false);
+
         // Audit Logs
         AuditLog::log('system_seed', 'Platform initialized with FUNDI final business model.', 'System', 1);
     }

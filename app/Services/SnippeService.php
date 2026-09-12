@@ -20,6 +20,11 @@ class SnippeService
      */
     public static function getApiKey(): string
     {
+        $dbKey = \App\Models\SystemSetting::get('snippe_api_key');
+        if (!empty($dbKey)) {
+            return trim($dbKey);
+        }
+
         return config('services.snippe.api_key') 
             ?: env('SNIPPE_API_KEY', 'snp_d72351fa5858490448258a2d515e5a8ad2439fca3ddf64a2123737fbc1c28ce8');
     }
@@ -29,8 +34,27 @@ class SnippeService
      */
     public static function getWebhookSecret(): string
     {
+        $dbSecret = \App\Models\SystemSetting::get('snippe_webhook_secret');
+        if (!empty($dbSecret)) {
+            return trim($dbSecret);
+        }
+
         return config('services.snippe.webhook_secret') 
             ?: env('SNIPPE_WEBHOOK_SECRET', 'whsec_0836d02c3d08337fe6597f9c199e2d82c98fea6c718cf3669bc08dc9b6485cf6');
+    }
+
+    /**
+     * Get the configured Profile ID / Merchant ID.
+     */
+    public static function getProfileId(): string
+    {
+        $dbProfile = \App\Models\SystemSetting::get('snippe_profile_id');
+        if (!empty($dbProfile)) {
+            return trim($dbProfile);
+        }
+
+        return config('services.snippe.profile_id') 
+            ?: env('SNIPPE_PROFILE_ID', 'prof_4a8df29e81b67c94');
     }
 
     /**
@@ -38,6 +62,11 @@ class SnippeService
      */
     public static function getBaseUrl(): string
     {
+        $dbUrl = \App\Models\SystemSetting::get('snippe_base_url');
+        if (!empty($dbUrl)) {
+            return rtrim(trim($dbUrl), '/');
+        }
+
         return rtrim(config('services.snippe.base_url') ?: env('SNIPPE_BASE_URL', 'https://api.snippe.sh/api/v1'), '/');
     }
 
@@ -46,6 +75,11 @@ class SnippeService
      */
     public static function getWebhookUrl(): string
     {
+        $dbWebhookUrl = \App\Models\SystemSetting::get('snippe_webhook_url');
+        if (!empty($dbWebhookUrl)) {
+            return trim($dbWebhookUrl);
+        }
+
         return config('services.snippe.webhook_url') 
             ?: env('SNIPPE_WEBHOOK_URL', 'https://fundi-app-one.vercel.app/webhook/snippe');
     }
