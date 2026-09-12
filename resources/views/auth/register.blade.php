@@ -87,7 +87,7 @@
                 </div>
             @endif
 
-            <form method="POST" action="{{ route('register.submit') }}" data-turbo="false" class="space-y-4">
+            <form method="POST" action="{{ route('register.submit') }}" class="space-y-4">
                 @csrf
                 <input type="hidden" name="intent" :value="intent">
 

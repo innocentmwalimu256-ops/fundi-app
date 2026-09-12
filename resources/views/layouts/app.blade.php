@@ -103,7 +103,27 @@
         .custom-scrollbar::-webkit-scrollbar-track { background: #F7F8F7; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #E5E7EB; border-radius: 9999px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #98A2B3; }
-        .turbo-progress-bar { height: 3px; background: linear-gradient(90deg, #0F9F95, #14B8A6, #2DD4BF); }
+        .turbo-progress-bar { 
+            height: 3px; 
+            background: linear-gradient(90deg, #0F9F95, #14B8A6, #2DD4BF); 
+            box-shadow: 0 0 12px rgba(20, 184, 166, 0.7);
+            z-index: 99999;
+        }
+        
+        /* Inertia / Vue-Like Instant SPA Morph Transitions */
+        @keyframes spaMorph {
+            from {
+                opacity: 0.90;
+                transform: translateY(2px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        main {
+            animation: spaMorph 0.12s cubic-bezier(0.16, 1, 0.3, 1);
+        }
         
         /* Touch & Native Mobile Enhancements */
         .btn-tap {

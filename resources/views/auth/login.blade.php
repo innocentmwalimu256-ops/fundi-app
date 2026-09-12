@@ -69,7 +69,7 @@
 
 
             <!-- Login Form -->
-            <form id="login-form" method="POST" action="{{ route('login.submit') }}" data-turbo="false" class="space-y-4">
+            <form id="login-form" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
                 @csrf
 
                 <!-- Email or Phone -->
