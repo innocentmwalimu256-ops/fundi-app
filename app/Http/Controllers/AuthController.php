@@ -37,7 +37,7 @@ class AuthController extends Controller
 
         if (!$user) {
             return back()->withInput($request->only('login', 'remember'))->withErrors([
-                'login' => __('Hakuna akaunti yenye barua pepe, namba ya simu, au taarifa hizi. Tafadhali jisajili kwanza.'),
+                'login' => __('No account found with this email, phone number, or login details. Please register first.'),
             ]);
         }
 
@@ -58,13 +58,13 @@ class AuthController extends Controller
 
         if (!$passwordMatches) {
             return back()->withInput($request->only('login', 'remember'))->withErrors([
-                'login' => __('Nenosiri uliloweka si sahihi. Tafadhali jaribu tena au weka upya nenosiri.'),
+                'login' => __('The password you entered is incorrect. Please try again or reset your password.'),
             ]);
         }
 
         if ($user->status !== 'active') {
             return back()->withErrors([
-                'login' => __('Akaunti yako imesimamishwa (Suspended). Tafadhali wasiliana na uongozi kwa msaada.'),
+                'login' => __('Your account is currently suspended. Please contact support.'),
             ]);
         }
 
@@ -76,7 +76,7 @@ class AuthController extends Controller
         if (!$user->isEmailVerified() && $user->role !== 'admin') {
             EmailVerificationService::generateAndSendOtp($user);
             return redirect()->route('verification.notice')
-                ->with('info', __('Tafadhali thibitisha barua pepe yako kwa kuweka nambari ya siri (OTP) iliyotumwa.'));
+                ->with('info', __('Please verify your email address by entering the 6-digit OTP sent to your inbox.'));
         }
 
         return $this->redirectBasedOnRole($user);
@@ -141,7 +141,7 @@ class AuthController extends Controller
         EmailVerificationService::generateAndSendOtp($user);
 
         return redirect()->route('verification.notice')
-            ->with('info', __('Usajili umekamilika! Tumetuma nambari ya siri (OTP) kwenye barua pepe yako ili kuamilisha akaunti.'));
+            ->with('info', __('Registration successful! We have sent a 6-digit OTP code to your email to verify your account.'));
     }
 
     /**
@@ -184,7 +184,7 @@ class AuthController extends Controller
         $intent = session()->pull('register_intent');
         if ($intent === 'technician') {
             return redirect()->route('client.become-technician')
-                ->with('success', __('Barua pepe imethibitishwa! Tafadhali jaza maombi yako ya ufundi hapa chini.'));
+                ->with('success', __('Email verified successfully! Please submit your technician application below.'));
         }
 
         return $this->redirectBasedOnRole($user)
@@ -204,13 +204,13 @@ class AuthController extends Controller
         $cooldown = session('resend_cooldown', 0);
         if ($cooldown > time()) {
             $remaining = $cooldown - time();
-            return back()->with('error', __("Tafadhali subiri sekunde :sec kabla ya kuomba tena OTP mpya.", ['sec' => $remaining]));
+            return back()->with('error', __("Please wait :sec seconds before requesting a new OTP.", ['sec' => $remaining]));
         }
 
         EmailVerificationService::generateAndSendOtp($user);
         session(['resend_cooldown' => time() + 60]);
 
-        return back()->with('info', __('Nambari mpya ya siri (OTP) imetumwa kwenye barua pepe yako.'));
+        return back()->with('info', __('A new 6-digit OTP code has been sent to your email.'));
     }
 
     /**
@@ -243,7 +243,7 @@ class AuthController extends Controller
         EmailVerificationService::generateAndSendOtp($user, $newEmail);
         session(['resend_cooldown' => time() + 60]);
 
-        return back()->with('info', __("Anwani ya barua pepe imerekebishwa kuwa :email na OTP mpya imetumwa.", ['email' => $newEmail]));
+        return back()->with('info', __("Email address updated to :email and a new OTP code has been sent.", ['email' => $newEmail]));
     }
 
     public function logout(Request $request)

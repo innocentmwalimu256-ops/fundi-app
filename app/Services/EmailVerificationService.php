@@ -73,7 +73,7 @@ class EmailVerificationService
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             return [
                 'valid' => false,
-                'message' => __('Tafadhali weka anwani sahihi ya barua pepe.'),
+                'message' => __('Please enter a valid email address.'),
             ];
         }
 
@@ -81,7 +81,7 @@ class EmailVerificationService
         if (count($parts) !== 2) {
             return [
                 'valid' => false,
-                'message' => __('Mfumo wa barua pepe uliyoweka si sahihi.'),
+                'message' => __('Invalid email format provided.'),
             ];
         }
 
@@ -91,7 +91,7 @@ class EmailVerificationService
         if (in_array($domain, self::$disposableDomains, true)) {
             return [
                 'valid' => false,
-                'message' => __('Barua pepe za muda mfupi (disposable/temp-mail) haziruhusiwi. Tafadhali weka barua pepe yako halisi.'),
+                'message' => __('Temporary and disposable email addresses are not allowed. Please use your real email address.'),
             ];
         }
 
@@ -107,7 +107,7 @@ class EmailVerificationService
                 if ($ip === $domain) {
                     return [
                         'valid' => false,
-                        'message' => __('Anwani ya barua pepe hii haipo au haina seva ya barua pepe (inoperative domain). Tafadhali weka email halisi na inayofanya kazi.'),
+                        'message' => __('This email domain does not exist or has no active mail server (inoperative domain). Please provide a valid active email.'),
                     ];
                 }
             }
@@ -115,7 +115,7 @@ class EmailVerificationService
 
         return [
             'valid' => true,
-            'message' => __('Anwani ya barua pepe imekubaliwa.'),
+            'message' => __('Email address accepted.'),
         ];
     }
 
@@ -174,14 +174,14 @@ class EmailVerificationService
         if (!$otp) {
             return [
                 'success' => false,
-                'message' => __('Nambari ya siri (OTP) uliyoweka si sahihi. Tafadhali hakiki na ujaribu tena.'),
+                'message' => __('Invalid OTP code. Please check and try again.'),
             ];
         }
 
         if ($otp->isExpired()) {
             return [
                 'success' => false,
-                'message' => __('Nambari hii ya siri imekwisha muda wake (expired). Tafadhali bonyeza "Tuma Upya OTP".'),
+                'message' => __('This OTP code has expired. Please click Resend OTP.'),
             ];
         }
 
@@ -200,7 +200,7 @@ class EmailVerificationService
 
         return [
             'success' => true,
-            'message' => __('Barua pepe yako imethibitishwa kikamilifu! Akaunti yako sasa ipo tayari.'),
+            'message' => __('Email verified successfully! Your account is now active.'),
         ];
     }
 

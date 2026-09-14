@@ -1040,5 +1040,22 @@
     "Entity": "Kipengele",
     "IP Address": "Anwani ya IP",
     "System": "Mfumo",
-    "No audit records found.": "Hakuna rekodi za ukaguzi zilizopatikana."
+    "No audit records found.": "Hakuna rekodi za ukaguzi zilizopatikana.",
+    "No account found with this email, phone number, or login details. Please register first.": "Hakuna akaunti yenye barua pepe, namba ya simu, au taarifa hizi. Tafadhali jisajili kwanza.",
+    "The password you entered is incorrect. Please try again or reset your password.": "Nenosiri uliloweka si sahihi. Tafadhali jaribu tena au weka upya nenosiri.",
+    "Your account is currently suspended. Please contact support.": "Akaunti yako imesimamishwa (Suspended). Tafadhali wasiliana na uongozi kwa msaada.",
+    "Please verify your email address by entering the 6-digit OTP sent to your inbox.": "Tafadhali thibitisha barua pepe yako kwa kuweka nambari ya siri (OTP) iliyotumwa kwenye barua pepe yako.",
+    "Registration successful! We have sent a 6-digit OTP code to your email to verify your account.": "Usajili umekamilika! Tumetuma nambari ya siri (OTP) ya tarakimu 6 kwenye barua pepe yako ili kuamilisha akaunti.",
+    "Email verified successfully! Please submit your technician application below.": "Barua pepe imethibitishwa! Tafadhali jaza maombi yako ya ufundi hapa chini.",
+    "Please wait :sec seconds before requesting a new OTP.": "Tafadhali subiri sekunde :sec kabla ya kuomba tena OTP mpya.",
+    "A new 6-digit OTP code has been sent to your email.": "Nambari mpya ya siri (OTP) imetumwa kwenye barua pepe yako.",
+    "Email address updated to :email and a new OTP code has been sent.": "Anwani ya barua pepe imerekebishwa kuwa :email na OTP mpya imetumwa.",
+    "Please enter a valid email address.": "Tafadhali weka anwani sahihi ya barua pepe.",
+    "Invalid email format provided.": "Mfumo wa barua pepe uliyoweka si sahihi.",
+    "Temporary and disposable email addresses are not allowed. Please use your real email address.": "Barua pepe za muda mfupi (disposable/temp-mail) haziruhusiwi. Tafadhali weka barua pepe yako halisi.",
+    "This email domain does not exist or has no active mail server (inoperative domain). Please provide a valid active email.": "Anwani ya barua pepe hii haipo au haina seva ya barua pepe (inoperative domain). Tafadhali weka email halisi na inayofanya kazi.",
+    "Email address accepted.": "Anwani ya barua pepe imekubaliwa.",
+    "Invalid OTP code. Please check and try again.": "Nambari ya siri (OTP) uliyoweka si sahihi. Tafadhali hakiki na ujaribu tena.",
+    "This OTP code has expired. Please click Resend OTP.": "Nambari hii ya siri imekwisha muda wake (expired). Tafadhali bonyeza Tuma Upya OTP.",
+    "Email verified successfully! Your account is now active.": "Barua pepe yako imethibitishwa kikamilifu! Akaunti yako sasa ipo tayari."
 }

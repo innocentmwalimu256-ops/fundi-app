@@ -1040,5 +1040,22 @@
     "Entity": "Entity",
     "IP Address": "IP Address",
     "System": "System",
-    "No audit records found.": "No audit records found."
+    "No audit records found.": "No audit records found.",
+    "No account found with this email, phone number, or login details. Please register first.": "No account found with this email, phone number, or login details. Please register first.",
+    "The password you entered is incorrect. Please try again or reset your password.": "The password you entered is incorrect. Please try again or reset your password.",
+    "Your account is currently suspended. Please contact support.": "Your account is currently suspended. Please contact support.",
+    "Please verify your email address by entering the 6-digit OTP sent to your inbox.": "Please verify your email address by entering the 6-digit OTP sent to your inbox.",
+    "Registration successful! We have sent a 6-digit OTP code to your email to verify your account.": "Registration successful! We have sent a 6-digit OTP code to your email to verify your account.",
+    "Email verified successfully! Please submit your technician application below.": "Email verified successfully! Please submit your technician application below.",
+    "Please wait :sec seconds before requesting a new OTP.": "Please wait :sec seconds before requesting a new OTP.",
+    "A new 6-digit OTP code has been sent to your email.": "A new 6-digit OTP code has been sent to your email.",
+    "Email address updated to :email and a new OTP code has been sent.": "Email address updated to :email and a new OTP code has been sent.",
+    "Please enter a valid email address.": "Please enter a valid email address.",
+    "Invalid email format provided.": "Invalid email format provided.",
+    "Temporary and disposable email addresses are not allowed. Please use your real email address.": "Temporary and disposable email addresses are not allowed. Please use your real email address.",
+    "This email domain does not exist or has no active mail server (inoperative domain). Please provide a valid active email.": "This email domain does not exist or has no active mail server (inoperative domain). Please provide a valid active email.",
+    "Email address accepted.": "Email address accepted.",
+    "Invalid OTP code. Please check and try again.": "Invalid OTP code. Please check and try again.",
+    "This OTP code has expired. Please click Resend OTP.": "This OTP code has expired. Please click Resend OTP.",
+    "Email verified successfully! Your account is now active.": "Email verified successfully! Your account is now active."
 }
