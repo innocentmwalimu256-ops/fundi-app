@@ -23,7 +23,7 @@ class VerificationOtpMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Uthibitisho wa Barua Pepe - FUNDI App (' . $this->otpCode . ')',
+            subject: 'Email Verification - FUNDI App (' . $this->otpCode . ')',
         );
     }
 

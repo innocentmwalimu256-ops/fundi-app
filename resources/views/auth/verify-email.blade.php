@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', __('Thibitisha Barua Pepe') . ' - FUNDI')
+@section('title', __('Verify Email Address') . ' - FUNDI')
 
 @section('content')
 <div class="max-w-md mx-auto px-4 py-12" x-data="{
@@ -76,9 +76,9 @@
             <div class="w-16 h-16 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center mx-auto shadow-sm">
                 <i data-lucide="mail-check" class="w-8 h-8"></i>
             </div>
-            <h1 class="text-2xl font-black text-slate-900">{{ __('Uthibitisho wa Barua Pepe') }}</h1>
+            <h1 class="text-2xl font-black text-slate-900">{{ __('Email Verification') }}</h1>
             <p class="text-xs text-slate-500 leading-relaxed">
-                {{ __('Tumetuma nambari ya siri ya tarakimu 6 (OTP) kwenye anwani yako ya barua pepe:') }}
+                {{ __('We have sent a 6-digit verification OTP code to your email address:') }}
             </p>
             <div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-slate-100 text-xs font-mono font-bold text-slate-800">
                 <i data-lucide="mail" class="w-3.5 h-3.5 text-slate-500"></i>
@@ -108,7 +108,7 @@
 
         @if(session('last_verification_otp') && (app()->environment('local') || config('app.debug')))
             <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs text-center">
-                <span class="font-bold">{{ __('Mazingira ya Majaribio (Local OTP):') }}</span>
+                <span class="font-bold">{{ __('Demo / Local Testing OTP:') }}</span>
                 <span class="font-mono font-black text-sm ml-1 text-slate-900">{{ session('last_verification_otp') }}</span>
             </div>
         @endif
@@ -120,7 +120,7 @@
 
             <div>
                 <label class="block text-center text-xs font-bold uppercase tracking-wider text-slate-600 mb-3">
-                    {{ __('Ingiza Nambari ya Siri (OTP)') }}
+                    {{ __('Enter 6-Digit OTP Code') }}
                 </label>
                 
                 <div class="flex justify-center items-center gap-2 sm:gap-3" @paste="handlePaste($event)">
@@ -138,7 +138,7 @@
                     </template>
                 </div>
                 <p class="text-[11px] text-center text-slate-400 mt-2">
-                    {{ __('Msimbo unaisha muda wake baada ya dakika 15.') }}
+                    {{ __('Code expires in 15 minutes.') }}
                 </p>
             </div>
 
@@ -146,7 +146,7 @@
                     :disabled="fullOtp.length !== 6" 
                     class="w-full py-4 rounded-2xl bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black text-xs uppercase tracking-wider shadow-lg shadow-teal-700/25 transition flex items-center justify-center space-x-2 cursor-pointer">
                 <i data-lucide="check-circle" class="w-4 h-4"></i>
-                <span>{{ __('Thibitisha na Uwashe Akaunti') }}</span>
+                <span>{{ __('Verify & Activate Account') }}</span>
             </button>
         </form>
 
@@ -160,10 +160,10 @@
                         class="text-xs font-bold text-teal-700 hover:text-teal-900 disabled:text-slate-400 transition cursor-pointer flex items-center space-x-1.5">
                     <i data-lucide="refresh-cw" class="w-3.5 h-3.5" :class="cooldown > 0 ? '' : 'text-teal-600'"></i>
                     <template x-if="cooldown === 0">
-                        <span>{{ __('Hujapokea nambari? Tuma Upya OTP') }}</span>
+                        <span>{{ __('Did not receive code? Resend OTP') }}</span>
                     </template>
                     <template x-if="cooldown > 0">
-                        <span>{{ __('Unaweza kutuma tena baada ya') }} <strong x-text="cooldown + 's'"></strong></span>
+                        <span>{{ __('You can resend in') }} <strong x-text="cooldown + 's'"></strong></span>
                     </template>
                 </button>
             </form>
@@ -171,12 +171,12 @@
             <button type="button" 
                     @click="changeEmailModal = true" 
                     class="text-xs font-medium text-slate-500 hover:text-slate-800 underline transition cursor-pointer">
-                {{ __('Ulikosea barua pepe? Badilisha anwani hapa') }}
+                {{ __('Mistyped email? Change address here') }}
             </button>
 
             <div class="pt-2">
                 <a href="{{ route('logout') }}" class="text-[11px] font-bold text-rose-600 hover:text-rose-800 transition">
-                    {{ __('Ondoka kwenye akaunti (Logout)') }}
+                    {{ __('Log Out of Account') }}
                 </a>
             </div>
 
@@ -188,36 +188,36 @@
     <div x-show="changeEmailModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
         <div class="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full shadow-2xl border border-slate-100 space-y-4" @click.outside="changeEmailModal = false">
             <div class="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 class="text-base font-black text-slate-900">{{ __('Badilisha Barua Pepe') }}</h3>
+                <h3 class="text-base font-black text-slate-900">{{ __('Change Email Address') }}</h3>
                 <button type="button" @click="changeEmailModal = false" class="text-slate-400 hover:text-slate-600">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
 
             <p class="text-xs text-slate-500 leading-relaxed">
-                {{ __('Weka barua pepe yako halisi na inayofanya kazi. Mfumo utatuma nambari mpya ya OTP kwenye anwani hii.') }}
+                {{ __('Enter your active, valid email address. A new OTP verification code will be sent to this address.') }}
             </p>
 
             <form method="POST" action="{{ route('verification.change-email') }}" class="space-y-4">
                 @csrf
                 <div>
                     <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-1.5">
-                        {{ __('Anwani Mpya ya Barua Pepe') }}
+                        {{ __('New Email Address') }}
                     </label>
                     <input type="email" 
                            name="email" 
                            x-model="newEmail" 
                            required 
-                           placeholder="mfano: jina@gmail.com" 
+                           placeholder="e.g. name@gmail.com" 
                            class="w-full py-3 px-4 rounded-xl border border-slate-200 text-xs font-bold text-slate-900 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-teal-500 focus:outline-none">
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-2">
                     <button type="button" @click="changeEmailModal = false" class="px-4 py-2.5 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-100 transition">
-                        {{ __('Ghairi') }}
+                        {{ __('Cancel') }}
                     </button>
                     <button type="submit" class="px-5 py-2.5 text-xs font-bold bg-teal-600 text-white rounded-xl shadow hover:bg-teal-700 transition">
-                        {{ __('Hifadhi na Tuma OTP') }}
+                        {{ __('Save & Send OTP') }}
                     </button>
                 </div>
             </form>

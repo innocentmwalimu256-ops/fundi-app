@@ -1057,5 +1057,20 @@
     "Email address accepted.": "Anwani ya barua pepe imekubaliwa.",
     "Invalid OTP code. Please check and try again.": "Nambari ya siri (OTP) uliyoweka si sahihi. Tafadhali hakiki na ujaribu tena.",
     "This OTP code has expired. Please click Resend OTP.": "Nambari hii ya siri imekwisha muda wake (expired). Tafadhali bonyeza Tuma Upya OTP.",
-    "Email verified successfully! Your account is now active.": "Barua pepe yako imethibitishwa kikamilifu! Akaunti yako sasa ipo tayari."
+    "Email verified successfully! Your account is now active.": "Barua pepe yako imethibitishwa kikamilifu! Akaunti yako sasa ipo tayari.",
+    "Verify Email Address": "Uthibitisho wa Barua Pepe",
+    "Email Verification": "Uthibitisho wa Barua Pepe",
+    "We have sent a 6-digit verification OTP code to your email address:": "Tumetuma nambari ya siri ya tarakimu 6 (OTP) kwenye anwani yako ya barua pepe:",
+    "Demo / Local Testing OTP:": "Mazingira ya Majaribio (Local OTP):",
+    "Enter 6-Digit OTP Code": "Ingiza Nambari ya Siri (OTP)",
+    "Code expires in 15 minutes.": "Msimbo unaisha muda wake baada ya dakika 15.",
+    "Verify & Activate Account": "Thibitisha na Uwashe Akaunti",
+    "Did not receive code? Resend OTP": "Hujapokea nambari? Tuma Upya OTP",
+    "You can resend in": "Unaweza kutuma tena baada ya",
+    "Mistyped email? Change address here": "Ulikosea barua pepe? Badilisha anwani hapa",
+    "Log Out of Account": "Toka kwenye Akaunti",
+    "Change Email Address": "Badilisha Anwani ya Barua Pepe",
+    "Enter your active, valid email address. A new OTP verification code will be sent to this address.": "Weka anwani yako halisi ya barua pepe inayofanya kazi. Nambari mpya ya siri (OTP) itatumwa kwenye anwani hii.",
+    "New Email Address": "Anwani Mpya ya Barua Pepe",
+    "Save & Send OTP": "Hifadhi na Utume OTP"
 }
