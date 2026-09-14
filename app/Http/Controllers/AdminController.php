@@ -137,6 +137,50 @@ class AdminController extends Controller
         return back()->with('success', "User {$user->full_name} status updated to {$newStatus}.");
     }
 
+    public function deleteUser(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+        if ($user->id === Auth::id()) {
+            return back()->with('error', __('Huwezi kufuta akaunti yako mwenyewe ya Admin.'));
+        }
+
+        $userName = $user->full_name;
+        $userEmail = $user->email;
+        $userId = $user->id;
+
+        DB::transaction(function () use ($user) {
+            // Delete related technician records if any
+            if ($user->technicianProfile) {
+                $user->technicianProfile->delete();
+            }
+            \App\Models\TechnicianAvailability::where('user_id', $user->id)->delete();
+            \App\Models\TechnicianPortfolio::where('user_id', $user->id)->delete();
+            \App\Models\TechnicianServiceArea::where('user_id', $user->id)->delete();
+            \App\Models\TechnicianApplication::where('user_id', $user->id)->delete();
+            \App\Models\Subscription::where('user_id', $user->id)->delete();
+            \App\Models\SubscriptionPayment::where('user_id', $user->id)->delete();
+            \App\Models\EmailOtp::where('user_id', $user->id)->delete();
+            \App\Models\Notification::where('user_id', $user->id)->delete();
+            \App\Models\Favorite::where('client_id', $user->id)->orWhere('technician_id', $user->id)->delete();
+            \App\Models\UserReport::where('reporter_id', $user->id)->orWhere('reported_id', $user->id)->delete();
+            
+            // Delete user record (freeing up the email and phone)
+            $user->delete();
+        });
+
+        AuditLog::log(
+            'delete_user',
+            "Admin " . Auth::user()->full_name . " deleted user {$userName} ({$userEmail}) from the system",
+            'User',
+            $userId
+        );
+
+        return back()->with('success', __("Mtumiaji :name (:email) amefutwa kabisa kwenye mfumo na barua pepe yake sasa ipo huru kusajiliwa tena.", [
+            'name' => $userName,
+            'email' => $userEmail,
+        ]));
+    }
+
     public function technicians(Request $request)
     {
         $status = $request->input('verification_status');

@@ -145,6 +145,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     // Users
     Route::get('/users', [AdminController::class, 'users'])->name('users.index');
     Route::post('/users/{id}/toggle-status', [AdminController::class, 'toggleUserStatus'])->name('users.toggle-status');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.destroy');
+    Route::post('/users/{id}/delete', [AdminController::class, 'deleteUser'])->name('users.delete');
 
     // Technicians & Verification Applications
     Route::get('/technicians', [AdminController::class, 'technicians'])->name('technicians.index');
