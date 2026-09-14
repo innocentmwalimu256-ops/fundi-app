@@ -47,6 +47,12 @@ Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->nam
 
 // Authenticated Shared Routes
 Route::middleware('auth')->group(function () {
+    // Email OTP Verification Routes (Always accessible to authenticated users)
+    Route::get('/verify-email', [AuthController::class, 'showVerifyEmail'])->name('verification.notice');
+    Route::post('/verify-email/confirm', [AuthController::class, 'verifyEmailOtp'])->name('verification.verify');
+    Route::post('/verify-email/resend', [AuthController::class, 'resendEmailOtp'])->name('verification.resend');
+    Route::post('/verify-email/change', [AuthController::class, 'changeEmailDuringVerification'])->name('verification.change-email');
+
     // In-System Notifications
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
@@ -65,7 +71,7 @@ Route::middleware('auth')->group(function () {
 });
 
 // Client Routes
-Route::middleware(['auth', 'role:client'])->group(function () {
+Route::middleware(['auth', 'role:client', 'email.verified'])->group(function () {
     Route::get('/dashboard', [ClientController::class, 'dashboard'])->name('client.dashboard');
     Route::get('/services', [ClientController::class, 'services'])->name('client.services.index');
     Route::get('/services/{id}', [ClientController::class, 'serviceShow'])->name('client.services.show');
@@ -97,7 +103,7 @@ Route::middleware(['auth', 'role:client'])->group(function () {
 });
 
 // Technician Routes
-Route::prefix('technician')->name('technician.')->middleware(['auth', 'role:technician'])->group(function () {
+Route::prefix('technician')->name('technician.')->middleware(['auth', 'role:technician', 'email.verified'])->group(function () {
     
     // Subscription & Plan Selection (Available to both active & expired technicians)
     Route::get('/subscription', [SubscriptionController::class, 'index'])->name('subscription');
@@ -195,4 +201,5 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
     Route::put('/profile/password', [AdminController::class, 'updatePassword'])->name('profile.password');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings.index');
     Route::put('/settings/payment', [AdminController::class, 'updatePaymentSettings'])->name('settings.payment.update');
+    Route::put('/settings/mail', [AdminController::class, 'updateMailSettings'])->name('settings.mail.update');
 });

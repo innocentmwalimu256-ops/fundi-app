@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AuditLog;
 use App\Models\User;
+use App\Services\EmailVerificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -143,6 +144,13 @@ class AuthController extends Controller
             'password' => ['required', 'confirmed', Password::min(6)],
         ]);
 
+        // 1. Active Email & Disposable Blacklist Verification
+        $emailCheck = EmailVerificationService::validateActiveEmail($validated['email']);
+        if (!$emailCheck['valid']) {
+            return back()->withInput($request->except('password', 'password_confirmation'))
+                ->withErrors(['email' => $emailCheck['message']]);
+        }
+
         $rawPassword = $validated['password'];
         $hashedPassword = null;
         try {
@@ -157,24 +165,130 @@ class AuthController extends Controller
 
         $user = User::create([
             'full_name' => $validated['full_name'],
-            'email' => $validated['email'],
+            'email' => strtolower(trim($validated['email'])),
             'phone' => $validated['phone'],
             'password' => $hashedPassword,
             'role' => 'client',
             'status' => 'active',
+            'email_verified_at' => null, // Unverified initially
         ]);
 
         Auth::login($user);
         $request->session()->regenerate();
 
-        AuditLog::log('register', "New user registered: {$user->full_name}", 'User', $user->id);
-
         if ($request->input('intent') === 'technician') {
-            return redirect()->route('client.become-technician')
-                ->with('success', 'Account created! Please submit your technician application below to get verified.');
+            session(['register_intent' => 'technician']);
         }
 
-        return redirect()->route('client.dashboard')->with('success', 'Welcome to FUNDI! Your account is ready.');
+        AuditLog::log('register', "New user registered: {$user->full_name} ({$user->email})", 'User', $user->id);
+
+        // Generate and send 6-digit OTP to user's active email
+        EmailVerificationService::generateAndSendOtp($user);
+
+        return redirect()->route('verification.notice')
+            ->with('info', __('Usajili umekamilika! Tumetuma nambari ya siri (OTP) kwenye barua pepe yako ili kuamilisha akaunti.'));
+    }
+
+    /**
+     * Show Email OTP Verification Screen.
+     */
+    public function showVerifyEmail()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        if ($user->isEmailVerified()) {
+            return $this->redirectBasedOnRole($user);
+        }
+
+        return view('auth.verify-email');
+    }
+
+    /**
+     * Confirm and verify the 6-digit Email OTP.
+     */
+    public function verifyEmailOtp(Request $request)
+    {
+        $request->validate([
+            'otp_code' => 'required|string|min:6|max:10',
+        ]);
+
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $result = EmailVerificationService::verifyOtp($user, $request->otp_code);
+
+        if (!$result['success']) {
+            return back()->withErrors(['otp_code' => $result['message']]);
+        }
+
+        $intent = session()->pull('register_intent');
+        if ($intent === 'technician') {
+            return redirect()->route('client.become-technician')
+                ->with('success', __('Barua pepe imethibitishwa! Tafadhali jaza maombi yako ya ufundi hapa chini.'));
+        }
+
+        return $this->redirectBasedOnRole($user)
+            ->with('success', $result['message']);
+    }
+
+    /**
+     * Resend Email Verification OTP.
+     */
+    public function resendEmailOtp(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $cooldown = session('resend_cooldown', 0);
+        if ($cooldown > time()) {
+            $remaining = $cooldown - time();
+            return back()->with('error', __("Tafadhali subiri sekunde :sec kabla ya kuomba tena OTP mpya.", ['sec' => $remaining]));
+        }
+
+        EmailVerificationService::generateAndSendOtp($user);
+        session(['resend_cooldown' => time() + 60]);
+
+        return back()->with('info', __('Nambari mpya ya siri (OTP) imetumwa kwenye barua pepe yako.'));
+    }
+
+    /**
+     * Change email address if user mistyped it during registration.
+     */
+    public function changeEmailDuringVerification(Request $request)
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $request->validate([
+            'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
+        ]);
+
+        $newEmail = strtolower(trim($request->email));
+
+        // Validate active domain
+        $emailCheck = EmailVerificationService::validateActiveEmail($newEmail);
+        if (!$emailCheck['valid']) {
+            return back()->withErrors(['email' => $emailCheck['message']]);
+        }
+
+        $user->update([
+            'email' => $newEmail,
+            'email_verified_at' => null,
+        ]);
+
+        EmailVerificationService::generateAndSendOtp($user, $newEmail);
+        session(['resend_cooldown' => time() + 60]);
+
+        return back()->with('info', __("Anwani ya barua pepe imerekebishwa kuwa :email na OTP mpya imetumwa.", ['email' => $newEmail]));
     }
 
     public function logout(Request $request)

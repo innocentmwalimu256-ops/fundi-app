@@ -739,7 +739,19 @@ class AdminController extends Controller
         $baseUrl = SystemSetting::get('snippe_base_url', config('services.snippe.base_url') ?: env('SNIPPE_BASE_URL', 'https://api.snippe.sh/api/v1'));
         $webhookUrl = SystemSetting::get('snippe_webhook_url', config('services.snippe.webhook_url') ?: env('SNIPPE_WEBHOOK_URL', 'https://fundi-app-one.vercel.app/webhook/snippe'));
 
-        return view('admin.settings', compact('apiKey', 'webhookSecret', 'profileId', 'baseUrl', 'webhookUrl'));
+        // SMTP Mail Settings
+        $mailHost = SystemSetting::get('mail_host', config('mail.mailers.smtp.host') ?: env('MAIL_HOST', ''));
+        $mailPort = SystemSetting::get('mail_port', config('mail.mailers.smtp.port') ?: env('MAIL_PORT', '587'));
+        $mailUsername = SystemSetting::get('mail_username', config('mail.mailers.smtp.username') ?: env('MAIL_USERNAME', ''));
+        $mailPassword = SystemSetting::get('mail_password', config('mail.mailers.smtp.password') ?: env('MAIL_PASSWORD', ''));
+        $mailEncryption = SystemSetting::get('mail_encryption', config('mail.mailers.smtp.encryption') ?: env('MAIL_ENCRYPTION', 'tls'));
+        $mailFromAddress = SystemSetting::get('mail_from_address', config('mail.from.address') ?: env('MAIL_FROM_ADDRESS', 'no-reply@fundiapp.co.tz'));
+        $mailFromName = SystemSetting::get('mail_from_name', config('mail.from.name') ?: env('MAIL_FROM_NAME', 'FUNDI App'));
+
+        return view('admin.settings', compact(
+            'apiKey', 'webhookSecret', 'profileId', 'baseUrl', 'webhookUrl',
+            'mailHost', 'mailPort', 'mailUsername', 'mailPassword', 'mailEncryption', 'mailFromAddress', 'mailFromName'
+        ));
     }
 
     public function updatePaymentSettings(Request $request)
@@ -767,5 +779,34 @@ class AdminController extends Controller
         AuditLog::log('update_payment_gateway_settings', "Admin " . Auth::user()->full_name . " updated Snippe Payment Gateway API credentials (Profile ID, API Key, Webhook Secret)", 'SystemSetting', 0);
 
         return back()->with('success', 'Mipangilio ya API za Malipo (Profile ID, API Key, na Webhook Secret) imesasishwa kikamilifu!');
+    }
+
+    public function updateMailSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'mail_host' => 'required|string|max:255',
+            'mail_port' => 'required|numeric',
+            'mail_username' => 'required|string|max:255',
+            'mail_password' => 'nullable|string|max:255',
+            'mail_encryption' => 'nullable|string|in:tls,ssl',
+            'mail_from_address' => 'required|email|max:255',
+            'mail_from_name' => 'required|string|max:255',
+        ]);
+
+        SystemSetting::set('mail_host', trim($validated['mail_host']), 'mail', 'SMTP Server Host', false);
+        SystemSetting::set('mail_port', trim($validated['mail_port']), 'mail', 'SMTP Server Port', false);
+        SystemSetting::set('mail_username', trim($validated['mail_username']), 'mail', 'SMTP Username', false);
+
+        if (!empty($validated['mail_password'])) {
+            SystemSetting::set('mail_password', trim($validated['mail_password']), 'mail', 'SMTP Password / App Password', true);
+        }
+
+        SystemSetting::set('mail_encryption', trim($validated['mail_encryption'] ?? 'tls'), 'mail', 'SMTP Encryption', false);
+        SystemSetting::set('mail_from_address', trim($validated['mail_from_address']), 'mail', 'Email Sender Address', false);
+        SystemSetting::set('mail_from_name', trim($validated['mail_from_name']), 'mail', 'Email Sender Name', false);
+
+        AuditLog::log('update_mail_settings', "Admin " . Auth::user()->full_name . " updated SMTP Email configuration settings", 'SystemSetting', 0);
+
+        return back()->with('success', 'Mipangilio ya Barua Pepe (SMTP Mail Configuration) imesasishwa kikamilifu!');
     }
 }
