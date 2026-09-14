@@ -33,63 +33,12 @@ class AuthController extends Controller
         $user = User::where('email', $loginInput)
             ->orWhere('phone', $loginInput)
             ->orWhereRaw('LOWER(full_name) = ?', [strtolower($loginInput)])
-            ->orWhere('email', 'like', strtolower($loginInput) . '@%')
             ->first();
 
-        // Auto-provision if missing from ephemeral serverless SQLite
         if (!$user) {
-            $lowerLogin = strtolower($loginInput);
-            if (str_contains($lowerLogin, 'innocent') || str_contains($lowerLogin, 'guzman') || $lowerLogin === '0700000002') {
-                $user = User::firstOrCreate(
-                    ['email' => 'innocentsteven206@gmail.com'],
-                    [
-                        'full_name' => 'Innocent Steven (Guzman)',
-                        'phone' => '0700000002',
-                        'password' => password_hash('innocent', PASSWORD_DEFAULT),
-                        'role' => 'technician',
-                        'status' => 'active',
-                    ]
-                );
-                \App\Models\TechnicianProfile::firstOrCreate(
-                    ['user_id' => $user->id],
-                    [
-                        'professional_title' => 'Master Plumber & Electrical Specialist',
-                        'bio' => 'Professional technician ready for hire.',
-                        'years_experience' => 5,
-                        'location' => 'Dar es Salaam, Kinondoni',
-                        'service_area' => 'Dar es Salaam Citywide',
-                        'availability_status' => 'available',
-                        'verification_status' => 'approved',
-                        'average_rating' => 4.95,
-                        'total_reviews' => 28,
-                        'completed_jobs_count' => 54,
-                    ]
-                );
-                $plan = \App\Models\SubscriptionPlan::where('slug', 'premium')->first() ?? \App\Models\SubscriptionPlan::first();
-                if ($plan) {
-                    \App\Models\Subscription::firstOrCreate(
-                        ['user_id' => $user->id],
-                        [
-                            'plan_id' => $plan->id,
-                            'status' => 'active',
-                            'started_at' => now()->subDay(),
-                            'expires_at' => now()->addDays(30),
-                            'auto_renew' => true,
-                        ]
-                    );
-                }
-            } elseif (str_contains($lowerLogin, 'leryn') || $lowerLogin === '0700000001') {
-                $user = User::firstOrCreate(
-                    ['email' => 'leryn12@gmail.com'],
-                    [
-                        'full_name' => 'Leryn',
-                        'phone' => '0700000001',
-                        'password' => password_hash('innocent', PASSWORD_DEFAULT),
-                        'role' => 'client',
-                        'status' => 'active',
-                    ]
-                );
-            }
+            return back()->withInput($request->only('login', 'remember'))->withErrors([
+                'login' => __('Hakuna akaunti yenye barua pepe, namba ya simu, au taarifa hizi. Tafadhali jisajili kwanza.'),
+            ]);
         }
 
         $passwordMatches = false;
@@ -107,22 +56,28 @@ class AuthController extends Controller
             $passwordMatches = true;
         }
 
-        if (!$user || !$passwordMatches) {
+        if (!$passwordMatches) {
             return back()->withInput($request->only('login', 'remember'))->withErrors([
-                'login' => 'Invalid email/phone or password provided.',
+                'login' => __('Nenosiri uliloweka si sahihi. Tafadhali jaribu tena au weka upya nenosiri.'),
             ]);
         }
 
         if ($user->status !== 'active') {
             return back()->withErrors([
-                'login' => 'Your account is currently suspended. Please contact support.',
+                'login' => __('Akaunti yako imesimamishwa (Suspended). Tafadhali wasiliana na uongozi kwa msaada.'),
             ]);
         }
 
-        Auth::login($user, true);
+        Auth::login($user, $remember);
         $request->session()->regenerate();
 
         AuditLog::log('login', "User {$user->full_name} logged in", 'User', $user->id);
+
+        if (!$user->isEmailVerified() && $user->role !== 'admin') {
+            EmailVerificationService::generateAndSendOtp($user);
+            return redirect()->route('verification.notice')
+                ->with('info', __('Tafadhali thibitisha barua pepe yako kwa kuweka nambari ya siri (OTP) iliyotumwa.'));
+        }
 
         return $this->redirectBasedOnRole($user);
     }
