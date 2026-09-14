@@ -377,44 +377,5 @@
         </div>
     </section>
 
-    <!-- 8. DOWNLOAD APP SHOWCASE SECTION -->
-    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-teal-950 text-white p-8 sm:p-12 border border-slate-700 shadow-2xl relative overflow-hidden">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                <div class="lg:col-span-8 space-y-4">
-                    <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-teal-500/20 text-teal-300 text-xs font-bold">
-                        <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-                        <span>{{ __('Available on Android & Web') }}</span>
-                    </div>
-                    <h3 class="text-2xl sm:text-4xl font-black tracking-tight text-white">
-                        {{ __('Get FUNDI on your phone') }}
-                    </h3>
-                    <p class="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-xl">
-                        {{ __('Download the official FUNDI Android APK or add to home screen. Access 100% verified artisans, get real-time job notifications, and call or chat instantly without delay.') }}
-                    </p>
-                    <div class="flex flex-wrap items-center gap-3 pt-2">
-                        <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="px-6 py-3.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-teal-500/25 transition flex items-center space-x-2">
-                            <i data-lucide="download" class="w-4 h-4"></i>
-                            <span>{{ __('Download Android APK (8.5 MB)') }}</span>
-                        </a>
-                        <a href="{{ route('login') }}" class="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider border border-slate-700 transition flex items-center space-x-2">
-                            <i data-lucide="globe" class="w-4 h-4 text-teal-400"></i>
-                            <span>{{ __('Open Web App') }}</span>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-4 flex justify-center lg:justify-end">
-                    <div class="p-4 bg-white/10 backdrop-blur-md rounded-2xl border border-white/20 text-center space-y-3">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data={{ urlencode(route('app.download')) }}&margin=4" 
-                             alt="Scan to Download FUNDI App" 
-                             class="w-32 h-32 mx-auto rounded-xl shadow-md bg-white p-2">
-                        <p class="text-[11px] text-teal-300 font-bold">{{ __('Scan to Download APK') }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
 </div>
 @endsection

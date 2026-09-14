@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\AdminController;
-use App\Http\Controllers\AppDownloadController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\MessageController;
@@ -12,12 +11,6 @@ use App\Http\Controllers\SnippeWebhookController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\TechnicianController;
 use Illuminate\Support\Facades\Route;
-
-// App & Android APK Download Routes (Publicly Accessible)
-Route::get('/download-app', [AppDownloadController::class, 'index'])->name('app.download');
-Route::get('/download/apk', [AppDownloadController::class, 'downloadApk'])->name('app.download.apk');
-Route::get('/app', [AppDownloadController::class, 'index'])->name('app.download.short');
-Route::get('/download', [AppDownloadController::class, 'index'])->name('app.download.alias');
 
 // Snippe Payment Webhook Endpoint (Exempt from CSRF)
 Route::post('/webhook/snippe', [SnippeWebhookController::class, 'handle'])->name('webhook.snippe');

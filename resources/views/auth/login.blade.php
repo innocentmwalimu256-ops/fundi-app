@@ -5,12 +5,8 @@
 @section('content')
 <div class="min-h-screen flex flex-col justify-between items-center py-8 px-4 sm:px-6 lg:px-8 bg-[#F7F8F7] relative">
     
-    <!-- Top Action Bar: Download App + Language Switcher -->
-    <div class="w-full max-w-md flex items-center justify-between">
-        <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200/80 text-xs font-bold transition shadow-xs">
-            <i data-lucide="download" class="w-3.5 h-3.5 text-teal-600"></i>
-            <span>{{ __('Download App / APK') }}</span>
-        </a>
+    <!-- Top Right Floating Language Switcher (SW | EN) -->
+    <div class="w-full max-w-md flex justify-end">
 
         <div class="relative" x-data="{ langOpen: false }">
             <button @click="langOpen = !langOpen" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-slate-50 text-xs font-bold text-navy-900 transition shadow-subtle">
@@ -136,23 +132,6 @@
                 </a>
             </div>
 
-        </div>
-
-        <!-- Download App Quick Banner -->
-        <div class="mt-4 p-3.5 rounded-2xl bg-white border border-slate-200/90 shadow-xs flex items-center justify-between">
-            <div class="flex items-center space-x-2.5">
-                <div class="w-8 h-8 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center font-bold flex-shrink-0">
-                    <i data-lucide="smartphone" class="w-4 h-4"></i>
-                </div>
-                <div>
-                    <h4 class="text-xs font-bold text-navy-900 leading-tight">{{ __('FUNDI Mobile App') }}</h4>
-                    <p class="text-[10px] text-slate-500 leading-tight">{{ __('Download Android APK v1.0.4 (8.5 MB)') }}</p>
-                </div>
-            </div>
-            <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-teal-300 font-bold text-[11px] shadow-xs flex items-center space-x-1.5 transition">
-                <i data-lucide="download" class="w-3 h-3"></i>
-                <span>{{ __('Download APK') }}</span>
-            </a>
         </div>
     </div>
 
