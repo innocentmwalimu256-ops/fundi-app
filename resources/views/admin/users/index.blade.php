@@ -49,7 +49,60 @@
                 </thead>
                 <tbody class="divide-y divide-slate-100">
                     @forelse($users as $u)
-                    <tr class="hover:bg-slate-50/60">
+                    <tr x-data="{
+                            userStatus: '{{ $u->status }}',
+                            loading: false,
+                            deleted: false,
+                            async toggleStatus() {
+                                this.loading = true;
+                                try {
+                                    let res = await fetch('{{ route('admin.users.toggle-status', $u->id) }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                            'Accept': 'application/json'
+                                        }
+                                    });
+                                    let data = await res.json();
+                                    if (data.success) {
+                                        this.userStatus = data.status;
+                                        this.$nextTick(() => { if (window.lucide) window.lucide.createIcons(); });
+                                    }
+                                } catch (e) {
+                                    window.location.reload();
+                                } finally {
+                                    this.loading = false;
+                                }
+                            },
+                            async deleteUser() {
+                                if (!confirm('{{ __('Je, una uhakika unataka kumfuta kabisa mtumiaji huyu (:name)? Taarifa zake zitaondolewa na email yake (:email) itakuwa huru kusajiliwa upya.', ['name' => $u->full_name, 'email' => $u->email]) }}')) {
+                                    return;
+                                }
+                                this.loading = true;
+                                try {
+                                    let res = await fetch('{{ route('admin.users.delete', $u->id) }}', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                            'Accept': 'application/json'
+                                        }
+                                    });
+                                    let data = await res.json();
+                                    if (data.success) {
+                                        this.deleted = true;
+                                    }
+                                } catch (e) {
+                                    window.location.reload();
+                                } finally {
+                                    this.loading = false;
+                                }
+                            }
+                        }" 
+                        x-show="!deleted"
+                        x-transition.duration.300ms
+                        class="hover:bg-slate-50/60 transition">
                         <td class="p-4">
                             <div class="flex items-center space-x-3">
                                 <div class="w-9 h-9 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center justify-center">
@@ -71,36 +124,57 @@
                             </span>
                         </td>
                         <td class="p-4">
-                            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize {{ $u->status === 'active' ? 'bg-emerald-100 text-emerald-800' : 'bg-rose-100 text-rose-800' }}">
-                                {{ __(ucfirst($u->status)) }}
-                            </span>
+                            <template x-if="userStatus === 'active'">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize bg-emerald-100 text-emerald-800">
+                                    {{ __('Active') }}
+                                </span>
+                            </template>
+                            <template x-if="userStatus !== 'active'">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize bg-rose-100 text-rose-800">
+                                    {{ __('Suspended') }}
+                                </span>
+                            </template>
                         </td>
                         <td class="p-4 text-slate-500">{{ $u->created_at->format('d M Y') }}</td>
                         <td class="p-4 text-right">
                             @if($u->id !== auth()->id())
                             <div class="flex items-center justify-end space-x-2">
-                                <form method="POST" action="{{ route('admin.users.toggle-status', $u->id) }}" class="inline">
-                                    @csrf
-                                    @if($u->status === 'active')
-                                    <button type="submit" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition flex items-center space-x-1 cursor-pointer" title="{{ __('Simamisha mtumiaji huyu kwa muda') }}">
-                                        <i data-lucide="pause-circle" class="w-3.5 h-3.5 text-amber-600"></i>
-                                        <span>{{ __('Suspend') }}</span>
-                                    </button>
-                                    @else
-                                    <button type="submit" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition flex items-center space-x-1 cursor-pointer shadow-xs" title="{{ __('Rejesha na umruhusu mtumiaji huyu aendelee kutumia mfumo') }}">
-                                        <i data-lucide="play-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
-                                        <span>{{ __('Ruhusu / Unsuspend') }}</span>
-                                    </button>
-                                    @endif
-                                </form>
+                                <button type="button" 
+                                        @click="toggleStatus()" 
+                                        :disabled="loading"
+                                        :class="userStatus === 'active' ? 'bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200' : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border-emerald-300 shadow-xs'"
+                                        class="px-3 py-1.5 rounded-xl text-[11px] font-bold border transition flex items-center space-x-1 cursor-pointer disabled:opacity-50">
+                                    <template x-if="!loading && userStatus === 'active'">
+                                        <span class="flex items-center space-x-1">
+                                            <i data-lucide="pause-circle" class="w-3.5 h-3.5 text-amber-600"></i>
+                                            <span>{{ __('Suspend') }}</span>
+                                        </span>
+                                    </template>
+                                    <template x-if="!loading && userStatus !== 'active'">
+                                        <span class="flex items-center space-x-1">
+                                            <i data-lucide="play-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                            <span>{{ __('Ruhusu / Unsuspend') }}</span>
+                                        </span>
+                                    </template>
+                                    <template x-if="loading">
+                                        <span class="flex items-center space-x-1">
+                                            <svg class="animate-spin h-3.5 w-3.5 text-slate-700" fill="none" viewBox="0 0 24 24">
+                                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            <span>{{ __('Inabadilisha...') }}</span>
+                                        </span>
+                                    </template>
+                                </button>
 
-                                <form method="POST" action="{{ route('admin.users.delete', $u->id) }}" class="inline" onsubmit="return confirm('{{ __('Je, una uhakika unataka kumfuta kabisa mtumiaji huyu (:name)? Taarifa zake zitaondolewa na email yake (:email) itakuwa huru kusajiliwa upya.', ['name' => $u->full_name, 'email' => $u->email]) }}');">
-                                    @csrf
-                                    <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition flex items-center space-x-1 cursor-pointer" title="{{ __('Futa kabisa mtumiaji na weka email yake huru') }}">
-                                        <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
-                                        <span>{{ __('Delete') }}</span>
-                                    </button>
-                                </form>
+                                <button type="button" 
+                                        @click="deleteUser()" 
+                                        :disabled="loading"
+                                        class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition flex items-center space-x-1 cursor-pointer disabled:opacity-50"
+                                        title="{{ __('Futa kabisa mtumiaji na weka email yake huru') }}">
+                                    <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
+                                    <span>{{ __('Delete') }}</span>
+                                </button>
                             </div>
                             @else
                             <span class="text-slate-400 text-[10px] italic">{{ __('Akaunti Yako (You)') }}</span>

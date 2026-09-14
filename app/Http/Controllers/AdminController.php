@@ -121,6 +121,9 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
         if ($user->id === Auth::id()) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => __('Huwezi kusimamisha akaunti yako mwenyewe ya Admin.')], 403);
+            }
             return back()->with('error', __('Huwezi kusimamisha akaunti yako mwenyewe ya Admin.'));
         }
 
@@ -138,6 +141,14 @@ class AdminController extends Controller
             ? __("Mtumiaji :name amewashwa tena na kuruhusiwa kuendelea kutumia mfumo kikamilifu (Unsuspend / Allowed).", ['name' => $user->full_name])
             : __("Mtumiaji :name amesimamishwa kwa muda (Suspended). Hataweza kuingia kwenye mfumo mpaka umruhusu tena.", ['name' => $user->full_name]);
 
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'status' => $newStatus,
+                'message' => $msg,
+            ]);
+        }
+
         return back()->with('success', $msg);
     }
 
@@ -145,6 +156,9 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
         if ($user->id === Auth::id()) {
+            if ($request->expectsJson() || $request->ajax()) {
+                return response()->json(['success' => false, 'message' => __('Huwezi kufuta akaunti yako mwenyewe ya Admin.')], 403);
+            }
             return back()->with('error', __('Huwezi kufuta akaunti yako mwenyewe ya Admin.'));
         }
 
@@ -179,10 +193,19 @@ class AdminController extends Controller
             $userId
         );
 
-        return back()->with('success', __("Mtumiaji :name (:email) amefutwa kabisa kwenye mfumo na barua pepe yake sasa ipo huru kusajiliwa tena.", [
+        $msg = __("Mtumiaji :name (:email) amefutwa kabisa kwenye mfumo na barua pepe yake sasa ipo huru kusajiliwa tena.", [
             'name' => $userName,
             'email' => $userEmail,
-        ]));
+        ]);
+
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => $msg,
+            ]);
+        }
+
+        return back()->with('success', $msg);
     }
 
     public function technicians(Request $request)
