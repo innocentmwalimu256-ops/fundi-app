@@ -78,23 +78,32 @@
                         <td class="p-4 text-slate-500">{{ $u->created_at->format('d M Y') }}</td>
                         <td class="p-4 text-right">
                             @if($u->id !== auth()->id())
-                            <div class="flex items-center justify-end space-x-1.5">
+                            <div class="flex items-center justify-end space-x-2">
                                 <form method="POST" action="{{ route('admin.users.toggle-status', $u->id) }}" class="inline">
                                     @csrf
-                                    <button type="submit" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition {{ $u->status === 'active' ? 'bg-amber-50 text-amber-700 hover:bg-amber-100' : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' }}">
-                                        {{ $u->status === 'active' ? __('Suspend') : __('Activate') }}
+                                    @if($u->status === 'active')
+                                    <button type="submit" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 transition flex items-center space-x-1 cursor-pointer" title="{{ __('Simamisha mtumiaji huyu kwa muda') }}">
+                                        <i data-lucide="pause-circle" class="w-3.5 h-3.5 text-amber-600"></i>
+                                        <span>{{ __('Suspend') }}</span>
                                     </button>
+                                    @else
+                                    <button type="submit" class="px-3 py-1.5 rounded-xl text-[11px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 transition flex items-center space-x-1 cursor-pointer shadow-xs" title="{{ __('Rejesha na umruhusu mtumiaji huyu aendelee kutumia mfumo') }}">
+                                        <i data-lucide="play-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                        <span>{{ __('Ruhusu / Unsuspend') }}</span>
+                                    </button>
+                                    @endif
                                 </form>
 
-                                <form method="POST" action="{{ route('admin.users.delete', $u->id) }}" class="inline" onsubmit="return confirm('{{ __('Je, una uhakika unataka kumfuta kabisa mtumiaji huyu (:name)? Email yake (:email) itakuwa huru kutumika kusajili upya.', ['name' => $u->full_name, 'email' => $u->email]) }}');">
+                                <form method="POST" action="{{ route('admin.users.delete', $u->id) }}" class="inline" onsubmit="return confirm('{{ __('Je, una uhakika unataka kumfuta kabisa mtumiaji huyu (:name)? Taarifa zake zitaondolewa na email yake (:email) itakuwa huru kusajiliwa upya.', ['name' => $u->full_name, 'email' => $u->email]) }}');">
                                     @csrf
-                                    <button type="submit" class="px-2.5 py-1.5 rounded-lg text-[11px] font-bold bg-rose-50 text-rose-700 hover:bg-rose-100 transition">
-                                        {{ __('Delete') }}
+                                    <button type="submit" class="px-2.5 py-1.5 rounded-xl text-[11px] font-bold bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 transition flex items-center space-x-1 cursor-pointer" title="{{ __('Futa kabisa mtumiaji na weka email yake huru') }}">
+                                        <i data-lucide="trash-2" class="w-3.5 h-3.5 text-rose-600"></i>
+                                        <span>{{ __('Delete') }}</span>
                                     </button>
                                 </form>
                             </div>
                             @else
-                            <span class="text-slate-400 text-[10px] italic">{{ __('You') }}</span>
+                            <span class="text-slate-400 text-[10px] italic">{{ __('Akaunti Yako (You)') }}</span>
                             @endif
                         </td>
                     </tr>

@@ -121,7 +121,7 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
         if ($user->id === Auth::id()) {
-            return back()->with('error', 'You cannot suspend your own admin account.');
+            return back()->with('error', __('Huwezi kusimamisha akaunti yako mwenyewe ya Admin.'));
         }
 
         $newStatus = $user->status === 'active' ? 'suspended' : 'active';
@@ -134,7 +134,11 @@ class AdminController extends Controller
             $user->id
         );
 
-        return back()->with('success', "User {$user->full_name} status updated to {$newStatus}.");
+        $msg = $newStatus === 'active'
+            ? __("Mtumiaji :name amewashwa tena na kuruhusiwa kuendelea kutumia mfumo kikamilifu (Unsuspend / Allowed).", ['name' => $user->full_name])
+            : __("Mtumiaji :name amesimamishwa kwa muda (Suspended). Hataweza kuingia kwenye mfumo mpaka umruhusu tena.", ['name' => $user->full_name]);
+
+        return back()->with('success', $msg);
     }
 
     public function deleteUser(Request $request, $id)
