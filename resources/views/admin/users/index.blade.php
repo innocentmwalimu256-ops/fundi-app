@@ -24,6 +24,7 @@
                 <select name="status" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs bg-slate-50">
                     <option value="">{{ __('All Statuses') }}</option>
                     <option value="active" {{ $status === 'active' ? 'selected' : '' }}>{{ __('Active') }}</option>
+                    <option value="pending" {{ $status === 'pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
                     <option value="suspended" {{ $status === 'suspended' ? 'selected' : '' }}>{{ __('Suspended') }}</option>
                 </select>
                 <button type="submit" class="px-4 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-sm">
@@ -129,7 +130,12 @@
                                     {{ __('Active') }}
                                 </span>
                             </template>
-                            <template x-if="userStatus !== 'active'">
+                            <template x-if="userStatus === 'pending'">
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize bg-amber-100 text-amber-800 border border-amber-200" title="{{ __('Pending OTP Email Verification') }}">
+                                    {{ __('Pending') }}
+                                </span>
+                            </template>
+                            <template x-if="userStatus === 'suspended'">
                                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold capitalize bg-rose-100 text-rose-800">
                                     {{ __('Suspended') }}
                                 </span>
@@ -150,7 +156,13 @@
                                             <span>{{ __('Suspend') }}</span>
                                         </span>
                                     </template>
-                                    <template x-if="!loading && userStatus !== 'active'">
+                                    <template x-if="!loading && userStatus === 'pending'">
+                                        <span class="flex items-center space-x-1">
+                                            <i data-lucide="check-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
+                                            <span>{{ __('Ruhusu / Activate') }}</span>
+                                        </span>
+                                    </template>
+                                    <template x-if="!loading && userStatus === 'suspended'">
                                         <span class="flex items-center space-x-1">
                                             <i data-lucide="play-circle" class="w-3.5 h-3.5 text-emerald-600"></i>
                                             <span>{{ __('Ruhusu / Unsuspend') }}</span>

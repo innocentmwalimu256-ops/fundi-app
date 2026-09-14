@@ -62,7 +62,7 @@ class AuthController extends Controller
             ]);
         }
 
-        if ($user->status !== 'active') {
+        if ($user->status === 'suspended') {
             return back()->withErrors([
                 'login' => __('Your account is currently suspended. Please contact support.'),
             ]);
@@ -73,7 +73,7 @@ class AuthController extends Controller
 
         AuditLog::log('login', "User {$user->full_name} logged in", 'User', $user->id);
 
-        if (!$user->isEmailVerified() && $user->role !== 'admin') {
+        if ((!$user->isEmailVerified() || $user->status === 'pending') && $user->role !== 'admin') {
             EmailVerificationService::generateAndSendOtp($user);
             return redirect()->route('verification.notice')
                 ->with('info', __('Please verify your email address by entering the 6-digit OTP sent to your inbox.'));
@@ -124,7 +124,7 @@ class AuthController extends Controller
             'phone' => $validated['phone'],
             'password' => $hashedPassword,
             'role' => 'client',
-            'status' => 'active',
+            'status' => 'pending',
             'email_verified_at' => null, // Unverified initially
         ]);
 
