@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#0F9F95">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="FUNDI">
+    <link rel="manifest" href="/manifest.json">
     <title>@yield('title', 'Sign In') — FUNDI | Find. Connect. Fix.</title>
     
     <!-- Preconnect & DNS-Prefetch for Maximum Speed -->
@@ -442,10 +448,10 @@
             <!-- Left Sidebar Footer: App Download, Language & Logout -->
             <div class="pt-4 border-t border-slate-200/80 space-y-2">
                 <!-- Mobile App Download Banner -->
-                <a href="{{ route('app.download') }}" class="flex items-center justify-between p-2.5 rounded-xl bg-teal-50 hover:bg-teal-100/80 border border-teal-200 text-teal-900 text-xs font-bold transition shadow-xs group">
+                <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="flex items-center justify-between p-2.5 rounded-xl bg-teal-50 hover:bg-teal-100/80 border border-teal-200 text-teal-900 text-xs font-bold transition shadow-xs group">
                     <div class="flex items-center space-x-2">
-                        <i data-lucide="smartphone" class="w-4 h-4 text-teal-600 group-hover:scale-110 transition-transform"></i>
-                        <span>{{ __('Mobile App (APK)') }}</span>
+                        <i data-lucide="download" class="w-4 h-4 text-teal-600 group-hover:scale-110 transition-transform"></i>
+                        <span>{{ __('Download APK') }}</span>
                     </div>
                     <span class="px-1.5 py-0.5 rounded bg-teal-600 text-white text-[9px] font-black uppercase tracking-wider">APK</span>
                 </a>
@@ -549,7 +555,7 @@
                             <i data-lucide="message-square" class="w-4 h-4 mr-3"></i> {{ __('Messages') }}
                         </a>
 
-                        <a href="{{ route('app.download') }}" class="flex items-center px-3 py-2.5 rounded-xl bg-teal-50 text-teal-800 font-bold border border-teal-200 shadow-xs">
+                        <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="flex items-center px-3 py-2.5 rounded-xl bg-teal-50 text-teal-800 font-bold border border-teal-200 shadow-xs">
                             <i data-lucide="download" class="w-4 h-4 mr-3 text-teal-600"></i> {{ __('Download App (APK)') }}
                         </a>
                     </nav>
@@ -705,9 +711,9 @@
                     <!-- Right CTAs -->
                     <div class="flex items-center space-x-2 sm:space-x-3">
                         <!-- App Download Link -->
-                        <a href="{{ route('app.download') }}" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 text-xs font-bold transition shadow-xs">
-                            <i data-lucide="smartphone" class="w-3.5 h-3.5 text-teal-600"></i>
-                            <span class="hidden sm:inline">{{ __('Download App') }}</span>
+                        <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-800 text-xs font-bold transition shadow-xs">
+                            <i data-lucide="download" class="w-3.5 h-3.5 text-teal-600"></i>
+                            <span class="hidden sm:inline">{{ __('Download App (APK)') }}</span>
                             <span class="sm:hidden">APK</span>
                         </a>
 

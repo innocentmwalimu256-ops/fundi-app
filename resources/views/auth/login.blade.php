@@ -7,7 +7,7 @@
     
     <!-- Top Action Bar: Download App + Language Switcher -->
     <div class="w-full max-w-md flex items-center justify-between">
-        <a href="{{ route('app.download') }}" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200/80 text-xs font-bold transition shadow-xs">
+        <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200/80 text-xs font-bold transition shadow-xs">
             <i data-lucide="download" class="w-3.5 h-3.5 text-teal-600"></i>
             <span>{{ __('Download App / APK') }}</span>
         </a>
@@ -149,9 +149,9 @@
                     <p class="text-[10px] text-slate-500 leading-tight">{{ __('Download Android APK v1.0.4 (8.5 MB)') }}</p>
                 </div>
             </div>
-            <a href="{{ route('app.download') }}" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-teal-300 font-bold text-[11px] shadow-xs flex items-center space-x-1.5 transition">
+            <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-teal-300 font-bold text-[11px] shadow-xs flex items-center space-x-1.5 transition">
                 <i data-lucide="download" class="w-3 h-3"></i>
-                <span>{{ __('Get App') }}</span>
+                <span>{{ __('Download APK') }}</span>
             </a>
         </div>
     </div>

@@ -393,13 +393,13 @@
                         {{ __('Download the official FUNDI Android APK or add to home screen. Access 100% verified artisans, get real-time job notifications, and call or chat instantly without delay.') }}
                     </p>
                     <div class="flex flex-wrap items-center gap-3 pt-2">
-                        <a href="{{ route('app.download') }}" class="px-6 py-3.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-teal-500/25 transition flex items-center space-x-2">
+                        <a href="{{ route('app.download.apk') }}" download="FUNDI-App.apk" class="px-6 py-3.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-teal-500/25 transition flex items-center space-x-2">
                             <i data-lucide="download" class="w-4 h-4"></i>
                             <span>{{ __('Download Android APK (8.5 MB)') }}</span>
                         </a>
-                        <a href="{{ route('app.download') }}" class="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider border border-slate-700 transition flex items-center space-x-2">
-                            <i data-lucide="help-circle" class="w-4 h-4 text-teal-400"></i>
-                            <span>{{ __('Installation Guide') }}</span>
+                        <a href="{{ route('login') }}" class="px-5 py-3.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs uppercase tracking-wider border border-slate-700 transition flex items-center space-x-2">
+                            <i data-lucide="globe" class="w-4 h-4 text-teal-400"></i>
+                            <span>{{ __('Open Web App') }}</span>
                         </a>
                     </div>
                 </div>
