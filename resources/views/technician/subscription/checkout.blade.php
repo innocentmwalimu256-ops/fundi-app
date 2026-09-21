@@ -18,7 +18,7 @@
         </div>
 
         <!-- Plan Summary Box -->
-        <div class="bg-gradient-to-br from-slate-900 via-brand-950 to-slate-900 rounded-3xl p-6 text-white space-y-4 shadow-lg border border-teal-500/20">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 rounded-3xl p-6 text-white space-y-4 shadow-lg border border-teal-500/20">
             <div class="flex items-center justify-between">
                 <div>
                     <h3 class="text-lg font-black text-white">{{ __($plan->name) }} {{ __('Plan') }}</h3>

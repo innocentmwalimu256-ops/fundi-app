@@ -13,13 +13,13 @@
     </div>
 
     <div class="flex border-b border-slate-200 space-x-4 text-xs font-bold">
-        <a href="{{ route('technician.jobs.index', ['status' => 'all']) }}" class="py-3 border-b-2 {{ $status === 'all' ? 'border-brand-700 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+        <a href="{{ route('technician.jobs.index', ['status' => 'all']) }}" class="py-3 border-b-2 {{ $status === 'all' ? 'border-teal-700 text-teal-700' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
             {{ __('All Jobs') }}
         </a>
-        <a href="{{ route('technician.jobs.index', ['status' => 'active']) }}" class="py-3 border-b-2 {{ $status === 'active' ? 'border-brand-700 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+        <a href="{{ route('technician.jobs.index', ['status' => 'active']) }}" class="py-3 border-b-2 {{ $status === 'active' ? 'border-teal-700 text-teal-700' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
             {{ __('Active / In Progress') }}
         </a>
-        <a href="{{ route('technician.jobs.index', ['status' => 'completed']) }}" class="py-3 border-b-2 {{ $status === 'completed' ? 'border-brand-700 text-brand-700' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
+        <a href="{{ route('technician.jobs.index', ['status' => 'completed']) }}" class="py-3 border-b-2 {{ $status === 'completed' ? 'border-teal-700 text-teal-700' : 'border-transparent text-slate-500 hover:text-slate-800' }}">
             {{ __('Completed History') }}
         </a>
     </div>

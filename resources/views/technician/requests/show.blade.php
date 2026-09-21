@@ -33,7 +33,7 @@
                     {{ __('Decline') }}
                 </button>
             @elseif(in_array($request->status, ['accepted', 'quotation_pending']))
-                <button type="button" @click="quoteModal = true" class="px-5 py-2.5 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center space-x-1.5">
+                <button type="button" @click="quoteModal = true" class="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center space-x-1.5 cursor-pointer">
                     <i data-lucide="calculator" class="w-4 h-4"></i>
                     <span>{{ $request->latestQuotation ? __('Update / Re-Send Quotation') : __('Create Itemized Quotation') }}</span>
                 </button>
@@ -47,10 +47,32 @@
         <!-- Left 2 Cols: Details, Quotation, Status Actions, Chat -->
         <div class="lg:col-span-2 space-y-6">
 
+            <!-- Next Step Prompt Banner for Technician -->
+            @if(in_array($request->status, ['accepted', 'quotation_pending']))
+            <div class="bg-gradient-to-r from-slate-900 via-slate-950 to-teal-950 rounded-3xl p-6 text-white border border-teal-500/30 shadow-lg flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 text-[11px] font-bold">
+                        <i data-lucide="calculator" class="w-3.5 h-3.5 mr-1"></i>
+                        <span>{{ __('HATUA INAYOFUATA / NEXT STEP') }}</span>
+                    </div>
+                    <h3 class="text-base font-black text-white">
+                        {{ $request->latestQuotation ? __('Nukuu ya Bei Imetumwa (Inasubiri Mteja)') : __('Andaa na Utume Makadirio ya Bei (Quotation)') }}
+                    </h3>
+                    <p class="text-xs text-slate-300">
+                        {{ $request->latestQuotation ? __('Nukuu yako ipo kwa mteja kwa ajili ya kuikubali au kuikataa.') : __('Weka mchanganuo wa gharama za ufundi (labour), vifaa (materials), na usafiri ili mteja athibitishe kabla ya kuanza kazi.') }}
+                    </p>
+                </div>
+                <button type="button" @click="quoteModal = true" class="px-6 py-3.5 rounded-2xl bg-teal-500 hover:bg-teal-400 active:scale-95 text-slate-950 font-black text-xs shadow-lg shadow-teal-500/20 transition flex items-center space-x-2 flex-shrink-0 cursor-pointer">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                    <span>{{ $request->latestQuotation ? __('Badili / Tuma Upya Nukuu') : __('Jaza Nukuu ya Bei (Quotation)') }}</span>
+                </button>
+            </div>
+            @endif
+
             <!-- Problem Description & Photos (Section 19) -->
             <div class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-4">
                 <h2 class="text-base font-bold uppercase tracking-wider text-slate-900 flex items-center">
-                    <i data-lucide="file-text" class="w-4 h-4 mr-2 text-brand-700"></i> {{ __('Client Problem Description') }}
+                    <i data-lucide="file-text" class="w-4 h-4 mr-2 text-teal-700"></i> {{ __('Client Problem Description') }}
                 </h2>
                 
                 <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-sm text-slate-800 leading-relaxed">
@@ -104,7 +126,7 @@
                     @endif
                     <div class="flex justify-between pt-3 text-base font-black text-slate-900">
                         <span>{{ __('Total Cost') }}</span>
-                        <span class="text-brand-700">{{ $request->latestQuotation->formatted_total }}</span>
+                        <span class="text-teal-700">{{ $request->latestQuotation->formatted_total }}</span>
                     </div>
                 </div>
 
@@ -208,7 +230,7 @@
                 <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">{{ __('Client Information') }}</h3>
                 
                 <div class="flex items-center space-x-3">
-                    <div class="w-12 h-12 rounded-2xl bg-brand-900 text-white font-bold text-sm flex items-center justify-center">
+                    <div class="w-12 h-12 rounded-2xl bg-slate-900 text-teal-300 font-black text-sm flex items-center justify-center shadow-xs">
                         {{ $request->client->initials }}
                     </div>
                     <div>
@@ -268,7 +290,7 @@
                                 @endif
                             </p>
                             @if(!auth()->user()->hasActiveSubscription())
-                            <a href="{{ route('technician.subscription') }}" class="block text-center py-2.5 px-3 bg-brand-700 hover:bg-brand-800 text-white font-bold text-xs rounded-xl shadow-sm transition">
+                            <a href="{{ route('technician.subscription') }}" class="block text-center py-2.5 px-3 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-xl shadow-sm transition">
                                 {{ __('Renew Subscription Plan') }}
                             </a>
                             @endif
@@ -315,29 +337,29 @@
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">{{ __('Labour Cost') }} (TZS)</label>
-                        <input type="number" name="labour_cost" x-model="labour" required min="0" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-brand-500 bg-slate-50">
+                        <input type="number" name="labour_cost" x-model="labour" required min="0" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-teal-500 bg-slate-50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">{{ __('Materials Cost') }} (TZS)</label>
-                        <input type="number" name="materials_cost" x-model="materials" min="0" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-brand-500 bg-slate-50">
+                        <input type="number" name="materials_cost" x-model="materials" min="0" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-teal-500 bg-slate-50">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">{{ __('Transport / Logistics') }} (TZS)</label>
-                        <input type="number" name="transport_cost" x-model="transport" min="0" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-brand-500 bg-slate-50">
+                        <input type="number" name="transport_cost" x-model="transport" min="0" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-teal-500 bg-slate-50">
                     </div>
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">{{ __('Discount') }} (TZS)</label>
-                        <input type="number" name="discount" x-model="discount" min="0" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-brand-500 bg-slate-50">
+                        <input type="number" name="discount" x-model="discount" min="0" class="w-full py-2.5 px-3 rounded-xl border border-slate-200 text-xs font-bold focus:ring-2 focus:ring-teal-500 bg-slate-50">
                     </div>
                 </div>
 
                 <!-- Live Auto-Summed Total Display (Section 22) -->
-                <div class="p-4 rounded-2xl bg-brand-50 border border-brand-200 text-center">
-                    <p class="text-xs font-bold uppercase tracking-wider text-brand-700">{{ __('Total Calculated Quotation') }}</p>
-                    <p class="text-2xl font-black text-brand-950 mt-0.5">
+                <div class="p-4 rounded-2xl bg-teal-50 border border-teal-200 text-center">
+                    <p class="text-xs font-bold uppercase tracking-wider text-teal-800">{{ __('Total Calculated Quotation') }}</p>
+                    <p class="text-2xl font-black text-slate-950 mt-0.5 font-mono">
                         TZS <span x-text="new Intl.NumberFormat().format(total)"></span>
                     </p>
                 </div>
@@ -359,8 +381,8 @@
                 </div>
 
                 <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" @click="quoteModal = false" class="px-4 py-2 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-100">{{ __('Cancel') }}</button>
-                    <button type="submit" class="px-5 py-2 text-xs font-bold bg-brand-700 hover:bg-brand-800 text-white rounded-xl shadow">{{ __('Send Quotation') }}</button>
+                    <button type="button" @click="quoteModal = false" class="px-4 py-2 text-xs font-bold text-slate-600 rounded-xl hover:bg-slate-100 cursor-pointer">{{ __('Cancel') }}</button>
+                    <button type="submit" class="px-5 py-2.5 text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white rounded-xl shadow cursor-pointer">{{ __('Send Quotation') }}</button>
                 </div>
             </form>
         </div>
