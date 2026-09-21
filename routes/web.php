@@ -37,6 +37,9 @@ Route::middleware('guest')->group(function () {
     Route::get('/demo', function () {
         return view('auth.demo');
     })->name('demo');
+    Route::get('/demo-center', function () {
+        return redirect()->route('demo');
+    })->name('demo.center');
 });
 
 // Language Switcher (Swahili & English)

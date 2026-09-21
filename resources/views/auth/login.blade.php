@@ -7,7 +7,7 @@
     
     <!-- Top Bar with Language Switcher & Full Demo Link -->
     <div class="w-full max-w-md flex items-center justify-between">
-        <a href="{{ route('demo.center') }}" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-teal-200 bg-teal-50/80 hover:bg-teal-100 text-xs font-bold text-teal-800 transition shadow-subtle">
+        <a href="{{ route('demo') }}" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-teal-200 bg-teal-50/80 hover:bg-teal-100 text-xs font-bold text-teal-800 transition shadow-subtle">
             <i data-lucide="presentation" class="w-3.5 h-3.5 text-teal-600"></i>
             <span>{{ __('Demo Center') }}</span>
         </a>
