@@ -129,7 +129,7 @@ class ServiceRequestController extends Controller
                 'preferred_time' => $validated['preferred_time'] ?? $request->input('preferred_time', '14:00'),
                 'urgency' => $validated['urgency'] ?? $request->input('urgency', 'normal'),
                 'status' => 'pending',
-                'payment_status' => $isDemo ? 'paid' : 'unpaid',
+                'payment_status' => 'unpaid',
                 'connection_fee' => $isDemo ? 0 : 500,
                 'connection_fee_status' => $isDemo ? 'paid' : 'pending',
                 'connection_fee_reference' => $paymentRef,
@@ -204,7 +204,6 @@ class ServiceRequestController extends Controller
         if ($isDemo) {
             $serviceRequest->update([
                 'connection_fee_status' => 'paid',
-                'payment_status' => 'paid',
                 'connection_fee_reference' => 'DEMO-FREE-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
             ]);
 

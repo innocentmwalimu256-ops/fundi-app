@@ -217,7 +217,6 @@ class PaymentStatusController extends Controller
         if ($isDemo) {
             $serviceRequest->update([
                 'connection_fee_status' => 'paid',
-                'payment_status' => 'paid',
                 'connection_fee_reference' => 'DEMO-FREE-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
             ]);
 
