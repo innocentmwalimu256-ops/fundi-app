@@ -5,9 +5,14 @@
 @section('content')
 <div class="min-h-screen flex flex-col justify-between items-center py-8 px-4 sm:px-6 lg:px-8 bg-[#F7F8F7] relative">
     
-    <!-- Top Right Floating Language Switcher (SW | EN) -->
-    <div class="w-full max-w-md flex justify-end">
+    <!-- Top Bar with Language Switcher & Full Demo Link -->
+    <div class="w-full max-w-md flex items-center justify-between">
+        <a href="{{ route('demo.center') }}" class="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-teal-200 bg-teal-50/80 hover:bg-teal-100 text-xs font-bold text-teal-800 transition shadow-subtle">
+            <i data-lucide="presentation" class="w-3.5 h-3.5 text-teal-600"></i>
+            <span>{{ __('Demo Center') }}</span>
+        </a>
 
+        <!-- Floating Language Switcher (SW | EN) -->
         <div class="relative" x-data="{ langOpen: false }">
             <button @click="langOpen = !langOpen" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl border border-[#E5E7EB] bg-white hover:bg-slate-50 text-xs font-bold text-navy-900 transition shadow-subtle">
                 <i data-lucide="globe" class="w-3.5 h-3.5 text-teal-600"></i>
@@ -28,7 +33,7 @@
     </div>
 
     <!-- Center Login Card -->
-    <div class="w-full max-w-md my-auto">
+    <div class="w-full max-w-md my-auto space-y-4">
         <div class="bg-white rounded-3xl p-7 sm:p-9 shadow-card border border-[#E5E7EB] space-y-6">
             
             <!-- Brand Logo & Header -->
@@ -66,8 +71,66 @@
                 </div>
             @endif
 
+            <!-- 1-Click Interactive Demo Accounts Section -->
+            <div class="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2.5">
+                <div class="flex items-center justify-between">
+                    <span class="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center space-x-1.5">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-teal-600"></i>
+                        <span>{{ __('Quick Demo Logins') }}</span>
+                    </span>
+                    <span class="text-[10px] font-medium text-slate-400">{{ __('1-Click Fill') }}</span>
+                </div>
 
+                <div class="grid grid-cols-2 gap-2">
+                    <!-- Demo Admin -->
+                    <button type="button" onclick="fillDemoLogin('admin@fundi.test', 'password123')"
+                        class="p-2.5 rounded-xl bg-white hover:bg-purple-50 hover:border-purple-300 border border-slate-200 text-left transition flex items-center space-x-2 shadow-xs group">
+                        <div class="w-7 h-7 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center font-bold flex-shrink-0 text-xs">
+                            <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="text-[11px] font-bold text-slate-900 group-hover:text-purple-700 leading-tight truncate">{{ __('Super Admin') }}</div>
+                            <div class="text-[9px] text-slate-400 truncate">admin@fundi.test</div>
+                        </div>
+                    </button>
 
+                    <!-- Demo Client -->
+                    <button type="button" onclick="fillDemoLogin('client@fundi.test', 'password123')"
+                        class="p-2.5 rounded-xl bg-white hover:bg-blue-50 hover:border-blue-300 border border-slate-200 text-left transition flex items-center space-x-2 shadow-xs group">
+                        <div class="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold flex-shrink-0 text-xs">
+                            <i data-lucide="user" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="text-[11px] font-bold text-slate-900 group-hover:text-blue-700 leading-tight truncate">{{ __('Client (Mteja)') }}</div>
+                            <div class="text-[9px] text-slate-400 truncate">client@fundi.test</div>
+                        </div>
+                    </button>
+
+                    <!-- Demo Active Fundi -->
+                    <button type="button" onclick="fillDemoLogin('tech@fundi.test', 'password123')"
+                        class="p-2.5 rounded-xl bg-white hover:bg-teal-50 hover:border-teal-300 border border-slate-200 text-left transition flex items-center space-x-2 shadow-xs group">
+                        <div class="w-7 h-7 rounded-lg bg-teal-100 text-teal-700 flex items-center justify-center font-bold flex-shrink-0 text-xs">
+                            <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="text-[11px] font-bold text-slate-900 group-hover:text-teal-700 leading-tight truncate">{{ __('Fundi (Active)') }}</div>
+                            <div class="text-[9px] text-slate-400 truncate">tech@fundi.test</div>
+                        </div>
+                    </button>
+
+                    <!-- Demo Expired Fundi -->
+                    <button type="button" onclick="fillDemoLogin('expiredtech@fundi.test', 'password123')"
+                        class="p-2.5 rounded-xl bg-white hover:bg-rose-50 hover:border-rose-300 border border-slate-200 text-left transition flex items-center space-x-2 shadow-xs group">
+                        <div class="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold flex-shrink-0 text-xs">
+                            <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                        </div>
+                        <div class="overflow-hidden">
+                            <div class="text-[11px] font-bold text-slate-900 group-hover:text-rose-700 leading-tight truncate">{{ __('Fundi (Expired)') }}</div>
+                            <div class="text-[9px] text-slate-400 truncate">expiredtech@...</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
 
             <!-- Login Form -->
             <form id="login-form" method="POST" action="{{ route('login.submit') }}" class="space-y-4">
@@ -141,5 +204,26 @@
     </div>
 
 </div>
+
+<script>
+    function fillDemoLogin(username, password) {
+        const loginInput = document.getElementById('login');
+        const passInput = document.getElementById('password');
+        
+        if (loginInput && passInput) {
+            loginInput.value = username;
+            passInput.value = password;
+            
+            // Visual highlight effect
+            loginInput.classList.add('ring-2', 'ring-teal-500', 'bg-white');
+            passInput.classList.add('ring-2', 'ring-teal-500', 'bg-white');
+            
+            setTimeout(() => {
+                loginInput.classList.remove('ring-2', 'ring-teal-500');
+                passInput.classList.remove('ring-2', 'ring-teal-500');
+            }, 1000);
+        }
+    }
+</script>
 
 @endsection
