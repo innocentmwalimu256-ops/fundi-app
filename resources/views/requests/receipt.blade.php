@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Official Payment Receipt #{{ $request->reference_no }} — FUNDI</title>
+    <title>{{ $request->payment_status === 'paid' ? 'Official Payment Receipt' : 'Service Agreement & Quotation' }} #{{ $request->reference_no }} — FUNDI</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
     <style>
@@ -20,6 +20,12 @@
             transform: rotate(-12deg);
             text-shadow: 0 0 1px rgba(5, 150, 105, 0.2);
         }
+        .stamp-pending {
+            border: 3px dashed #d97706;
+            color: #d97706;
+            transform: rotate(-12deg);
+            text-shadow: 0 0 1px rgba(217, 119, 6, 0.2);
+        }
     </style>
 </head>
 @php
@@ -31,6 +37,7 @@
             $backUrl = route('admin.requests.show', $request->id);
         }
     }
+    $isPaid = ($request->payment_status === 'paid');
     $q = $request->latestQuotation;
     $totalAmount = $q ? $q->total_cost : 0;
     $receiptNo = 'REC-' . strtoupper(substr(md5($request->reference_no . $request->id), 0, 8));
@@ -47,22 +54,29 @@
                 <span>{{ __('Back to Request') }}</span>
             </a>
             <div class="flex items-center space-x-2">
-                <button onclick="window.print()" class="px-5 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center space-x-2 cursor-pointer">
+                <button onclick="window.print()" class="px-5 py-2.5 {{ $isPaid ? 'bg-emerald-700 hover:bg-emerald-800' : 'bg-slate-900 hover:bg-slate-800' }} text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center space-x-2 cursor-pointer">
                     <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                    <span>{{ __('Print / Download PDF') }}</span>
+                    <span>{{ $isPaid ? __('Print / Download Receipt') : __('Print / Save Agreement') }}</span>
                 </button>
             </div>
         </div>
 
-        <!-- Official Receipt Box -->
+        <!-- Document Box -->
         <div class="receipt-box bg-white rounded-3xl p-8 sm:p-12 shadow-xl border border-slate-200 space-y-8 relative overflow-hidden">
             
             <!-- Watermark / Stamp -->
             <div class="absolute right-8 top-36 sm:right-16 sm:top-32 pointer-events-none opacity-85 z-10 select-none">
+                @if($isPaid)
                 <div class="stamp-paid px-6 py-2 rounded-2xl font-black text-center uppercase tracking-widest leading-tight">
                     <span class="text-xl sm:text-2xl block">PAID IN FULL</span>
                     <span class="text-[10px] font-bold block tracking-wider">IMELIPWA YOTE • VERIFIED</span>
                 </div>
+                @else
+                <div class="stamp-pending px-6 py-2 rounded-2xl font-black text-center uppercase tracking-widest leading-tight">
+                    <span class="text-lg sm:text-xl block">AGREED QUOTATION</span>
+                    <span class="text-[10px] font-bold block tracking-wider">INASUBIRI MALIPO • PENDING</span>
+                </div>
+                @endif
             </div>
 
             <!-- Header -->
@@ -74,7 +88,9 @@
                         </div>
                         <div>
                             <span class="text-xl font-black tracking-tight text-slate-950">FUNDI</span>
-                            <span class="text-[10px] font-bold bg-teal-50 text-teal-800 border border-teal-200 px-1.5 py-0.5 rounded ml-1.5 uppercase">Official Receipt</span>
+                            <span class="text-[10px] font-bold {{ $isPaid ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200' }} border px-1.5 py-0.5 rounded ml-1.5 uppercase">
+                                {{ $isPaid ? 'Official Receipt' : 'Service Agreement' }}
+                            </span>
                         </div>
                     </div>
                     <p class="text-xs text-slate-500 font-medium">Digital Service Marketplace • Verified Operations</p>
@@ -82,10 +98,17 @@
                 </div>
 
                 <div class="text-right space-y-1">
+                    @if($isPaid)
                     <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-100 text-emerald-800 border border-emerald-300 inline-flex items-center space-x-1">
-                        <span>MALIPO YAMEKAMILIKA</span>
+                        <span>MALIPO YAMEKAMILIKA (PAID)</span>
                     </span>
                     <p class="text-xs font-mono font-bold text-slate-900 mt-1">Receipt #: <span class="text-emerald-700 font-black">{{ $receiptNo }}</span></p>
+                    @else
+                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase bg-amber-100 text-amber-800 border border-amber-300 inline-flex items-center space-x-1">
+                        <span>INASUBIRI MALIPO / PENDING</span>
+                    </span>
+                    <p class="text-xs font-mono font-bold text-slate-900 mt-1">Quotation Ref: <span class="text-amber-700 font-black">{{ $receiptNo }}</span></p>
+                    @endif
                     <p class="text-[11px] font-mono text-slate-500">Order: {{ $request->reference_no }}</p>
                     <p class="text-[11px] text-slate-400">{{ $settlementDate }}</p>
                 </div>
@@ -111,8 +134,14 @@
             <!-- Itemized Financial Breakdown -->
             <div class="space-y-3">
                 <div class="flex items-center justify-between">
-                    <p class="text-xs font-bold uppercase tracking-wider text-slate-900">Payment Breakdown / Mchanganuo wa Malipo</p>
+                    <p class="text-xs font-bold uppercase tracking-wider text-slate-900">
+                        {{ $isPaid ? 'Payment Breakdown / Mchanganuo wa Malipo' : 'Agreed Quotation Breakdown / Mchanganuo wa Makubaliano' }}
+                    </p>
+                    @if($isPaid)
                     <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Payment Confirmed</span>
+                    @else
+                    <span class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Awaiting Settlement</span>
+                    @endif
                 </div>
                 
                 <div class="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100 text-xs overflow-hidden">
@@ -150,16 +179,20 @@
                     <!-- Totals Table -->
                     <div class="p-4 bg-slate-50 space-y-2 border-t border-slate-200">
                         <div class="flex justify-between text-slate-600 text-xs">
-                            <span>Total Invoiced Amount (Jumla ya Gharama):</span>
+                            <span>Total Agreed Invoiced Amount (Jumla ya Gharama):</span>
                             <span class="font-bold font-mono text-slate-900">TZS {{ number_format($totalAmount, 0) }}</span>
                         </div>
-                        <div class="flex justify-between text-emerald-800 text-xs font-bold">
-                            <span>Amount Paid by Client (Kiasi Kilicholipwa):</span>
-                            <span class="font-mono text-emerald-700 font-black">TZS {{ number_format($totalAmount, 0) }}</span>
+                        <div class="flex justify-between {{ $isPaid ? 'text-emerald-800' : 'text-slate-500' }} text-xs font-bold">
+                            <span>Amount Paid (Kiasi Kilicholipwa):</span>
+                            <span class="font-mono {{ $isPaid ? 'text-emerald-700 font-black' : 'text-slate-600' }}">
+                                {{ $isPaid ? 'TZS ' . number_format($totalAmount, 0) : 'TZS 0.00' }}
+                            </span>
                         </div>
                         <div class="flex justify-between text-slate-900 text-sm font-black pt-2 border-t border-slate-200">
-                            <span>BALANCE DUE / DENI LILILOBAKI:</span>
-                            <span class="font-mono text-emerald-600">TZS 0.00 (PAID)</span>
+                            <span>{{ $isPaid ? 'BALANCE DUE / DENI LILILOBAKI:' : 'AMOUNT PENDING PAYMENT / SALIO LINALOSUBIRIWA:' }}</span>
+                            <span class="font-mono {{ $isPaid ? 'text-emerald-600' : 'text-amber-600' }}">
+                                {{ $isPaid ? 'TZS 0.00 (PAID)' : 'TZS ' . number_format($totalAmount, 0) . ' (PENDING)' }}
+                            </span>
                         </div>
                     </div>
                 </div>
@@ -168,29 +201,47 @@
             <!-- Settlement & Audit Details -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Payment Status & Method</p>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Payment Status & Settlement</p>
+                    @if($isPaid)
                     <p class="font-bold text-emerald-700 flex items-center space-x-1">
                         <span>Direct Settlement • Paid in Full</span>
                     </p>
-                    <p class="text-[11px] text-slate-500">Method: Cash / Mobile Money (Direct P2P)</p>
+                    <p class="text-[11px] text-slate-500">Method: Cash / Mobile Money (Direct P2P Confirmed)</p>
+                    @else
+                    <p class="font-bold text-amber-700 flex items-center space-x-1">
+                        <span>Pending Technician Confirmation</span>
+                    </p>
+                    <p class="text-[11px] text-slate-500">Awaiting settlement & receipt acknowledgment</p>
+                    @endif
                 </div>
 
                 <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 space-y-1">
-                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Service Completion Verification</p>
-                    <p class="font-bold text-slate-900">Confirmed & Signed by Client</p>
+                    <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Service Completion Status</p>
+                    <p class="font-bold text-slate-900">{{ in_array($request->status, ['completed', 'client_confirmed', 'reviewed']) ? 'Completed & Confirmed' : 'Scheduled & In Progress' }}</p>
                     <p class="text-[11px] text-slate-500">Platform Commission: 0% Platform Free</p>
                 </div>
             </div>
 
             <!-- Legal and Verification Notice -->
+            @if($isPaid)
             <div class="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 text-[11px] text-emerald-950 leading-relaxed space-y-1">
                 <p class="font-black text-emerald-900 flex items-center space-x-1">
                     <span>Uthibitisho Rasmi wa Malipo na Ukamilifu wa Kazi</span>
                 </p>
                 <p class="text-emerald-800">
-                    Risiti hii inathibitisha kuwa kazi ya ufundi imekaguliwa, kukubaliwa, na malipo ya makadirio ya jumla ya <strong>TZS {{ number_format($totalAmount, 0) }}</strong> yamekamilika kikamilifu kati ya Mteja na Fundi bila salio lolote linalodaiwa.
+                    Risiti hii inathibitisha kuwa kazi ya ufundi imekaguliwa, kukubaliwa, na malipo ya makadirio ya jumla ya <strong>TZS {{ number_format($totalAmount, 0) }}</strong> yamekamilika na kuthibitishwa na Fundi bila salio lolote linalodaiwa.
                 </p>
             </div>
+            @else
+            <div class="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-[11px] text-amber-950 leading-relaxed space-y-1">
+                <p class="font-black text-amber-900 flex items-center space-x-1">
+                    <span>Taarifa ya Nukuu ya Makubaliano ya Kazi (Quotation & Agreement)</span>
+                </p>
+                <p class="text-amber-800">
+                    Huu ni mkataba wa makadirio ya gharama za kazi uliokubaliwa na pande zote mbili. Mara tu malipo yakifanyika na fundi kuthibitisha kupokea fedha, mfumo utazalisha <strong>Risiti Rasmi ya Malipo (PAID IN FULL)</strong>.
+                </p>
+            </div>
+            @endif
 
             <!-- Footer Signature & Cryptographic Verification -->
             <div class="pt-6 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between text-[10px] text-slate-400 gap-2 font-mono">
@@ -199,7 +250,7 @@
                     <span class="text-slate-600 font-bold">Ref: {{ $request->reference_no }}</span>
                 </div>
                 <div>
-                    <span>Security Hash: {{ strtoupper(substr(md5($request->reference_no . $request->id . 'PAID'), 0, 16)) }}</span>
+                    <span>Security Hash: {{ strtoupper(substr(md5($request->reference_no . $request->id . ($isPaid ? 'PAID' : 'PENDING')), 0, 16)) }}</span>
                 </div>
             </div>
 

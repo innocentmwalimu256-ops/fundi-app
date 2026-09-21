@@ -412,33 +412,30 @@ class ServiceRequestController extends Controller
         $client = Auth::user();
         $serviceRequest = ServiceRequest::where('client_id', $client->id)->findOrFail($id);
 
-        if ($serviceRequest->status !== 'completed') {
-            return back()->with('error', 'The technician must mark the job as completed before you can confirm.');
+        if (!in_array($serviceRequest->status, ['completed', 'in_progress', 'scheduled'])) {
+            return back()->with('error', 'Kazi lazima iwe imefanyika au kukamilishwa kabla ya kuthibitisha.');
         }
 
         $serviceRequest->update([
             'status' => 'client_confirmed',
-            'payment_status' => 'paid',
+            'payment_status' => 'pending_confirmation',
         ]);
 
         if ($serviceRequest->job) {
             $serviceRequest->job->update(['confirmed_at' => now()]);
         }
 
-        if ($serviceRequest->technician->technicianProfile) {
-            $serviceRequest->technician->technicianProfile->recalculateRating();
-        }
-
-        AuditLog::log('confirm_completion', "Client confirmed completion and payment settlement for request {$serviceRequest->reference_no}", 'ServiceRequest', $serviceRequest->id);
+        AuditLog::log('client_confirmed_payment_pending', "Client {$client->full_name} confirmed completion and submitted payment for {$serviceRequest->reference_no}, awaiting technician confirmation", 'ServiceRequest', $serviceRequest->id);
 
         Notification::send(
             $serviceRequest->technician_id,
-            'job_confirmed',
-            'Job Completion & Payment Confirmed!',
-            "Client {$client->full_name} has verified and confirmed completion of {$serviceRequest->reference_no}."
+            'payment_pending_confirmation',
+            'Mteja Amethibitisha Malipo!',
+            "Mteja {$client->full_name} amethibitisha kuwa amekulipa gharama za kazi kwa ombi {$serviceRequest->reference_no}. Tafadhali thibitisha kupokea malipo ili kufungua risiti rasmi.",
+            route('technician.requests.show', $serviceRequest->id)
         );
 
-        return back()->with('success', 'Completion confirmed! Please take a moment to rate and review your technician.');
+        return back()->with('success', 'Uthibitisho wa kukamilisha kazi na malipo umetumwa kwa fundi! Fundi akithibitisha kupokea malipo, risiti rasmi ya kidijitali (PAID IN FULL) itafunguliwa mara moja.');
     }
 
     public function storeReview(Request $request, $id)

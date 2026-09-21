@@ -372,20 +372,65 @@
             @endif
 
             <!-- Completion Confirmation & Review CTA (Section 41 & 42) -->
-            @if($request->status === 'completed')
+            @if(in_array($request->status, ['completed', 'in_progress']) && $request->payment_status !== 'paid' && $request->payment_status !== 'pending_confirmation')
             <div class="bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 rounded-3xl p-6 sm:p-8 text-white shadow-xl space-y-4">
                 <div class="space-y-1">
-                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">{{ __('Action Required') }}</span>
-                    <h3 class="text-lg sm:text-xl font-black">{{ __('Technician has finished the work!') }}</h3>
-                    <p class="text-xs text-slate-300">{{ __('Please inspect the completed work and confirm satisfaction to close this job.') }}</p>
+                    <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">{{ __('Hatua Inayofuata / Next Step') }}</span>
+                    <h3 class="text-lg sm:text-xl font-black">{{ __('Kazi Imekamilika: Thibitisha & Kamilisha Malipo') }}</h3>
+                    <p class="text-xs text-slate-300">{{ __('Tafadhali kagua kazi iliyofanyika na umkabidhi fundi malipo yake ya moja kwa moja ya TZS :amount (Cash au Simu). Ukishafanya hivyo, bonyeza kitufe hapa chini kuthibitisha.', ['amount' => $request->latestQuotation ? number_format($request->latestQuotation->total_cost, 0) : '0']) }}</p>
                 </div>
 
                 <form method="POST" action="{{ route('client.requests.confirm-completion', $request->id) }}">
                     @csrf
-                    <button type="submit" class="py-3.5 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg transition">
-                         {{ __('Confirm Completion & Unlock Review') }}
+                    <button type="submit" class="py-3.5 px-6 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg transition flex items-center space-x-2 cursor-pointer">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        <span>{{ __('Thibitisha Kazi & Nimeshafanya Malipo') }}</span>
                     </button>
                 </form>
+            </div>
+            @endif
+
+            <!-- Client Waiting for Fundi Payment Confirmation Notice -->
+            @if($request->payment_status === 'pending_confirmation')
+            <div class="bg-gradient-to-r from-amber-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-8 text-white border border-amber-500/30 shadow-xl space-y-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-bold">
+                        <i data-lucide="clock" class="w-3.5 h-3.5 mr-1 text-amber-400"></i>
+                        <span>{{ __('INASUBIRI UTHIBITISHO WA FUNDI') }}</span>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-black text-white">{{ __('Malipo Yako Yanasubiri Fundi Athibitishe Kupokea') }}</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        {{ __('Umeshatuma taarifa kuwa umekamilisha malipo kwa fundi. Mara tu fundi atakapothibitisha kupokea fedha kwenye mfumo wake, Risiti Rasmi ya Malipo (PAID IN FULL) itafunguliwa papo hapo.') }}
+                    </p>
+                </div>
+                <div class="pt-1 flex items-center space-x-3">
+                    <a href="{{ route('requests.receipt', $request->id) }}" target="_blank" class="px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs border border-white/20 transition flex items-center space-x-2">
+                        <i data-lucide="file-text" class="w-4 h-4 text-amber-400"></i>
+                        <span>{{ __('Tazama Nukuu ya Makubaliano (Agreed Quote)') }}</span>
+                    </a>
+                </div>
+            </div>
+            @endif
+
+            <!-- Paid in Full Confirmation Notice for Client -->
+            @if($request->payment_status === 'paid')
+            <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-8 text-white border border-emerald-500/30 shadow-xl space-y-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5 mr-1 text-emerald-400"></i>
+                        <span>{{ __('MALIPO YAMETHIBITISHWA NA FUNDI') }}</span>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-black text-white">{{ __('Kazi na Malipo Yamekamilika Kikamilifu!') }}</h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        {{ __('Fundi amethibitisha kupokea malipo yote. Risiti yako rasmi ya kidijitali (PAID IN FULL) sasa imefunguliwa na ipo tayari.') }}
+                    </p>
+                </div>
+                <div class="pt-1">
+                    <a href="{{ route('requests.receipt', $request->id) }}" target="_blank" class="inline-flex items-center space-x-2 px-6 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition">
+                        <i data-lucide="receipt" class="w-4 h-4"></i>
+                        <span>{{ __('Pakua / Tazama Risiti Rasmi (PAID IN FULL)') }}</span>
+                    </a>
+                </div>
             </div>
             @endif
 

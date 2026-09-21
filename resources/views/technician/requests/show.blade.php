@@ -175,12 +175,61 @@
                     </form>
                 </div>
 
-                @if($request->status === 'completed')
-                <div class="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-800 flex items-center">
-                    <i data-lucide="clock" class="w-4 h-4 mr-2 flex-shrink-0 text-amber-600"></i>
-                    <span>{{ __('Job marked complete! Waiting for client inspection and completion confirmation.') }}</span>
+                @if($request->status === 'completed' && $request->payment_status !== 'paid')
+                <div class="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 space-y-2">
+                    <div class="flex items-center space-x-2 font-bold text-amber-800">
+                        <i data-lucide="clock" class="w-4 h-4 text-amber-600 flex-shrink-0"></i>
+                        <span>{{ __('Kazi Imekamilika! Mteja anafanya ukaguzi na kukamilisha malipo.') }}</span>
+                    </div>
+                    <p class="text-[11px] text-amber-700 leading-relaxed">
+                        {{ __('Mteja akishakulipa mkononi au kwa simu, tafadhali bonyeza kitufe cha kuthibitisha kupokea malipo ili kutoa Risiti Rasmi ya Malipo (PAID IN FULL).') }}
+                    </p>
                 </div>
                 @endif
+            </div>
+            @endif
+
+            <!-- Technician Confirm Payment Received Box -->
+            @if(in_array($request->status, ['completed', 'client_confirmed']) && $request->payment_status !== 'paid')
+            <div class="bg-gradient-to-r from-amber-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-8 text-white border border-amber-500/30 shadow-xl space-y-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[11px] font-bold">
+                        <i data-lucide="wallet" class="w-3.5 h-3.5 mr-1 text-amber-400"></i>
+                        <span>{{ __('MALIPO YANASUBIRI UTHIBITISHO WAKO') }}</span>
+                    </div>
+                    <h3 class="text-base sm:text-lg font-black text-white">
+                        {{ __('Thibitisha Kupokea Malipo ya Kazi (TZS :amount)', ['amount' => $request->latestQuotation ? number_format($request->latestQuotation->total_cost, 0) : '0']) }}
+                    </h3>
+                    <p class="text-xs text-slate-300 leading-relaxed">
+                        {{ __('Je, umepokea malipo ya moja kwa moja (Cash au Mobile Money) kutoka kwa mteja? Ukibonyeza kitufe hapa chini, mfumo utathibitisha malipo na kutoa Risiti Rasmi ya Malipo (PAID IN FULL) kwa mteja.') }}
+                    </p>
+                </div>
+
+                <form method="POST" action="{{ route('technician.requests.confirm-payment', $request->id) }}" class="pt-2">
+                    @csrf
+                    <button type="submit" class="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 active:scale-95 text-slate-950 font-black text-xs uppercase tracking-wider shadow-lg shadow-emerald-500/20 transition flex items-center justify-center space-x-2 cursor-pointer">
+                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                        <span>{{ __('Thibitisha Nimepokea Malipo (Confirm Payment Received)') }}</span>
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            <!-- Paid in Full Confirmation Notice -->
+            @if($request->payment_status === 'paid')
+            <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-slate-950 rounded-3xl p-6 text-white border border-emerald-500/30 shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div class="space-y-1">
+                    <div class="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[11px] font-bold">
+                        <i data-lucide="check-circle" class="w-3.5 h-3.5 mr-1 text-emerald-400"></i>
+                        <span>{{ __('MALIPO YAMETHIBITISHWA KIKAMILIFU') }}</span>
+                    </div>
+                    <h3 class="text-base font-black text-white">{{ __('Malipo Yamekamilika & Risiti Imefunguliwa') }}</h3>
+                    <p class="text-xs text-slate-300">{{ __('Uthibitisho wa kupokea malipo umekamilika. Risiti rasmi (PAID IN FULL) sasa inapatikana.') }}</p>
+                </div>
+                <a href="{{ route('requests.receipt', $request->id) }}" target="_blank" class="px-5 py-3 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs transition flex items-center space-x-2 flex-shrink-0">
+                    <i data-lucide="receipt" class="w-4 h-4"></i>
+                    <span>{{ __('Tazama Risiti Rasmi') }}</span>
+                </a>
             </div>
             @endif
 

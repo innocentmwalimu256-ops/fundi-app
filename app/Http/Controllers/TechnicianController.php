@@ -302,6 +302,33 @@ class TechnicianController extends Controller
         return back()->with('success', 'Job status updated to ' . ucfirst(str_replace('_', ' ', $newStatus)));
     }
 
+    public function confirmPaymentReceived(Request $request, $id)
+    {
+        $technician = Auth::user();
+        $serviceRequest = ServiceRequest::where('technician_id', $technician->id)->findOrFail($id);
+
+        $serviceRequest->update([
+            'payment_status' => 'paid',
+            'status' => 'client_confirmed',
+        ]);
+
+        if ($serviceRequest->technician && $serviceRequest->technician->technicianProfile) {
+            $serviceRequest->technician->technicianProfile->recalculateRating();
+        }
+
+        AuditLog::log('technician_confirmed_payment', "Technician {$technician->full_name} confirmed receipt of full payment for {$serviceRequest->reference_no}", 'ServiceRequest', $serviceRequest->id);
+
+        Notification::send(
+            $serviceRequest->client_id,
+            'payment_confirmed_by_technician',
+            'Fundi Amethibitisha Kupokea Malipo!',
+            "Fundi {$technician->full_name} amethibitisha kupokea malipo yote kwa kazi {$serviceRequest->reference_no}. Risiti yako rasmi ya kidijitali (PAID IN FULL) imefunguliwa kikamilifu.",
+            route('requests.receipt', $serviceRequest->id)
+        );
+
+        return back()->with('success', 'Uthibitisho umekamilika! Umethibitisha kupokea malipo na risiti rasmi ya malipo (PAID IN FULL) sasa ipo wazi kwa mteja.');
+    }
+
     public function updatePaymentStatus(Request $request, $id)
     {
         $technician = Auth::user();

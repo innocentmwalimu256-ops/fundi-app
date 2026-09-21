@@ -137,6 +137,7 @@ Route::prefix('technician')->name('technician.')->middleware(['auth', 'role:tech
         Route::get('/jobs', [TechnicianController::class, 'jobs'])->name('jobs.index');
         Route::get('/jobs/{id}', [TechnicianController::class, 'requestShow'])->name('jobs.show');
         Route::post('/jobs/{id}/status', [TechnicianController::class, 'updateJobStatus'])->name('jobs.status');
+        Route::post('/requests/{id}/confirm-payment', [TechnicianController::class, 'confirmPaymentReceived'])->name('requests.confirm-payment');
         Route::get('/messages', [MessageController::class, 'index'])->name('messages.index');
     });
 });
