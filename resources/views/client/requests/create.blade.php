@@ -111,28 +111,57 @@
                 </div>
             </div>
 
+            @php
+                $isDemoUser = str_ends_with(strtolower(auth()->user()->email ?? ''), '@fundi.test') || str_ends_with(strtolower(auth()->user()->email ?? ''), '@example.com');
+            @endphp
+
             <!-- Connection Fee Direct In-App Checkout Box -->
-            <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 text-white space-y-4 border border-teal-500/20 shadow-xl" x-data="{ feeMethod: 'mpesa' }">
+            <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-slate-950 to-teal-950 text-white space-y-4 border border-teal-500/20 shadow-xl" x-data="{ feeMethod: '{{ $isDemoUser ? 'demo' : 'mpesa' }}' }">
+                
+                @if($isDemoUser)
+                <div class="p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                        <div>
+                            <span class="text-xs font-black text-emerald-300">{{ __('Hali ya Jaribio / Demo Mode Ipo Wazi') }}</span>
+                            <p class="text-[11px] text-emerald-200/80">{{ __('Akaunti hii ya majaribio inatuma maombi BURE bila malipo (TZS 0) ili kuonesha utendaji kazi wa mfumo.') }}</p>
+                        </div>
+                    </div>
+                    <span class="text-[11px] font-mono font-black text-emerald-300 bg-emerald-950 px-2.5 py-1 rounded-lg border border-emerald-500/30 flex-shrink-0">TZS 0 (BURE)</span>
+                </div>
+                @endif
+
                 <div class="flex items-center justify-between border-b border-white/10 pb-4">
                     <div class="flex items-center space-x-3">
                         <div class="w-10 h-10 rounded-2xl bg-teal-400 text-slate-950 font-black flex items-center justify-center flex-shrink-0">
                             <i data-lucide="shield-check" class="w-5 h-5"></i>
                         </div>
                         <div>
-                            <h3 class="text-sm font-bold text-white">{{ __('Technician Connection Fee (In-App Checkout)') }}</h3>
-                            <p class="text-[11px] text-slate-300">{{ __('Pay securely within the app to dispatch your request directly to the technician.') }}</p>
+                            <h3 class="text-sm font-bold text-white">{{ __('Ada ya Kuunganishwa na Fundi') }}</h3>
+                            <p class="text-[11px] text-slate-300" x-show="feeMethod !== 'demo'">{{ __('Lipa ada ya kuunganishwa ili kufungua mawasiliano ya fundi na kutumiwa makadirio.') }}</p>
+                            <p class="text-[11px] text-emerald-300" x-show="feeMethod === 'demo'">{{ __('Hali ya jaribio: Ombi hili linatumwa bure papo hapo bila malipo.') }}</p>
                         </div>
                     </div>
                     <div class="text-right flex-shrink-0">
-                        <span class="text-2xl font-black text-teal-300 font-mono">TZS {{ number_format($connectionFee ?? 500, 0) }}</span>
-                        <span class="text-[10px] text-slate-400 block">{{ __('Connection Fee') }}</span>
+                        <span class="text-2xl font-black font-mono" :class="feeMethod === 'demo' ? 'text-emerald-400' : 'text-teal-300'" x-text="feeMethod === 'demo' ? 'TZS 0' : 'TZS {{ number_format($connectionFee ?? 500, 0) }}'">
+                            {{ $isDemoUser ? 'TZS 0' : 'TZS ' . number_format($connectionFee ?? 500, 0) }}
+                        </span>
+                        <span class="text-[10px] text-slate-400 block" x-text="feeMethod === 'demo' ? '{{ __('Bure (Demo Mode)') }}' : '{{ __('Connection Fee') }}'">
+                            {{ $isDemoUser ? __('Bure (Demo Mode)') : __('Connection Fee') }}
+                        </span>
                     </div>
                 </div>
 
                 <!-- Network Picker -->
                 <div>
-                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-2">{{ __('Select Payment Method') }}</label>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-2">{{ __('Njia ya Malipo / Chaguo') }}</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                        <label :class="feeMethod === 'demo' ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 ring-2 ring-emerald-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition col-span-2 sm:col-span-1">
+                            <input type="radio" name="payment_method" value="demo" class="sr-only" x-model="feeMethod">
+                            <span class="w-6 h-6 rounded-lg bg-emerald-600 text-white flex items-center justify-center font-black text-[10px]">D</span>
+                            <span>Demo (Bure)</span>
+                        </label>
+
                         <label :class="feeMethod === 'mpesa' ? 'bg-teal-500/20 border-teal-400 text-teal-300 ring-2 ring-teal-400/30' : 'bg-white/5 border-white/10 text-slate-300'" class="p-2.5 rounded-xl border cursor-pointer flex items-center space-x-2 text-xs font-bold transition">
                             <input type="radio" name="payment_method" value="mpesa" class="sr-only" x-model="feeMethod">
                             <span class="w-6 h-6 rounded-lg bg-rose-600 text-white flex items-center justify-center font-black text-[10px]">M</span>
@@ -159,21 +188,22 @@
                     </div>
                 </div>
 
-                <div>
+                <div x-show="feeMethod !== 'demo'">
                     <label class="block text-[11px] font-bold text-slate-300 mb-1">{{ __('Payment Phone Number') }}</label>
                     <input type="text" name="payment_phone" value="{{ auth()->user()->phone }}" placeholder="{{ __('07XXXXXXXX or 2557XXXXXXXX') }}" class="w-full py-2.5 px-3 rounded-xl bg-white/10 border border-white/20 text-xs text-white placeholder-slate-400 font-mono font-bold focus:ring-2 focus:ring-teal-400 focus:outline-none">
                 </div>
 
                 <p class="text-[11px] text-slate-400 flex items-center space-x-1">
                     <i data-lucide="info" class="w-3.5 h-3.5 text-teal-400 flex-shrink-0"></i>
-                    <span>{{ __('Note: Labour and material costs are settled directly with your technician upon completion (0% platform deduction).') }}</span>
+                    <span>{{ __('Kumbuka: Malipo ya kazi na vifaa hufanyika moja kwa moja baina ya mteja na fundi kazi ikikamilika (0% platform deduction).') }}</span>
                 </p>
 
                 <!-- Submit CTA -->
                 <div class="pt-4 border-t border-white/10">
                     <button type="submit" class="w-full py-4 px-6 rounded-2xl bg-teal-500 hover:bg-teal-400 active:scale-[0.99] text-slate-950 font-black text-sm shadow-lg shadow-teal-500/25 transition flex items-center justify-center space-x-2">
                         <i data-lucide="check-circle" class="w-5 h-5"></i>
-                        <span>{{ __('Pay Fee TZS :amount & Submit Request Instantly', ['amount' => number_format($connectionFee ?? 500, 0)]) }}</span>
+                        <span x-show="feeMethod === 'demo'">{{ __('Tuma Ombi Bure (Demo Mode - TZS 0)') }}</span>
+                        <span x-show="feeMethod !== 'demo'">{{ __('Pay Fee TZS :amount & Submit Request Instantly', ['amount' => number_format($connectionFee ?? 500, 0)]) }}</span>
                     </button>
                 </div>
             </div>

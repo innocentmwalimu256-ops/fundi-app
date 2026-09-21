@@ -68,7 +68,9 @@ class ServiceRequestController extends Controller
         $services = Service::where('status', 'active')->get();
         $selectedService = $serviceId ? Service::find($serviceId) : ($technician && $technician->services->isNotEmpty() ? $technician->services->first() : null);
 
-        $connectionFee = 500;
+        $isDemo = str_ends_with(strtolower(Auth::user()->email ?? ''), '@fundi.test')
+            || str_ends_with(strtolower(Auth::user()->email ?? ''), '@example.com');
+        $connectionFee = $isDemo ? 0 : 500;
         $admin = User::where('role', 'admin')->first();
         $adminPhone = $admin ? $admin->phone : '0675315279';
         $cleanPhone = preg_replace('/[^0-9]/', '', $adminPhone);
@@ -92,20 +94,29 @@ class ServiceRequestController extends Controller
         $validated = $request->validate([
             'technician_id' => 'required|exists:users,id',
             'service_id' => 'required|exists:services,id',
-            'description' => 'required|string|min:10|max:3000',
-            'location' => 'required|string|max:255',
-            'preferred_date' => 'required|date|after_or_equal:today',
+            'description' => 'required|string|min:10|max:2000',
+            'location' => 'nullable|string|max:255',
+            'preferred_date' => 'nullable|date|after_or_equal:today',
             'preferred_time' => 'nullable|string',
-            'urgency' => 'required|in:low,normal,high,urgent',
+            'urgency' => 'nullable|in:low,normal,high,urgent',
+            'payment_phone' => 'nullable|string|max:25',
+            'payment_method' => 'nullable|string|max:20',
             'payment_reference' => 'nullable|string|max:100',
             'images.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:4096',
         ]);
 
         $technician = User::where('role', 'technician')->findOrFail($validated['technician_id']);
 
-        $serviceRequest = DB::transaction(function () use ($client, $technician, $validated, $request) {
+        $isDemo = str_ends_with(strtolower($client->email ?? ''), '@fundi.test')
+            || str_ends_with(strtolower($client->email ?? ''), '@example.com')
+            || $request->input('payment_method') === 'demo'
+            || $request->boolean('is_demo');
+
+        $serviceRequest = DB::transaction(function () use ($client, $technician, $validated, $request, $isDemo) {
             $ref = ServiceRequest::generateReferenceNo();
-            $paymentRef = $request->input('payment_reference') ?: ('REQ-PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)));
+            $paymentRef = $isDemo
+                ? ('DEMO-FREE-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)))
+                : ($request->input('payment_reference') ?: ('REQ-PAY-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5))));
 
             $req = ServiceRequest::create([
                 'reference_no' => $ref,
@@ -118,9 +129,9 @@ class ServiceRequestController extends Controller
                 'preferred_time' => $validated['preferred_time'] ?? $request->input('preferred_time', '14:00'),
                 'urgency' => $validated['urgency'] ?? $request->input('urgency', 'normal'),
                 'status' => 'pending',
-                'payment_status' => 'unpaid',
-                'connection_fee' => 500,
-                'connection_fee_status' => 'pending',
+                'payment_status' => $isDemo ? 'paid' : 'unpaid',
+                'connection_fee' => $isDemo ? 0 : 500,
+                'connection_fee_status' => $isDemo ? 'paid' : 'pending',
                 'connection_fee_reference' => $paymentRef,
             ]);
 
@@ -138,7 +149,7 @@ class ServiceRequestController extends Controller
             return $req;
         });
 
-        AuditLog::log('create_request', "Client {$client->full_name} created service request {$serviceRequest->reference_no} (Connection Fee Pending: TZS 500)", 'ServiceRequest', $serviceRequest->id);
+        AuditLog::log('create_request', "Client {$client->full_name} created service request {$serviceRequest->reference_no} " . ($isDemo ? '(Free Demo Mode - TZS 0)' : '(Connection Fee Pending: TZS 500)'), 'ServiceRequest', $serviceRequest->id);
 
         Notification::send(
             $technician->id,
@@ -147,6 +158,11 @@ class ServiceRequestController extends Controller
             "Client {$client->full_name} has submitted a service request for {$serviceRequest->reference_no}.",
             route('technician.requests.show', $serviceRequest->id)
         );
+
+        if ($isDemo) {
+            return redirect()->route('client.requests.show', $serviceRequest->id)
+                ->with('success', __('Ombi lako limetumwa kwa fundi bure bila malipo (Demo / Jaribio Mode). Mawasiliano ya fundi yamefunguliwa papo hapo!'));
+        }
 
         // Initiate real Snippe Payment for the TZS 500 Connection Fee
         $paymentPhone = trim($request->input('payment_phone') ?? '') ?: ($client->phone ?? '');
@@ -178,6 +194,32 @@ class ServiceRequestController extends Controller
         if ($serviceRequest->connection_fee_status === 'paid') {
             return redirect()->route('client.requests.show', $serviceRequest->id)
                 ->with('info', __('Ada ya kuunganishwa tayari ilikwishalipwa.'));
+        }
+
+        $isDemo = str_ends_with(strtolower($client->email ?? ''), '@fundi.test')
+            || str_ends_with(strtolower($client->email ?? ''), '@example.com')
+            || $request->input('payment_method') === 'demo'
+            || $request->boolean('is_demo');
+
+        if ($isDemo) {
+            $serviceRequest->update([
+                'connection_fee_status' => 'paid',
+                'payment_status' => 'paid',
+                'connection_fee_reference' => 'DEMO-FREE-' . date('Ymd') . '-' . strtoupper(substr(uniqid(), -5)),
+            ]);
+
+            AuditLog::log('connection_fee_paid', "Client {$client->full_name} completed connection fee via Demo Mode for {$serviceRequest->reference_no}", 'ServiceRequest', $serviceRequest->id);
+
+            Notification::send(
+                $serviceRequest->technician_id,
+                'new_request',
+                'New Verified Client Service Request Received!',
+                "Client {$client->full_name} has verified the connection fee for {$serviceRequest->reference_no}.",
+                route('technician.requests.show', $serviceRequest->id)
+            );
+
+            return redirect()->route('client.requests.show', $serviceRequest->id)
+                ->with('success', __('Ada ya kuunganishwa imethibitishwa bure (Demo Mode). Mawasiliano ya fundi yamefunguliwa!'));
         }
 
         $paymentPhone = trim($request->input('phone_number') ?? '') ?: ($client->phone ?? '');
